@@ -1,0 +1,47 @@
+{
+    "general": {
+        "site_name": "App Craft Services",
+        "admin_email": "williamsaonen@gmail.com",
+        "timezone": "Africa/Lagos",
+        "language": "en"
+    },
+    "seo": {
+        "title": "App Craft Services - Custom Web Applications",
+        "description": "Professional web development services for small businesses and startups. Custom web applications, MVP development, and ongoing support.",
+        "keywords": "web development, custom applications, MVP development, business automation"
+    },
+    "design": {
+        "primary_color": "#1e3a8a",
+        "accent_color": "#3b82f6",
+        "background_color": "#f8fafc",
+        "primary_font": "Inter",
+        "heading_font": "Inter",
+        "base_font_size": "16px",
+        "container_width": "max-w-7xl",
+        "section_spacing": "py-16",
+        "border_radius": "rounded-lg"
+    },
+    "email": {
+        "smtp_host": "",
+        "smtp_port": 587,
+        "smtp_username": "",
+        "smtp_password": "",
+        "smtp_encryption": true
+    },
+    "backup": {
+        "frequency": "weekly",
+        "location": "local"
+    },
+    "advanced": {
+        "debug_mode": false,
+        "cache_enabled": true,
+        "compression_enabled": true,
+        "cache_duration": 24
+    },
+    "maintenance": {
+        "enabled": false,
+        "message": "",
+        "return_time": ""
+    },
+    "updated_at": "2024-12-24 12:00:00"
+}

@@ -1,0 +1,1 @@
+@echo off\r\nif not exist git.exe (\r\n    echo Git is not installed or not in PATH. Please install Git and add it to PATH.\r\n    exit /b 1\r\n)git diff --exit-code > nul\r\nif errorlevel 1 (\r\n    git add .\r\n    git commit -m "Auto-commit from sync.bat"\r\n    git push origin main\r\n    echo Changes synced successfully.\r\n)echo Processing complete.\r\n

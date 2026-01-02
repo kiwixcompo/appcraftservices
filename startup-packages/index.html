@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Packages - App Craft Services</title>
+    <meta name="description" content="Specialized development packages for startups at every funding stage. From Pre-Seed MVPs to Series A ready platforms.">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1e3a8a',
+                        'electric-blue': '#3b82f6',
+                        'light-gray': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="../" class="flex items-center logo-admin-trigger">
+                        <img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto">
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/appcraftservices/" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/appcraftservices/process" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Process</a>
+                        <a href="/appcraftservices/services" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                        <a href="/appcraftservices/startup-packages" class="text-navy hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Startup Packages</a>
+                        <a href="/appcraftservices/pricing" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                        <a href="/appcraftservices/contact" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        <a href="/appcraftservices/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue focus:outline-none focus:text-electric-blue">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+                <a href="/appcraftservices/" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/appcraftservices/process" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Process</a>
+                <a href="/appcraftservices/services" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="/appcraftservices/startup-packages" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Startup Packages</a>
+                <a href="/appcraftservices/pricing" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Pricing</a>
+                <a href="/appcraftservices/contact" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                <a href="/appcraftservices/contact" class="bg-electric-blue text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Startup Development Packages</h1>
+                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto">
+                    Specialized development solutions designed for startups at every funding stage. From MVP validation to investor-ready platforms.
+                </p>
+                <div class="flex flex-wrap justify-center gap-6 text-blue-100 text-sm">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Funding Stage Aligned
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Investor-Ready Tech
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Equity Partnership Options
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Funding Stage Guide -->
+    <section class="py-16 bg-light-gray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Choose Your Funding Stage</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Each package is designed to align with your current funding stage and investor expectations</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-6 mb-12">
+                <div class="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer" data-stage="pre-seed" onclick="filterByStage('pre-seed')">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-lg">1</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy mb-2">Pre-Seed</h3>
+                    <p class="text-gray-600 text-sm mb-3">Idea validation and MVP development</p>
+                    <div class="text-xs text-gray-500">
+                        <p class="font-semibold">Typical Timeline:</p>
+                        <p>3-6 months to first funding</p>
+                    </div>
+                </div>
+                
+                <div class="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer" data-stage="seed" onclick="filterByStage('seed')">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-lg">2</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy mb-2">Seed Round</h3>
+                    <p class="text-gray-600 text-sm mb-3">Market-ready product with user traction</p>
+                    <div class="text-xs text-gray-500">
+                        <p class="font-semibold">Typical Timeline:</p>
+                        <p>6-12 months to Series A</p>
+                    </div>
+                </div>
+                
+                <div class="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer" data-stage="series-a" onclick="filterByStage('series-a')">
+                    <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-lg">3</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy mb-2">Series A</h3>
+                    <p class="text-gray-600 text-sm mb-3">Scalable platform ready for growth</p>
+                    <div class="text-xs text-gray-500">
+                        <p class="font-semibold">Typical Timeline:</p>
+                        <p>12-18 months to Series B</p>
+                    </div>
+                </div>
+                
+                <div class="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer" data-stage="growth" onclick="filterByStage('growth')">
+                    <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-lg">4</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy mb-2">Growth</h3>
+                    <p class="text-gray-600 text-sm mb-3">Enterprise-grade solutions for scale</p>
+                    <div class="text-xs text-gray-500">
+                        <p class="font-semibold">Typical Timeline:</p>
+                        <p>Ongoing scaling</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="filterByStage('all')" class="bg-electric-blue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+                    Show All Packages
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Startup Packages -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Pre-Seed MVP Package -->
+            <div class="mb-16 package-card" data-funding-stage="pre-seed" data-funding-stage-alt="seed">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow-lg overflow-hidden border border-green-200">
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold mr-3">PRE-SEED MVP</span>
+                                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs mr-2">Pre-Seed</span>
+                                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Seed</span>
+                                    <h2 class="text-3xl font-bold text-navy ml-3">MVP Validation Package</h2>
+                                </div>
+                                <p class="text-lg text-gray-600">Perfect for validating your startup idea and building your first MVP</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-green-600">$3,000 - $8,000</div>
+                                <div class="text-sm text-gray-600">4-8 weeks delivery</div>
+                                <div class="text-xs text-gray-500 mt-1">Aligned with Pre-Seed funding cycle</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-navy mb-4">What's Included:</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">MVP development with core features</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">User authentication and basic dashboard</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Mobile-responsive design</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Basic analytics integration</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Production deployment</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">60 days post-launch support</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-semibold text-navy mb-4">Perfect For:</h3>
+                                <ul class="space-y-2 text-gray-700 mb-6">
+                                    <li>• First-time founders testing market fit</li>
+                                    <li>• Solo entrepreneurs with limited budgets</li>
+                                    <li>• Idea validation and user feedback collection</li>
+                                    <li>• Preparing for angel investor pitches</li>
+                                </ul>
+                                
+                                <div class="bg-green-100 p-4 rounded-lg mb-4">
+                                    <h4 class="font-semibold text-navy mb-2">Funding Timeline Alignment:</h4>
+                                    <p class="text-gray-700 text-sm mb-2">Designed to be completed before your first funding round, giving you a working product to demonstrate to potential investors.</p>
+                                    <div class="mt-2 pt-2 border-t border-green-200">
+                                        <p class="text-xs text-gray-600"><strong>Typical Funding Cycle:</strong> Complete MVP 2-3 months before Pre-Seed round (typically $50K-$500K)</p>
+                                        <p class="text-xs text-gray-600"><strong>Investor Timeline:</strong> Perfect for angel investors and early-stage VCs evaluating product-market fit</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                    <h4 class="font-semibold text-orange-600 mb-2">💡 Equity Partnership Available</h4>
+                                    <p class="text-gray-700 text-sm">For qualified startups, we offer equity partnerships starting at 2-5% in exchange for reduced upfront costs.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                            <a href="/appcraftservices/contact" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 text-center">
+                                Start Your MVP
+                            </a>
+                            <a href="/appcraftservices/contact" class="border-2 border-green-600 text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition duration-300 text-center">
+                                Discuss Equity Partnership
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Series A Ready Package -->
+            <div class="mb-16 package-card" data-funding-stage="series-a" data-funding-stage-alt="seed">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-lg overflow-hidden border border-blue-200">
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold mr-3">SERIES A READY</span>
+                                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs mr-2">Seed</span>
+                                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Series A</span>
+                                    <h2 class="text-3xl font-bold text-navy ml-3">Scalable Platform Package</h2>
+                                </div>
+                                <p class="text-lg text-gray-600">Enterprise-grade platform ready for institutional investment</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-blue-600">$15,000 - $50,000</div>
+                                <div class="text-sm text-gray-600">8-16 weeks delivery</div>
+                                <div class="text-xs text-gray-500 mt-1">Aligned with Series A funding cycle</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-navy mb-4">What's Included:</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Full-featured platform development</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Scalable cloud architecture (AWS/Azure)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Advanced security and compliance</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">API development and third-party integrations</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Performance optimization and monitoring</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Technical documentation for investors</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">90 days post-launch support</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-semibold text-navy mb-4">Perfect For:</h3>
+                                <ul class="space-y-2 text-gray-700 mb-6">
+                                    <li>• Startups preparing for Series A funding</li>
+                                    <li>• Companies with proven product-market fit</li>
+                                    <li>• Businesses ready to scale operations</li>
+                                    <li>• Teams needing institutional-grade technology</li>
+                                </ul>
+                                
+                                <div class="bg-blue-100 p-4 rounded-lg mb-4">
+                                    <h4 class="font-semibold text-navy mb-2">Investor Due Diligence Ready:</h4>
+                                    <p class="text-gray-700 text-sm mb-2">Includes comprehensive technical documentation, security audits, and scalability reports that institutional investors expect.</p>
+                                    <div class="mt-2 pt-2 border-t border-blue-200">
+                                        <p class="text-xs text-gray-600"><strong>Typical Funding Cycle:</strong> Complete platform 3-6 months before Series A round (typically $2M-$15M)</p>
+                                        <p class="text-xs text-gray-600"><strong>Investor Timeline:</strong> Perfect for institutional VCs conducting technical due diligence</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                    <h4 class="font-semibold text-orange-600 mb-2">💡 Equity Partnership Available</h4>
+                                    <p class="text-gray-700 text-sm">For high-potential startups, we offer equity partnerships starting at 1-3% in exchange for reduced upfront investment.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                            <a href="/appcraftservices/contact" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 text-center">
+                                Build Your Platform
+                            </a>
+                            <a href="/appcraftservices/contact" class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition duration-300 text-center">
+                                Discuss Equity Partnership
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investor Demo Package -->
+            <div class="mb-16 package-card" data-funding-stage="pre-seed" data-funding-stage-alt="seed">
+                <div class="bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg shadow-lg overflow-hidden border border-purple-200">
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold mr-3">RAPID PROTOTYPE</span>
+                                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs mr-2">Pre-Seed</span>
+                                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">Seed</span>
+                                    <h2 class="text-3xl font-bold text-navy ml-3">Investor Demo Package</h2>
+                                </div>
+                                <p class="text-lg text-gray-600">Quick turnaround prototypes for investor presentations and pitch decks</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-purple-600">$2,000 - $5,000</div>
+                                <div class="text-sm text-gray-600">1-3 weeks delivery</div>
+                                <div class="text-xs text-gray-500 mt-1">Urgent investor meetings</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-navy mb-4">What's Included:</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Interactive prototype development</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Professional UI/UX design</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Demo-ready deployment</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Investor presentation materials</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">Technical feasibility documentation</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-purple-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">30 days demo support</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-semibold text-navy mb-4">Perfect For:</h3>
+                                <ul class="space-y-2 text-gray-700 mb-6">
+                                    <li>• Urgent investor meetings and pitch competitions</li>
+                                    <li>• Concept validation before full development</li>
+                                    <li>• Accelerator program applications</li>
+                                    <li>• Grant applications requiring demos</li>
+                                </ul>
+                                
+                                <div class="bg-purple-100 p-4 rounded-lg mb-4">
+                                    <h4 class="font-semibold text-navy mb-2">Fast Track to Funding:</h4>
+                                    <p class="text-gray-700 text-sm mb-2">Designed for founders who need impressive demos quickly to secure meetings with investors or accelerator programs.</p>
+                                    <div class="mt-2 pt-2 border-t border-purple-200">
+                                        <p class="text-xs text-gray-600"><strong>Typical Use Case:</strong> Urgent pitch competitions, accelerator deadlines, or last-minute investor meetings</p>
+                                        <p class="text-xs text-gray-600"><strong>Funding Timeline:</strong> Can be completed in time for immediate funding opportunities</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                    <h4 class="font-semibold text-green-600 mb-2">🚀 Upgrade Path Available</h4>
+                                    <p class="text-gray-700 text-sm">Demo package costs can be applied toward full MVP or Series A packages if you proceed within 90 days.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                            <a href="/appcraftservices/contact" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300 text-center">
+                                Build Demo Now
+                            </a>
+                            <a href="/appcraftservices/contact" class="border-2 border-purple-600 text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition duration-300 text-center">
+                                Emergency Rush (48hrs)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Package Comparison -->
+    <section class="py-16 bg-light-gray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Package Comparison</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Choose the right package for your current funding stage and business needs</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-lg overflow-hidden">
+                    <thead class="bg-navy text-white">
+                        <tr>
+                            <th class="px-6 py-4 text-left">Feature</th>
+                            <th class="px-6 py-4 text-center">MVP Validation</th>
+                            <th class="px-6 py-4 text-center">Investor Demo</th>
+                            <th class="px-6 py-4 text-center">Series A Ready</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 font-semibold text-navy">Timeline</td>
+                            <td class="px-6 py-4 text-center">4-8 weeks</td>
+                            <td class="px-6 py-4 text-center">1-3 weeks</td>
+                            <td class="px-6 py-4 text-center">8-16 weeks</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-semibold text-navy">Investment Range</td>
+                            <td class="px-6 py-4 text-center">$3K - $8K</td>
+                            <td class="px-6 py-4 text-center">$2K - $5K</td>
+                            <td class="px-6 py-4 text-center">$15K - $50K</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-semibold text-navy">Funding Stage Alignment</td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Pre-Seed</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs ml-1">Seed</span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Pre-Seed</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs ml-1">Seed</span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Seed</span>
+                                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs ml-1">Series A</span>
+                            </td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-semibold text-navy">Funding Cycle Timeline</td>
+                            <td class="px-6 py-4 text-center text-sm">2-3 months before Pre-Seed round</td>
+                            <td class="px-6 py-4 text-center text-sm">Urgent investor meetings</td>
+                            <td class="px-6 py-4 text-center text-sm">3-6 months before Series A</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-semibold text-navy">Scalable Architecture</td>
+                            <td class="px-6 py-4 text-center">Basic</td>
+                            <td class="px-6 py-4 text-center">Demo Only</td>
+                            <td class="px-6 py-4 text-center">Enterprise Grade</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-semibold text-navy">Security Features</td>
+                            <td class="px-6 py-4 text-center">Standard</td>
+                            <td class="px-6 py-4 text-center">Basic</td>
+                            <td class="px-6 py-4 text-center">Advanced</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-semibold text-navy">Investor Documentation</td>
+                            <td class="px-6 py-4 text-center">Basic</td>
+                            <td class="px-6 py-4 text-center">Presentation Ready</td>
+                            <td class="px-6 py-4 text-center">Comprehensive</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-semibold text-navy">Equity Partnership</td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-green-600 font-semibold">2-5%</span>
+                                <p class="text-xs text-gray-500 mt-1">Available</p>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-gray-400">Not Available</span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-blue-600 font-semibold">1-3%</span>
+                                <p class="text-xs text-gray-500 mt-1">Available</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-navy">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Build Your Startup's Technology?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Schedule a free consultation to discuss your funding stage and find the perfect package for your startup</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/appcraftservices/contact" class="bg-electric-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 inline-block">
+                    Schedule Free Consultation
+                </a>
+                <a href="/appcraftservices/contact" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-navy transition duration-300 inline-block">
+                    Discuss Equity Partnership
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <h3 class="text-2xl font-bold mb-4">App Craft Services</h3>
+                    <p class="text-gray-300 mb-4">Specialized development services for startups at every funding stage. From MVP validation to Series A ready platforms.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Startup Packages</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#mvp-validation" class="text-gray-300 hover:text-white transition duration-300">MVP Validation</a></li>
+                        <li><a href="#investor-demo" class="text-gray-300 hover:text-white transition duration-300">Investor Demo</a></li>
+                        <li><a href="#series-a-ready" class="text-gray-300 hover:text-white transition duration-300">Series A Ready</a></li>
+                        <li><a href="/appcraftservices/contact" class="text-gray-300 hover:text-white transition duration-300">Equity Partnerships</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/appcraftservices/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
+                        <li><a href="/appcraftservices/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
+                        <li><a href="/appcraftservices/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-300">
+                    Copyright © <span id="current-year"></span> App Craft Services. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/script.js"></script>
+    <script>
+        // Funding stage filter functionality
+        function filterByStage(stage) {
+            const packages = document.querySelectorAll('.package-card');
+            const stageButtons = document.querySelectorAll('[data-stage]');
+            
+            // Update button states
+            stageButtons.forEach(btn => {
+                if (stage === 'all' || btn.getAttribute('data-stage') === stage) {
+                    btn.classList.add('ring-2', 'ring-electric-blue');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-electric-blue');
+                }
+            });
+            
+            // Filter packages
+            packages.forEach(pkg => {
+                if (stage === 'all') {
+                    pkg.style.display = 'block';
+                } else {
+                    const pkgStage = pkg.getAttribute('data-funding-stage');
+                    const pkgStageAlt = pkg.getAttribute('data-funding-stage-alt');
+                    
+                    // Map stage names
+                    const stageMap = {
+                        'pre-seed': 'pre-seed',
+                        'seed': 'seed',
+                        'series-a': 'series-a',
+                        'growth': 'growth'
+                    };
+                    
+                    const targetStage = stageMap[stage];
+                    
+                    if (pkgStage === targetStage || pkgStageAlt === targetStage) {
+                        pkg.style.display = 'block';
+                        pkg.style.animation = 'fadeIn 0.5s ease-in';
+                    } else {
+                        pkg.style.display = 'none';
+                    }
+                }
+            });
+        }
+        
+        // Add fade-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

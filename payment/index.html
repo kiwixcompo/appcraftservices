@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - App Craft Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=your_paypal_client_id_here&currency=USD"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1e3a8a',
+                        'electric-blue': '#3b82f6',
+                        'light-gray': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-light-gray min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="/appcraftservices/" class="flex items-center">
+                        <img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto">
+                    </a>
+                </div>
+                <div class="text-sm text-gray-600">
+                    Secure Payment Processing
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-navy mb-4">Secure Payment</h1>
+            <p class="text-gray-600">Choose your preferred payment method</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Payment Form -->
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-xl font-semibold text-navy mb-6">Payment Details</h2>
+                
+                <form id="payment-form" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Service Package</label>
+                        <select id="service-package" name="package" class="w-full p-3 border border-gray-300 rounded-md" onchange="updateAmount()">
+                            <option value="">Select a package</option>
+                            <option value="essential" data-amount="1500">Essential App - $1,500</option>
+                            <option value="custom" data-amount="5000">Custom Development - $5,000</option>
+                            <option value="mvp" data-amount="3000">MVP Development - $3,000</option>
+                            <option value="maintenance" data-amount="500">Monthly Maintenance - $500</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Custom Amount (USD)</label>
+                        <input type="number" id="custom-amount" name="amount" min="100" step="0.01" placeholder="Enter amount" class="w-full p-3 border border-gray-300 rounded-md" onchange="updateAmount()">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                        <input type="text" id="customer-name" name="name" required class="w-full p-3 border border-gray-300 rounded-md">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input type="email" id="customer-email" name="email" required class="w-full p-3 border border-gray-300 rounded-md">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="payment-description" name="description" rows="3" placeholder="Brief description of the service" class="w-full p-3 border border-gray-300 rounded-md"></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="space-y-6">
+                <!-- Stripe Payment -->
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h3 class="text-lg font-semibold text-navy mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        Pay with Card (Stripe)
+                    </h3>
+                    
+                    <div id="stripe-card-element" class="p-3 border border-gray-300 rounded-md mb-4">
+                        <!-- Stripe Elements will create form elements here -->
+                    </div>
+                    
+                    <button id="stripe-submit" class="w-full bg-electric-blue text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300" disabled>
+                        <span id="stripe-button-text">Pay with Stripe</span>
+                        <div id="stripe-spinner" class="hidden inline-block ml-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- PayPal Payment -->
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h3 class="text-lg font-semibold text-navy mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        Pay with PayPal
+                    </h3>
+                    
+                    <div id="paypal-button-container"></div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-navy mb-4">Order Summary</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Service:</span>
+                            <span id="summary-service">Not selected</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Amount:</span>
+                            <span id="summary-amount">$0.00</span>
+                        </div>
+                        <div class="border-t pt-2 mt-2">
+                            <div class="flex justify-between font-semibold">
+                                <span>Total:</span>
+                                <span id="summary-total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="payment.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Process - App Craft Services</title>
+    <meta name="description" content="Learn about our proven 5-step development process for creating custom web applications.">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1e3a8a',
+                        'electric-blue': '#3b82f6',
+                        'light-gray': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="../" class="flex items-center logo-admin-trigger">
+                        <img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto">
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/appcraftservices/" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/appcraftservices/process" class="text-navy hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Process</a>
+                        <a href="/appcraftservices/services" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                        <a href="/appcraftservices/pricing" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                        <a href="/appcraftservices/contact" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        <a href="/appcraftservices/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue focus:outline-none focus:text-electric-blue">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+                <a href="/appcraftservices/" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/appcraftservices/process" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Process</a>
+                <a href="/appcraftservices/services" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="/appcraftservices/pricing" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Pricing</a>
+                <a href="/appcraftservices/contact" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                <a href="/appcraftservices/contact" class="bg-electric-blue text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Our Development Process</h1>
+                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                    A proven 5-step approach to delivering exceptional web applications
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Steps -->
+    <section class="py-16 bg-light-gray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Step 1 -->
+            <div class="mb-16">
+                <div class="flex flex-col lg:flex-row items-center">
+                    <div class="lg:w-1/2 mb-8 lg:mb-0 lg:pr-12">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-electric-blue text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">1</div>
+                            <h2 class="text-3xl font-bold text-navy">Consultation</h2>
+                        </div>
+                        <p class="text-lg text-gray-600 mb-6">
+                            We meet to understand your business goals and technical requirements. This initial consultation helps us grasp your vision, current challenges, and desired outcomes.
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Business requirements analysis
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Technical feasibility assessment
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Timeline and budget discussion
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <svg class="w-full h-48 text-electric-blue" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="mb-16">
+                <div class="flex flex-col lg:flex-row-reverse items-center">
+                    <div class="lg:w-1/2 mb-8 lg:mb-0 lg:pl-12">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-electric-blue text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">2</div>
+                            <h2 class="text-3xl font-bold text-navy">Strategy & Proposal</h2>
+                        </div>
+                        <p class="text-lg text-gray-600 mb-6">
+                            We analyze your needs and suggest the best architecture. Our team creates a comprehensive proposal outlining the technical approach, timeline, and investment required.
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Technical architecture design
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Detailed project proposal
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Technology stack recommendations
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <svg class="w-full h-48 text-electric-blue" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="mb-16">
+                <div class="flex flex-col lg:flex-row items-center">
+                    <div class="lg:w-1/2 mb-8 lg:mb-0 lg:pr-12">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-electric-blue text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">3</div>
+                            <h2 class="text-3xl font-bold text-navy">Agreement</h2>
+                        </div>
+                        <p class="text-lg text-gray-600 mb-6">
+                            Digital signing of service agreement ensuring mutual protection. We establish clear terms, deliverables, and expectations to protect both parties throughout the project.
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Secure digital contract signing
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Clear deliverables and milestones
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Mutual protection clauses
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <svg class="w-full h-48 text-electric-blue" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9,12L11,14L15,10L20.59,4L22,5.41L15,12.41L11,8.41L9,10.41L4,5.41L5.41,4L9,7.59L9,12M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="mb-16">
+                <div class="flex flex-col lg:flex-row-reverse items-center">
+                    <div class="lg:w-1/2 mb-8 lg:mb-0 lg:pl-12">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-electric-blue text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">4</div>
+                            <h2 class="text-3xl font-bold text-navy">Development</h2>
+                        </div>
+                        <p class="text-lg text-gray-600 mb-6">
+                            Our team builds your custom solution using industry best practices. We maintain regular communication and provide progress updates throughout the development cycle.
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Agile development methodology
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Regular progress updates
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Quality assurance testing
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <svg class="w-full h-48 text-electric-blue" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="mb-16">
+                <div class="flex flex-col lg:flex-row items-center">
+                    <div class="lg:w-1/2 mb-8 lg:mb-0 lg:pr-12">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-electric-blue text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">5</div>
+                            <h2 class="text-3xl font-bold text-navy">Launch</h2>
+                        </div>
+                        <p class="text-lg text-gray-600 mb-6">
+                            Deployment and handover of your completed application. We ensure smooth deployment, provide documentation, and offer training to get your team up and running.
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Production deployment
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Complete documentation
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Team training and support
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <svg class="w-full h-48 text-electric-blue" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-navy">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Start Your Project?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Let's begin with a consultation to understand your needs</p>
+            <a href="/appcraftservices/contact" class="bg-electric-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 inline-block">
+                Schedule Your Consultation
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <h3 class="text-2xl font-bold mb-4">App Craft Services</h3>
+                    <p class="text-gray-300 mb-4">Professional web development services for growing businesses. We build custom solutions that scale with your success.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/appcraftservices/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="/appcraftservices/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
+                        <li><a href="/appcraftservices/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
+                        <li><a href="/appcraftservices/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-300">
+                    Copyright © <span id="current-year"></span> App Craft Services. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/script.js"></script>
+</body>
+</html>

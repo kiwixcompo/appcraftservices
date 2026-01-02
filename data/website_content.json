@@ -1,0 +1,51 @@
+{
+    "site_info": {
+        "title": "App Craft Services",
+        "tagline": "Custom Web Applications for Growing Businesses",
+        "description": "Professional web development services for small businesses and startups.",
+        "email": "williamsaonen@gmail.com",
+        "phone": "+2348061581916",
+        "address": ""
+    },
+    "hero": {
+        "headline": "Custom Web Applications for Growing Businesses",
+        "subheadline": "We turn your business logic into powerful, scalable digital tools",
+        "cta_text": "Schedule a Consultation"
+    },
+    "value_props": [
+        {
+            "title": "Efficiency First",
+            "description": "Streamline your operations with custom tools designed specifically for your workflow"
+        },
+        {
+            "title": "Smart Automation",
+            "description": "Reduce manual work and human error with intelligent automation solutions"
+        },
+        {
+            "title": "Scalable Growth",
+            "description": "Build solutions that grow with your business, from startup to enterprise"
+        }
+    ],
+    "services": [
+        {
+            "name": "Custom Web Apps",
+            "price": "$1,000 - $2,000",
+            "description": "Dashboards, Internal Tools, Portals"
+        },
+        {
+            "name": "MVP Development",
+            "price": "Custom Quote",
+            "description": "For Startups needing to go to market fast"
+        },
+        {
+            "name": "Maintenance & Support",
+            "price": "Monthly Plans",
+            "description": "Ongoing security and updates"
+        }
+    ],
+    "colors": {
+        "primary": "#1e3a8a",
+        "accent": "#3b82f6",
+        "background": "#f8fafc"
+    }
+}

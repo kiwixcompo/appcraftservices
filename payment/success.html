@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - App Craft Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1e3a8a',
+                        'electric-blue': '#3b82f6',
+                        'light-gray': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-light-gray min-h-screen">
+    <div class="max-w-2xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-navy mb-4">Payment Successful!</h1>
+            <p class="text-gray-600 mb-6">Thank you for your payment. We've received your order and will begin processing it shortly.</p>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <h2 class="text-lg font-semibold text-navy mb-4">What happens next?</h2>
+                <div class="text-left space-y-3">
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">1</div>
+                        <div>
+                            <p class="font-medium">Confirmation Email</p>
+                            <p class="text-sm text-gray-600">You'll receive a payment confirmation email within the next few minutes.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">2</div>
+                        <div>
+                            <p class="font-medium">Project Kickoff</p>
+                            <p class="text-sm text-gray-600">Our team will contact you within 24 hours to discuss project details and timeline.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">3</div>
+                        <div>
+                            <p class="font-medium">Development Begins</p>
+                            <p class="text-sm text-gray-600">We'll start working on your project according to the agreed timeline.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <a href="/appcraftservices/" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 inline-block">
+                    Return to Homepage
+                </a>
+                <div>
+                    <p class="text-sm text-gray-600">
+                        Questions? Contact us at 
+                        <a href="mailto:williamsaonen@gmail.com" class="text-electric-blue hover:text-blue-700">williamsaonen@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get payment details from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentMethod = urlParams.get('payment_method');
+        const amount = urlParams.get('amount');
+        
+        if (paymentMethod && amount) {
+            console.log('Payment completed:', { method: paymentMethod, amount: amount });
+            
+            // You could send this data to your analytics or tracking system
+            // trackPaymentSuccess(paymentMethod, amount);
+        }
+    </script>
+</body>
+</html>

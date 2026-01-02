@@ -1,0 +1,14 @@
+# Minimal .htaccess for clean URLs in subdirectory
+RewriteEngine On
+
+# Set the base directory
+RewriteBase /appcraftservices/
+
+# Handle directory-based URLs (e.g., /appcraftservices/process -> /appcraftservices/process/index.html)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/appcraftservices/assets/
+RewriteRule ^([^/]+)/?$ $1/index.html [L]
+
+# Prevent directory browsing
+Options -Indexes
