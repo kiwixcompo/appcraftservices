@@ -195,7 +195,15 @@ class EnhancedRealtimeEditor {
     makeElementEditable(element) {
         element.classList.add('editable-element');
         element.setAttribute('data-editable', 'true');
-        element.setAttribute('data-original-content', element.innerHTML);
+        
+        // Store original content and structure
+        const originalHTML = element.innerHTML;
+        const originalClasses = element.className;
+        const originalStyles = element.getAttribute('style') || '';
+        
+        element.setAttribute('data-original-content', originalHTML);
+        element.setAttribute('data-original-classes', originalClasses);
+        element.setAttribute('data-original-styles', originalStyles);
         
         // Add edit overlay
         const overlay = element.ownerDocument.createElement('div');
@@ -334,8 +342,21 @@ class EnhancedRealtimeEditor {
         // Get element info
         const tagName = element.tagName.toLowerCase();
         const className = element.className.replace('editable-element', '').replace('editing', '').trim();
-        const textContent = element.textContent.replace('Click to edit', '').trim();
-        const innerHTML = element.innerHTML.replace(/<div class="edit-overlay">.*?<\/div>/s, '').replace(/<div class="element-type-badge">.*?<\/div>/s, '');
+        
+        // Get clean text content (without editor elements)
+        const cleanElement = element.cloneNode(true);
+        const editOverlay = cleanElement.querySelector('.edit-overlay');
+        const typeBadge = cleanElement.querySelector('.element-type-badge');
+        if (editOverlay) editOverlay.remove();
+        if (typeBadge) typeBadge.remove();
+        
+        const textContent = cleanElement.textContent.trim();
+        const innerHTML = cleanElement.innerHTML;
+        
+        // Get current styles
+        const computedStyles = window.getComputedStyle(element);
+        const currentTextColor = this.rgbToHex(computedStyles.color);
+        const currentBgColor = this.rgbToHex(computedStyles.backgroundColor);
         
         // Create enhanced edit form
         content.innerHTML = `
@@ -365,12 +386,12 @@ class EnhancedRealtimeEditor {
                 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-3">Content</label>
-                    <textarea id="element-content" class="editor-input editor-textarea w-full" rows="6" placeholder="Enter your content here...">${textContent}</textarea>
+                    <textarea id="element-content" class="editor-input editor-textarea w-full" rows="6" placeholder="Enter your content here...">${this.escapeHtml(textContent)}</textarea>
                 </div>
                 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-3">HTML (Advanced)</label>
-                    <textarea id="element-html" class="editor-input editor-textarea w-full font-mono text-sm" rows="4" placeholder="Advanced HTML editing...">${innerHTML}</textarea>
+                    <textarea id="element-html" class="editor-input editor-textarea w-full font-mono text-sm" rows="4" placeholder="Advanced HTML editing...">${this.escapeHtml(innerHTML)}</textarea>
                 </div>
                 
                 <div class="mb-6">
@@ -378,11 +399,11 @@ class EnhancedRealtimeEditor {
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Text Color</label>
-                            <input type="color" id="text-color" class="w-full h-10 border border-gray-300 rounded cursor-pointer">
+                            <input type="color" id="text-color" value="${currentTextColor}" class="w-full h-10 border border-gray-300 rounded cursor-pointer">
                         </div>
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Background</label>
-                            <input type="color" id="bg-color" class="w-full h-10 border border-gray-300 rounded cursor-pointer">
+                            <input type="color" id="bg-color" value="${currentBgColor}" class="w-full h-10 border border-gray-300 rounded cursor-pointer">
                         </div>
                     </div>
                 </div>
@@ -430,6 +451,26 @@ class EnhancedRealtimeEditor {
         this.setupAutoResize();
     }
     
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    rgbToHex(rgb) {
+        if (!rgb || rgb === 'rgba(0, 0, 0, 0)' || rgb === 'transparent') return '#000000';
+        
+        const result = rgb.match(/\d+/g);
+        if (!result) return '#000000';
+        
+        const r = parseInt(result[0]);
+        const g = parseInt(result[1]);
+        const b = parseInt(result[2]);
+        
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
     setupAutoResize() {
         const textareas = document.querySelectorAll('.editor-textarea');
         textareas.forEach(textarea => {
@@ -450,23 +491,48 @@ class EnhancedRealtimeEditor {
         const textColor = document.getElementById('text-color').value;
         const bgColor = document.getElementById('bg-color').value;
         
-        // Update element content
-        if (newHTML !== this.currentElement.innerHTML) {
+        // Get original attributes
+        const originalClasses = this.currentElement.getAttribute('data-original-classes') || '';
+        const originalStyles = this.currentElement.getAttribute('data-original-styles') || '';
+        
+        // Remove editor elements before updating
+        const editOverlay = this.currentElement.querySelector('.edit-overlay');
+        const typeBadge = this.currentElement.querySelector('.element-type-badge');
+        if (editOverlay) editOverlay.remove();
+        if (typeBadge) typeBadge.remove();
+        
+        // Update content while preserving structure
+        if (newHTML.trim() !== '') {
+            // If HTML was modified, use it but preserve classes
             this.currentElement.innerHTML = newHTML;
         } else {
-            this.currentElement.textContent = newContent;
+            // If only text content was changed, preserve inner HTML structure
+            const textNodes = this.getTextNodes(this.currentElement);
+            if (textNodes.length === 1) {
+                textNodes[0].textContent = newContent;
+            } else {
+                // For complex elements, try to update the main text content
+                this.updateMainTextContent(this.currentElement, newContent);
+            }
         }
         
-        // Apply styles
+        // Restore original classes and add editor class back
+        this.currentElement.className = originalClasses + ' editable-element';
+        
+        // Apply new styles while preserving original ones
+        let newStyles = originalStyles;
         if (textColor) {
-            this.currentElement.style.color = textColor;
+            newStyles += `; color: ${textColor}`;
         }
         if (bgColor) {
-            this.currentElement.style.backgroundColor = bgColor;
+            newStyles += `; background-color: ${bgColor}`;
+        }
+        if (newStyles) {
+            this.currentElement.setAttribute('style', newStyles);
         }
         
         // Re-add editor elements
-        this.makeElementEditable(this.currentElement);
+        this.addEditorElements(this.currentElement);
         
         // Store change
         const elementId = this.generateElementId(this.currentElement);
@@ -489,6 +555,60 @@ class EnhancedRealtimeEditor {
         }, 500);
     }
     
+    getTextNodes(element) {
+        const textNodes = [];
+        const walker = document.createTreeWalker(
+            element,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: function(node) {
+                    // Skip text nodes inside editor elements
+                    if (node.parentElement.classList.contains('edit-overlay') || 
+                        node.parentElement.classList.contains('element-type-badge')) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            }
+        );
+        
+        let node;
+        while (node = walker.nextNode()) {
+            textNodes.push(node);
+        }
+        return textNodes;
+    }
+    
+    updateMainTextContent(element, newContent) {
+        // Find the main text content and update it
+        const textNodes = this.getTextNodes(element);
+        if (textNodes.length > 0) {
+            // Update the first significant text node
+            textNodes[0].textContent = newContent;
+        }
+    }
+    
+    addEditorElements(element) {
+        // Add edit overlay
+        const overlay = element.ownerDocument.createElement('div');
+        overlay.className = 'edit-overlay';
+        overlay.innerHTML = `<i class="fas fa-edit"></i> Click to edit`;
+        element.appendChild(overlay);
+        
+        // Add element type badge
+        const badge = element.ownerDocument.createElement('div');
+        badge.className = 'element-type-badge';
+        badge.textContent = element.tagName.toLowerCase();
+        element.appendChild(badge);
+        
+        // Re-add click event
+        element.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.editElement(element);
+        });
+    }
+    
     duplicateElement(element) {
         const clone = element.cloneNode(true);
         clone.classList.remove('editing');
@@ -499,10 +619,37 @@ class EnhancedRealtimeEditor {
     
     resetElement(element) {
         const originalContent = element.getAttribute('data-original-content');
+        const originalClasses = element.getAttribute('data-original-classes');
+        const originalStyles = element.getAttribute('data-original-styles');
+        
         if (originalContent) {
+            // Remove current editor elements
+            const editOverlay = element.querySelector('.edit-overlay');
+            const typeBadge = element.querySelector('.element-type-badge');
+            if (editOverlay) editOverlay.remove();
+            if (typeBadge) typeBadge.remove();
+            
+            // Restore original content
             element.innerHTML = originalContent;
-            this.makeElementEditable(element);
+            
+            // Restore original classes
+            if (originalClasses) {
+                element.className = originalClasses + ' editable-element';
+            }
+            
+            // Restore original styles
+            if (originalStyles) {
+                element.setAttribute('style', originalStyles);
+            } else {
+                element.removeAttribute('style');
+            }
+            
+            // Re-add editor elements
+            this.addEditorElements(element);
+            
             this.showNotification('Element reset to original content', 'info');
+        } else {
+            this.showNotification('No original content found to restore', 'warning');
         }
     }
     
@@ -630,7 +777,38 @@ class EnhancedRealtimeEditor {
         try {
             // Get current page content
             const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
-            const htmlContent = iframeDoc.documentElement.outerHTML;
+            
+            // Clean the document before getting HTML
+            const cleanDoc = iframeDoc.cloneNode(true);
+            
+            // Remove all editor elements from the clean copy
+            const editOverlays = cleanDoc.querySelectorAll('.edit-overlay');
+            const typeBadges = cleanDoc.querySelectorAll('.element-type-badge');
+            
+            editOverlays.forEach(overlay => overlay.remove());
+            typeBadges.forEach(badge => badge.remove());
+            
+            // Clean up classes and attributes
+            const editableElements = cleanDoc.querySelectorAll('.editable-element');
+            editableElements.forEach(element => {
+                element.classList.remove('editable-element', 'editing');
+                element.removeAttribute('data-editable');
+                element.removeAttribute('data-original-content');
+                element.removeAttribute('data-original-classes');
+                element.removeAttribute('data-original-styles');
+                
+                // Clean up empty class attributes
+                if (!element.className.trim()) {
+                    element.removeAttribute('class');
+                }
+            });
+            
+            const htmlContent = cleanDoc.documentElement.outerHTML;
+            
+            console.log('Saving changes:', {
+                page: document.getElementById('page-selector').value,
+                changesCount: Object.keys(this.changes).length
+            });
             
             const response = await fetch('api/save_realtime_changes.php', {
                 method: 'POST',
@@ -644,16 +822,21 @@ class EnhancedRealtimeEditor {
                 })
             });
             
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
+            console.log('Save response:', data);
             
             if (data.success) {
                 this.changes = {};
                 this.showSaveIndicator(`All changes saved! (${data.changes_count} elements updated)`);
             } else {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Unknown error occurred');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error saving changes:', error);
             this.showNotification('Error saving changes: ' + error.message, 'error');
         } finally {
             this.showLoading(false);

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - App Craft Services</title>
+    <meta name="description" content="Transparent pricing for custom web applications. Essential apps starting at $1,000 and custom enterprise solutions.">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1e3a8a',
+                        'electric-blue': '#3b82f6',
+                        'light-gray': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="../" class="flex items-center logo-admin-trigger">
+                        <img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto">
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/appcraftservices/" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/appcraftservices/process" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Process</a>
+                        <a href="/appcraftservices/services" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                        <a href="/appcraftservices/pricing" class="text-navy hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                        <a href="/appcraftservices/contact" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        <a href="/appcraftservices/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue focus:outline-none focus:text-electric-blue">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+                <a href="/appcraftservices/" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/appcraftservices/process" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Process</a>
+                <a href="/appcraftservices/services" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="/appcraftservices/pricing" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Pricing</a>
+                <a href="/appcraftservices/contact" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                <a href="/appcraftservices/contact" class="bg-electric-blue text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Transparent Pricing</h1>
+                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                    Clear, honest pricing with no hidden fees. Choose the tier that fits your startup's needs and budget.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Tiers -->
+    <section class="py-16 bg-light-gray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- Essential App Tier -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-electric-blue text-white p-6 text-center">
+                        <h2 class="text-2xl font-bold mb-2">Essential App</h2>
+                        <div class="text-4xl font-bold mb-2">$800 - $2,000</div>
+                        <p class="text-blue-100">Perfect for startups with defined scopes and simple solutions</p>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-navy mb-4">What's Included:</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Custom web application development</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Responsive design for all devices</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Basic database integration</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">User authentication system</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Production deployment</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">30 days of post-launch support</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Complete documentation</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-navy mb-4">Perfect For:</h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li>• Startup internal tools</li>
+                                <li>• Simple MVPs</li>
+                                <li>• Data management systems</li>
+                                <li>• Customer portals</li>
+                                <li>• Workflow automation tools</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-light-gray p-4 rounded-lg mb-6">
+                            <h4 class="font-semibold text-navy mb-2">Timeline:</h4>
+                            <p class="text-gray-600">2-4 weeks from signed agreement to launch</p>
+                            <p class="text-gray-600 text-sm mt-2">Users have up to 5 modification requests they can make within the essential app package</p>
+                        </div>
+                        
+                        <a href="/appcraftservices/contact" class="w-full bg-electric-blue text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 text-center block">
+                            Get Started
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Custom/Enterprise Tier -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-electric-blue">
+                    <div class="bg-navy text-white p-6 text-center relative">
+                        <div class="absolute top-0 right-0 bg-electric-blue text-white px-3 py-1 text-sm font-semibold rounded-bl-lg">
+                            Most Popular
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">Custom/Enterprise</h2>
+                        <div class="text-4xl font-bold mb-2">Custom Quote</div>
+                        <p class="text-blue-100">For complex startup platforms and specific integrations</p>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-navy mb-4">What's Included:</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Everything in Essential App</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Complex business logic implementation</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Third-party API integrations</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Advanced security features</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Scalable architecture design</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Performance optimization</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Extended support period</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-gray-600">Team training sessions</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-navy mb-4">Perfect For:</h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li>• Enterprise-level applications</li>
+                                <li>• Complex workflow systems</li>
+                                <li>• Multi-user platforms</li>
+                                <li>• Integration-heavy solutions</li>
+                                <li>• High-performance applications</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-light-gray p-4 rounded-lg mb-6">
+                            <h4 class="font-semibold text-navy mb-2">Process:</h4>
+                            <p class="text-gray-600">Requires consultation to understand scope and provide accurate quote</p>
+                        </div>
+                        
+                        <a href="/appcraftservices/contact" class="w-full bg-navy text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-900 transition duration-300 text-center block">
+                            Request Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Information -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Payment Information</h2>
+                <p class="text-xl text-gray-600">Secure, flexible payment options for your convenience</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-light-gray p-8 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-navy">Secure Payments</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">We accept secure payments through industry-leading payment processors:</p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Stripe (Credit/Debit Cards)
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            PayPal
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Bank Transfer (for larger projects)
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-light-gray p-8 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-electric-blue mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-navy">Payment Terms</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <span class="font-semibold text-navy mr-2">Essential Apps:</span>
+                            50% upfront, 50% on completion
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-semibold text-navy mr-2">Custom Projects:</span>
+                            Flexible milestone-based payments
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-semibold text-navy mr-2">No Hidden Fees:</span>
+                            All costs discussed upfront
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-semibold text-navy mr-2">Refund Policy:</span>
+                            Satisfaction guaranteed or money back
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-light-gray">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-navy mb-3">What determines if my project fits the Essential App tier?</h3>
+                    <p class="text-gray-600">Essential Apps are perfect for well-defined projects with clear requirements, typically including basic CRUD operations, user authentication, and straightforward business logic. If your project requires complex integrations, advanced features, or extensive customization, it would fall under our Custom/Enterprise tier.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-navy mb-3">How long does the consultation process take?</h3>
+                    <p class="text-gray-600">Initial consultations typically take 30-60 minutes. For Custom/Enterprise projects, we may schedule follow-up sessions to fully understand your requirements. We'll provide a detailed proposal within 3-5 business days after our consultation.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-navy mb-3">Do you offer ongoing maintenance after launch?</h3>
+                    <p class="text-gray-600">Yes! All projects include 30 days of post-launch support. After that, we offer flexible maintenance packages including security updates, performance monitoring, and feature enhancements. Maintenance pricing is discussed based on your specific needs.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-navy mb-3">What if my project scope changes during development?</h3>
+                    <p class="text-gray-600">We understand that requirements can evolve. For Essential Apps, significant scope changes may require moving to our Custom tier. We'll always discuss any changes with you upfront and provide transparent pricing for additional work.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Maintenance Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">App Maintenance & Support</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Keep your application running smoothly with our comprehensive maintenance services</p>
+            </div>
+
+            <div class="bg-light-gray p-8 rounded-lg">
+                <div class="mb-6">
+                    <label for="maintenance-type" class="block text-lg font-semibold text-navy mb-4">What type of maintenance do you need?</label>
+                    <select id="maintenance-type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent">
+                        <option value="">Select maintenance type...</option>
+                        <option value="single-repair">Single repair or fix of an existing feature (built by us or not)</option>
+                        <option value="extend-support">Extend the duration of post-launch support</option>
+                        <option value="monthly-maintenance">Monthly maintenance and support services</option>
+                    </select>
+                </div>
+
+                <div id="maintenance-details" class="space-y-4" style="display: none;">
+                    <div id="single-repair-info" class="bg-white p-4 rounded-lg border border-gray-200" style="display: none;">
+                        <h4 class="font-semibold text-navy mb-2">Single Repair/Fix Service</h4>
+                        <p class="text-gray-600 text-sm">Perfect for fixing bugs, implementing small feature updates, or resolving compatibility issues. Pricing starts at $200 depending on complexity.</p>
+                        <a href="/appcraftservices/contact" class="mt-3 inline-block bg-electric-blue text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition duration-300">Get Started</a>
+                    </div>
+
+                    <div id="extend-support-info" class="bg-white p-4 rounded-lg border border-gray-200" style="display: none;">
+                        <h4 class="font-semibold text-navy mb-2">Extended Post-Launch Support</h4>
+                        <p class="text-gray-600 text-sm">Continue receiving priority support, bug fixes, and performance monitoring beyond the initial 30-day period. Starting at $150/month.</p>
+                        <a href="/appcraftservices/contact" class="mt-3 inline-block bg-electric-blue text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition duration-300">Learn More</a>
+                    </div>
+
+                    <div id="monthly-maintenance-info" class="bg-white p-4 rounded-lg border border-gray-200" style="display: none;">
+                        <h4 class="font-semibold text-navy mb-2">Monthly Maintenance Package</h4>
+                        <p class="text-gray-600 text-sm">Comprehensive ongoing support including security updates, performance optimization, feature enhancements, and 24/7 monitoring. Starting at $300/month.</p>
+                        <a href="/appcraftservices/contact" class="mt-3 inline-block bg-electric-blue text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition duration-300">Contact Us</a>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600 text-sm">Not sure which option is right for you? <a href="/appcraftservices/contact" class="text-electric-blue hover:text-blue-700 font-semibold">Schedule a free consultation</a> to discuss your maintenance needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-navy">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Get Started?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Schedule a free consultation to discuss your startup idea and get an accurate quote</p>
+            <a href="/appcraftservices/contact" class="bg-electric-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 inline-block">
+                Schedule Free Consultation
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <h3 class="text-2xl font-bold mb-4">App Craft Services</h3>
+                    <p class="text-gray-300 mb-4">Professional web development services for growing businesses. We build custom solutions that scale with your success.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/appcraftservices/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="/appcraftservices/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
+                        <li><a href="/appcraftservices/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
+                        <li><a href="/appcraftservices/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
+                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-300">
+                    Copyright © <span id="current-year"></span> App Craft Services. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/script.js"></script>
+    
+    <!-- Editor Mode Detection -->
+    <script>
+        // Check if page is loaded in editor mode
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('editor') === '1') {
+            // Add editor mode styles and functionality
+            document.body.classList.add('editor-mode');
+            
+            // Prevent normal navigation in editor mode
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href && !link.href.includes('mailto:') && !link.href.includes('tel:')) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+    <script>
+        // Maintenance dropdown functionality
+        document.getElementById('maintenance-type').addEventListener('change', function() {
+            const selectedValue = this.value;
+            const detailsContainer = document.getElementById('maintenance-details');
+            const allInfos = document.querySelectorAll('[id$="-info"]');
+
+            // Hide all info sections
+            allInfos.forEach(info => info.style.display = 'none');
+
+            if (selectedValue) {
+                detailsContainer.style.display = 'block';
+                const selectedInfo = document.getElementById(selectedValue + '-info');
+                if (selectedInfo) {
+                    selectedInfo.style.display = 'block';
+                }
+            } else {
+                detailsContainer.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

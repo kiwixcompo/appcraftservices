@@ -1,0 +1,18 @@
+{
+    "pricing": {
+        "timestamp": "2026-01-02 22:58:06",
+        "changes": {
+            "div-bg-electric-blue text-white p-6 text-center editable-element editing-RXNzZW50aW": {
+                "content": "Essential App h2\n                        $1000 - $2,000\n                        Perfect for startups with defined scopes and simple solutions Click to editp\n                     Click to editdiv",
+                "html": "                        <h2 class=\"text-2xl font-bold mb-2 editable-element\" data-editable=\"true\" data-original-content=\"Essential App\" style=\"\">Essential App<\/h2>\n                        <div class=\"text-4xl font-bold mb-2\">$800 - $2,000<\/div>\n                        <p class=\"text-blue-100 editable-element\" data-editable=\"true\" data-original-content=\"Perfect for startups with defined scopes and simple solutions\" style=\"\">Perfect for startups with defined scopes and simple solutions<div class=\"edit-overlay\"><i class=\"fas fa-edit\"><\/i> Click to edit<\/div><div class=\"element-type-badge\">p<\/div><\/p>\n                    <div class=\"edit-overlay\"><i class=\"fas fa-edit\"><\/i> Click to edit<\/div><div class=\"element-type-badge\">div<\/div>",
+                "styles": {
+                    "color": "#000000",
+                    "backgroundColor": "#000000"
+                },
+                "element": "<div class=\"bg-electric-blue text-white p-6 text-center editable-element editing\" data-editable=\"true\" data-original-content=\"                        &lt;h2 class=&quot;text-2xl font-bold mb-2 editable-element&quot; data-editable=&quot;true&quot; data-original-content=&quot;Essential App&quot; style=&quot;&quot;&gt;Essential App&lt;\/h2&gt;\n                        &lt;div class=&quot;text-4xl font-bold mb-2&quot;&gt;$800 - $2,000&lt;\/div&gt;\n                        &lt;p class=&quot;text-blue-100 editable-element&quot; data-editable=&quot;true&quot; data-original-content=&quot;Perfect for startups with defined scopes and simple solutions&quot; style=&quot;&quot;&gt;Perfect for startups with defined scopes and simple solutions&lt;\/p&gt;&lt;div class=&quot;edit-overlay&quot;&gt;&lt;i class=&quot;fas fa-edit&quot;&gt;&lt;\/i&gt; Click to edit&lt;\/div&gt;&lt;div class=&quot;element-type-badge&quot;&gt;p&lt;\/div&gt;&lt;p&gt;&lt;\/p&gt;\n                    &lt;div class=&quot;edit-overlay&quot;&gt;&lt;i class=&quot;fas fa-edit&quot;&gt;&lt;\/i&gt; Click to edit&lt;\/div&gt;&lt;div class=&quot;element-type-badge&quot;&gt;div&lt;\/div&gt;\" style=\"transform: translateY(-1px); color: rgb(0, 0, 0); background-color: rgb(0, 0, 0);\">                        <h2 class=\"text-2xl font-bold mb-2 editable-element\" data-editable=\"true\" data-original-content=\"Essential App\" style=\"\">Essential App<\/h2>\n                        <div class=\"text-4xl font-bold mb-2\">$800 - $2,000<\/div>\n                        <p class=\"text-blue-100 editable-element\" data-editable=\"true\" data-original-content=\"Perfect for startups with defined scopes and simple solutions\" style=\"\">Perfect for startups with defined scopes and simple solutions<\/p><div class=\"edit-overlay\"><i class=\"fas fa-edit\"><\/i> Click to edit<\/div><div class=\"element-type-badge\">p<\/div><p><\/p>\n                    <div class=\"edit-overlay\"><i class=\"fas fa-edit\"><\/i> Click to edit<\/div><div class=\"element-type-badge\">div<\/div><div class=\"edit-overlay\"><i class=\"fas fa-edit\"><\/i> Click to edit<\/div><div class=\"element-type-badge\">div<\/div><\/div>",
+                "timestamp": "2026-01-02T22:58:03.886Z"
+            }
+        },
+        "backup_file": "..\/..\/data\/backups\/pricing_2026-01-02_22-58-06.html"
+    }
+}

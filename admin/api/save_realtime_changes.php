@@ -57,11 +57,30 @@ try {
     // Remove editor-specific query parameters from URLs
     $cleanContent = preg_replace('/\?editor=1/', '', $cleanContent);
     
-    // Remove edit overlays and editor classes
+    // Remove edit overlays and editor classes more thoroughly
     $cleanContent = preg_replace('/<div class="edit-overlay"[^>]*>.*?<\/div>/s', '', $cleanContent);
-    $cleanContent = str_replace(' editable-element', '', $cleanContent);
-    $cleanContent = str_replace(' editing', '', $cleanContent);
-    $cleanContent = str_replace(' data-editable="true"', '', $cleanContent);
+    $cleanContent = preg_replace('/<div class="element-type-badge"[^>]*>.*?<\/div>/s', '', $cleanContent);
+    
+    // Clean up editor classes
+    $cleanContent = preg_replace('/\s*editable-element\s*/', ' ', $cleanContent);
+    $cleanContent = preg_replace('/\s*editing\s*/', ' ', $cleanContent);
+    $cleanContent = preg_replace('/\s*class=""\s*/', '', $cleanContent);
+    $cleanContent = preg_replace('/\s*class="\s*"\s*/', '', $cleanContent);
+    
+    // Remove editor attributes
+    $cleanContent = preg_replace('/\s*data-editable="[^"]*"/', '', $cleanContent);
+    $cleanContent = preg_replace('/\s*data-original-content="[^"]*"/', '', $cleanContent);
+    $cleanContent = preg_replace('/\s*data-original-classes="[^"]*"/', '', $cleanContent);
+    $cleanContent = preg_replace('/\s*data-original-styles="[^"]*"/', '', $cleanContent);
+    
+    // Clean up extra spaces in class attributes
+    $cleanContent = preg_replace('/class="([^"]*)"/', function($matches) {
+        $classes = trim(preg_replace('/\s+/', ' ', $matches[1]));
+        return $classes ? 'class="' . $classes . '"' : '';
+    }, $cleanContent);
+    
+    // Remove empty class attributes
+    $cleanContent = preg_replace('/\s*class=""\s*/', '', $cleanContent);
     
     // Save the file
     $result = file_put_contents($filePath, $cleanContent);
