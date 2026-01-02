@@ -1,0 +1,46 @@
+{
+    "statistics": {
+        "total_revenue": 12450,
+        "monthly_revenue": 3200,
+        "total_transactions": 28,
+        "pending_payments": 3
+    },
+    "transactions": [
+        {
+            "id": 1,
+            "client_name": "John Doe",
+            "client_email": "john@example.com",
+            "amount": 1500,
+            "currency": "USD",
+            "status": "completed",
+            "payment_method": "stripe",
+            "service": "Essential App",
+            "created_at": "2024-12-20 10:30:00",
+            "updated_at": "2024-12-20 10:35:00"
+        },
+        {
+            "id": 2,
+            "client_name": "Jane Smith",
+            "client_email": "jane@example.com",
+            "amount": 2000,
+            "currency": "USD",
+            "status": "pending",
+            "payment_method": "paypal",
+            "service": "Custom Enterprise",
+            "created_at": "2024-12-19 14:20:00",
+            "updated_at": "2024-12-19 14:20:00"
+        },
+        {
+            "id": 3,
+            "client_name": "Bob Johnson",
+            "client_email": "bob@example.com",
+            "amount": 800,
+            "currency": "USD",
+            "status": "completed",
+            "payment_method": "stripe",
+            "service": "Maintenance & Support",
+            "created_at": "2024-12-18 09:15:00",
+            "updated_at": "2024-12-18 09:20:00"
+        }
+    ]
+}

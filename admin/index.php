@@ -100,6 +100,10 @@ $content = array_merge($defaultContent, $content);
                     <i class="fas fa-edit mr-3"></i>
                     Content Management
                 </a>
+                <a href="#realtime-editing" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="openRealtimeEditor()">
+                    <i class="fas fa-magic mr-3"></i>
+                    Realtime Editing
+                </a>
                 <a href="#pages" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('pages')">
                     <i class="fas fa-file-alt mr-3"></i>
                     Page Editor

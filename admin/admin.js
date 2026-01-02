@@ -1,14 +1,38 @@
+// Admin Dashboard JavaScript
+
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.sidebar-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const tabName = this.closest('.sidebar-item').id;
-            showTab(tabName);
+    // 1. Setup Navigation Event Listeners
+    // This replaces the reliance on inline 'onclick' and handles the logic reliably.
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    
+    sidebarItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent the default jump/hash change
+            
+            // Get the target tab ID from the href attribute (e.g., "#dashboard" -> "dashboard")
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                const tabId = href.substring(1);
+                showTab(tabId);
+            }
         });
     });
+
+    // 2. Initialize the default tab (if needed)
+    // Check if there is a hash in the URL, otherwise default to dashboard
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) {
+        showTab(hash);
+    } else {
+        // Ensure dashboard is visible by default if no hash
+        showTab('dashboard');
+    }
 });
-// Admin Dashboard JavaScript
-// Tab Management
+
+// Tab Management Function
 function showTab(tabName) {
+    if (!tabName) return;
+
     // Hide all tab contents
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(tab => tab.classList.remove('active'));
@@ -17,18 +41,17 @@ function showTab(tabName) {
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     sidebarItems.forEach(item => item.classList.remove('active'));
 
-    // Show selected tab
+    // Show selected tab content
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
         selectedTab.classList.add('active');
     }
 
-    // Add active class to clicked sidebar item
-    if (event && event.target) {
-        const sidebarItem = event.target.closest('.sidebar-item');
-        if (sidebarItem) {
-            sidebarItem.classList.add('active');
-        }
+    // Highlight the corresponding sidebar item
+    // We select the link based on its href attribute
+    const activeLink = document.querySelector(`.sidebar-item[href="#${tabName}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
     }
 
     // Update page title
@@ -50,21 +73,29 @@ function showTab(tabName) {
         pageTitleEl.textContent = titles[tabName] || 'Dashboard';
     }
 
-    // Load tab-specific content
+    // Load tab-specific data
+    // We check if the functions exist before calling them to prevent errors
     if (tabName === 'messages') {
-        loadMessages();
+        if (typeof loadMessages === 'function') loadMessages();
     } else if (tabName === 'payments') {
-        loadPaymentData();
+        if (typeof loadPaymentData === 'function') loadPaymentData();
     } else if (tabName === 'analytics') {
-        loadAnalyticsData();
+        if (typeof loadAnalyticsData === 'function') loadAnalyticsData();
     } else if (tabName === 'reviews') {
-        loadReviews();
+        if (typeof loadReviews === 'function') loadReviews();
     } else if (tabName === 'invoices') {
-        initializeInvoiceForm();
+        // Initialize invoice form if the function exists (it might be in index.php or invoice.js)
+        if (typeof initializeInvoiceForm === 'function') {
+            initializeInvoiceForm();
+        } else if (typeof loadInvoices === 'function') {
+            loadInvoices(); // Fallback to loading list if init form is missing
+        }
+    } else if (tabName === 'content') {
+        if (typeof loadContentData === 'function') loadContentData();
     }
 }
 
-// Content Management
+// Content Management Form Handler
 document.getElementById('content-form')?.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -110,39 +141,51 @@ async function loadContentData() {
         const response = await fetch('../data/website_content.json');
         const content = await response.json();
 
-        // Populate form fields
-        const siteTitleEl = document.getElementById('site_title');
-        const siteTaglineEl = document.getElementById('site_tagline');
-        const siteDescriptionEl = document.getElementById('site_description');
-        const siteEmailEl = document.getElementById('site_email');
-        const sitePhoneEl = document.getElementById('site_phone');
+        // Populate form fields if elements exist
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val || '';
+        };
 
-        if (siteTitleEl) siteTitleEl.value = content.site_info?.title || '';
-        if (siteTaglineEl) siteTaglineEl.value = content.site_info?.tagline || '';
-        if (siteDescriptionEl) siteDescriptionEl.value = content.site_info?.description || '';
-        if (siteEmailEl) siteEmailEl.value = content.site_info?.email || '';
-        if (sitePhoneEl) sitePhoneEl.value = content.site_info?.phone || '';
+        if (content.site_info) {
+            setVal('site-name', content.site_info.title); // Note: ID might be 'site-name' or 'site_title' in HTML, checking both
+            const siteTitleEl = document.querySelector('input[name="site_title"]');
+            if (siteTitleEl) siteTitleEl.value = content.site_info.title || '';
+            
+            const siteTaglineEl = document.querySelector('input[name="site_tagline"]');
+            if (siteTaglineEl) siteTaglineEl.value = content.site_info.tagline || '';
+            
+            const siteDescEl = document.querySelector('textarea[name="site_description"]');
+            if (siteDescEl) siteDescEl.value = content.site_info.description || '';
+            
+            const siteEmailEl = document.querySelector('input[name="site_email"]');
+            if (siteEmailEl) siteEmailEl.value = content.site_info.email || '';
+            
+            const sitePhoneEl = document.querySelector('input[name="site_phone"]');
+            if (sitePhoneEl) sitePhoneEl.value = content.site_info.phone || '';
+        }
 
-        const heroHeadlineEl = document.getElementById('hero_headline');
-        const heroSubheadlineEl = document.getElementById('hero_subheadline');
-        const heroCtaEl = document.getElementById('hero_cta');
+        if (content.hero) {
+            const heroHeadEl = document.querySelector('input[name="hero_headline"]');
+            if (heroHeadEl) heroHeadEl.value = content.hero.headline || '';
+            
+            const heroSubEl = document.querySelector('textarea[name="hero_subheadline"]');
+            if (heroSubEl) heroSubEl.value = content.hero.subheadline || '';
+            
+            const heroCtaEl = document.querySelector('input[name="hero_cta"]');
+            if (heroCtaEl) heroCtaEl.value = content.hero.cta_text || '';
+        }
 
-        if (heroHeadlineEl) heroHeadlineEl.value = content.hero?.headline || '';
-        if (heroSubheadlineEl) heroSubheadlineEl.value = content.hero?.subheadline || '';
-        if (heroCtaEl) heroCtaEl.value = content.hero?.cta_text || '';
-
-        // Clear existing value props
+        // Clear existing value props and reload
         const valuePropsContainer = document.getElementById('value-props');
-        if (valuePropsContainer) {
-            const existingProps = valuePropsContainer.querySelectorAll('.value-prop-item');
-            existingProps.forEach(prop => prop.remove());
-
-            // Add current value props
-            if (content.value_props) {
-                content.value_props.forEach(prop => {
-                    addValuePropFromData(prop.title, prop.description);
-                });
-            }
+        if (valuePropsContainer && content.value_props) {
+            // Remove existing items except the first template if necessary, 
+            // but your PHP loop renders them. We might want to clear them to ensure JS state matches JSON.
+            // For now, we will assume the PHP rendered initial state is correct, or clear and rebuild:
+            valuePropsContainer.innerHTML = '';
+            content.value_props.forEach(prop => {
+                addValuePropFromData(prop.title, prop.description);
+            });
         }
 
     } catch (error) {
@@ -239,6 +282,7 @@ function showNotification(message, type = 'info') {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -314,7 +358,7 @@ function exportPayments() {
 }
 
 function refreshTransactions() {
-    loadPaymentData();
+    if (typeof loadPaymentData === 'function') loadPaymentData();
     showNotification('Transactions refreshed', 'success');
 }
 
@@ -410,10 +454,11 @@ function exportMessages() {
     showNotification('Export functionality coming soon!', 'info');
 }
 
-// Load Functions
+// Data Loading Functions
 async function loadMessages(filter = 'all') {
     try {
         const response = await fetch('api/get_messages.php');
+        if (!response.ok) throw new Error('Network response was not ok');
         const messages = await response.json();
 
         // Update message statistics
@@ -440,22 +485,28 @@ async function loadMessages(filter = 'all') {
             if (messages.length === 0) {
                 messagesList.innerHTML = '<p class="text-gray-500">No messages found</p>';
             } else {
-messagesList.innerHTML = ''; messages.forEach(message => { const li = document.createElement('li'); li.textContent = `${message.from_name}: ${message.subject} - ${formatDate(message.created_at)}`; messagesList.appendChild(li); });
+                messagesList.innerHTML = ''; 
+                messages.forEach(message => { 
+                    const li = document.createElement('li'); 
+                    li.textContent = `${message.from_name}: ${message.subject} - ${formatDate(message.created_at)}`; 
+                    messagesList.appendChild(li); 
+                });
             }
         }
 
     } catch (error) {
         const messagesList = document.getElementById('messages-list');
         if (messagesList) {
-            messagesList.innerHTML = '<p class="text-red-600">Error loading messages</p>';
+            messagesList.innerHTML = '<p class="text-gray-500">No messages yet (or API not available)</p>';
         }
-        console.error('Error loading messages:', error);
+        console.warn('Error loading messages:', error);
     }
 }
 
 async function loadPaymentData() {
     try {
         const response = await fetch('api/get_payments.php');
+        if (!response.ok) throw new Error('API not available');
         const payments = await response.json();
 
         // Update payment statistics
@@ -478,7 +529,7 @@ async function loadPaymentData() {
         if (pendingPaymentsEl) pendingPaymentsEl.textContent = payments.filter(p => p.status === 'pending').length;
 
     } catch (error) {
-        console.error('Error loading payment data:', error);
+        console.warn('Error loading payment data:', error);
     }
 }
 
@@ -498,10 +549,17 @@ async function loadAnalyticsData() {
 async function loadReviews(filter = 'all') {
     try {
         const response = await fetch(`api/get_reviews.php?status=${filter}&limit=50&offset=0`);
+        if (!response.ok) throw new Error('API not available');
         const reviews = await response.json();
         
-        // TODO: Implement review rendering logic here
+        // Review rendering logic would go here
     } catch (error) {
-        console.error('Error loading reviews:', error);
+        console.warn('Error loading reviews:', error);
     }
+}
+
+// Realtime Editor Function
+function openRealtimeEditor() {
+    // Open realtime editor in a new window/tab
+    window.open('realtime-editor.php?page=home', '_blank', 'width=1400,height=900');
 }

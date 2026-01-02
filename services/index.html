@@ -404,5 +404,23 @@
     </footer>
 
     <script src="../assets/script.js"></script>
+    
+    <!-- Editor Mode Detection -->
+    <script>
+        // Check if page is loaded in editor mode
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('editor') === '1') {
+            // Add editor mode styles and functionality
+            document.body.classList.add('editor-mode');
+            
+            // Prevent normal navigation in editor mode
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href && !link.href.includes('mailto:') && !link.href.includes('tel:')) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
