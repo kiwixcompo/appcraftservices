@@ -268,9 +268,5 @@ $pageUrl = $pageUrls[$page] ?? '../index.html';
     </div>
 
     <script src="assets/editor-enhanced.js"></script>
-    <script>
-        // Initialize enhanced editor
-        const editor = new EnhancedRealtimeEditor();
-    </script>
 </body>
 </html>

@@ -496,39 +496,52 @@ class EnhancedRealtimeEditor {
         const originalStyles = this.currentElement.getAttribute('data-original-styles') || '';
         
         // Remove editor elements before updating
-        const editOverlay = this.currentElement.querySelector('.edit-overlay');
-        const typeBadge = this.currentElement.querySelector('.element-type-badge');
-        if (editOverlay) editOverlay.remove();
-        if (typeBadge) typeBadge.remove();
+        this.removeEditorElements(this.currentElement);
         
         // Update content while preserving structure
-        if (newHTML.trim() !== '') {
-            // If HTML was modified, use it but preserve classes
-            this.currentElement.innerHTML = newHTML;
-        } else {
-            // If only text content was changed, preserve inner HTML structure
-            const textNodes = this.getTextNodes(this.currentElement);
-            if (textNodes.length === 1) {
-                textNodes[0].textContent = newContent;
-            } else {
-                // For complex elements, try to update the main text content
+        if (newHTML.trim() !== '' && newHTML !== this.currentElement.innerHTML) {
+            // If HTML was modified, use it but be careful about structure
+            try {
+                // Create a temporary element to validate HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newHTML;
+                
+                // Only update if the HTML is valid
+                if (tempDiv.innerHTML === newHTML) {
+                    this.currentElement.innerHTML = newHTML;
+                } else {
+                    // Fall back to text content update
+                    this.updateMainTextContent(this.currentElement, newContent);
+                }
+            } catch (error) {
+                console.warn('Invalid HTML provided, using text content instead:', error);
                 this.updateMainTextContent(this.currentElement, newContent);
             }
+        } else if (newContent.trim() !== '') {
+            // If only text content was changed, preserve inner HTML structure
+            this.updateMainTextContent(this.currentElement, newContent);
         }
         
-        // Restore original classes and add editor class back
-        this.currentElement.className = originalClasses + ' editable-element';
+        // Restore and update classes properly
+        let finalClasses = originalClasses;
+        if (!finalClasses.includes('editable-element')) {
+            finalClasses = (finalClasses + ' editable-element').trim();
+        }
+        this.currentElement.className = finalClasses;
         
         // Apply new styles while preserving original ones
         let newStyles = originalStyles;
-        if (textColor) {
-            newStyles += `; color: ${textColor}`;
+        if (textColor && textColor !== '#000000') {
+            newStyles = this.updateStyleProperty(newStyles, 'color', textColor);
         }
-        if (bgColor) {
-            newStyles += `; background-color: ${bgColor}`;
+        if (bgColor && bgColor !== '#000000') {
+            newStyles = this.updateStyleProperty(newStyles, 'background-color', bgColor);
         }
-        if (newStyles) {
+        
+        if (newStyles.trim()) {
             this.currentElement.setAttribute('style', newStyles);
+        } else {
+            this.currentElement.removeAttribute('style');
         }
         
         // Re-add editor elements
@@ -543,7 +556,7 @@ class EnhancedRealtimeEditor {
                 color: textColor,
                 backgroundColor: bgColor
             },
-            element: this.currentElement.outerHTML,
+            element: this.getCleanElementHTML(this.currentElement),
             timestamp: new Date().toISOString()
         };
         
@@ -553,6 +566,41 @@ class EnhancedRealtimeEditor {
             this.showSaveIndicator('Element saved successfully!');
             this.closeEditPanel();
         }, 500);
+    }
+    
+    updateStyleProperty(styleString, property, value) {
+        // Parse existing styles
+        const styles = {};
+        if (styleString) {
+            styleString.split(';').forEach(style => {
+                const [prop, val] = style.split(':').map(s => s.trim());
+                if (prop && val) {
+                    styles[prop] = val;
+                }
+            });
+        }
+        
+        // Update the specific property
+        styles[property] = value;
+        
+        // Rebuild style string
+        return Object.entries(styles)
+            .filter(([prop, val]) => prop && val)
+            .map(([prop, val]) => `${prop}: ${val}`)
+            .join('; ');
+    }
+    
+    getCleanElementHTML(element) {
+        // Create a clean copy without editor elements
+        const clone = element.cloneNode(true);
+        this.removeEditorElements(clone);
+        clone.classList.remove('editable-element', 'editing');
+        clone.removeAttribute('data-editable');
+        clone.removeAttribute('data-original-content');
+        clone.removeAttribute('data-original-classes');
+        clone.removeAttribute('data-original-styles');
+        
+        return clone.outerHTML;
     }
     
     getTextNodes(element) {
@@ -580,15 +628,30 @@ class EnhancedRealtimeEditor {
     }
     
     updateMainTextContent(element, newContent) {
-        // Find the main text content and update it
+        // Find the main text content and update it safely
         const textNodes = this.getTextNodes(element);
         if (textNodes.length > 0) {
             // Update the first significant text node
             textNodes[0].textContent = newContent;
+        } else {
+            // If no text nodes found, replace the entire text content
+            // but preserve any child elements that aren't editor elements
+            const children = Array.from(element.children).filter(child => 
+                !child.classList.contains('edit-overlay') && 
+                !child.classList.contains('element-type-badge')
+            );
+            
+            if (children.length === 0) {
+                // Safe to replace text content
+                element.textContent = newContent;
+            }
         }
     }
     
     addEditorElements(element) {
+        // Remove any existing editor elements first
+        this.removeEditorElements(element);
+        
         // Add edit overlay
         const overlay = element.ownerDocument.createElement('div');
         overlay.className = 'edit-overlay';
@@ -601,12 +664,22 @@ class EnhancedRealtimeEditor {
         badge.textContent = element.tagName.toLowerCase();
         element.appendChild(badge);
         
-        // Re-add click event
-        element.addEventListener('click', (e) => {
+        // Re-add click event (remove existing first)
+        element.removeEventListener('click', this.editElementHandler);
+        this.editElementHandler = (e) => {
             e.preventDefault();
             e.stopPropagation();
             this.editElement(element);
-        });
+        };
+        element.addEventListener('click', this.editElementHandler);
+    }
+    
+    removeEditorElements(element) {
+        // Remove edit overlay and type badge
+        const editOverlay = element.querySelector('.edit-overlay');
+        const typeBadge = element.querySelector('.element-type-badge');
+        if (editOverlay) editOverlay.remove();
+        if (typeBadge) typeBadge.remove();
     }
     
     duplicateElement(element) {
@@ -778,32 +851,13 @@ class EnhancedRealtimeEditor {
             // Get current page content
             const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
             
-            // Clean the document before getting HTML
+            // Create a clean copy of the document
             const cleanDoc = iframeDoc.cloneNode(true);
             
-            // Remove all editor elements from the clean copy
-            const editOverlays = cleanDoc.querySelectorAll('.edit-overlay');
-            const typeBadges = cleanDoc.querySelectorAll('.element-type-badge');
+            // Remove all editor elements and clean up attributes
+            this.cleanDocumentForSaving(cleanDoc);
             
-            editOverlays.forEach(overlay => overlay.remove());
-            typeBadges.forEach(badge => badge.remove());
-            
-            // Clean up classes and attributes
-            const editableElements = cleanDoc.querySelectorAll('.editable-element');
-            editableElements.forEach(element => {
-                element.classList.remove('editable-element', 'editing');
-                element.removeAttribute('data-editable');
-                element.removeAttribute('data-original-content');
-                element.removeAttribute('data-original-classes');
-                element.removeAttribute('data-original-styles');
-                
-                // Clean up empty class attributes
-                if (!element.className.trim()) {
-                    element.removeAttribute('class');
-                }
-            });
-            
-            const htmlContent = cleanDoc.documentElement.outerHTML;
+            const htmlContent = '<!DOCTYPE html>\n' + cleanDoc.documentElement.outerHTML;
             
             console.log('Saving changes:', {
                 page: document.getElementById('page-selector').value,
@@ -841,6 +895,43 @@ class EnhancedRealtimeEditor {
         } finally {
             this.showLoading(false);
         }
+    }
+    
+    cleanDocumentForSaving(doc) {
+        // Remove all editor elements
+        const editOverlays = doc.querySelectorAll('.edit-overlay');
+        const typeBadges = doc.querySelectorAll('.element-type-badge');
+        
+        editOverlays.forEach(overlay => overlay.remove());
+        typeBadges.forEach(badge => badge.remove());
+        
+        // Clean up classes and attributes on all editable elements
+        const editableElements = doc.querySelectorAll('.editable-element');
+        editableElements.forEach(element => {
+            // Remove editor classes
+            element.classList.remove('editable-element', 'editing');
+            
+            // Remove editor attributes
+            element.removeAttribute('data-editable');
+            element.removeAttribute('data-original-content');
+            element.removeAttribute('data-original-classes');
+            element.removeAttribute('data-original-styles');
+            
+            // Clean up empty class attributes
+            if (!element.className.trim()) {
+                element.removeAttribute('class');
+            }
+        });
+        
+        // Remove editor mode class from body
+        const body = doc.querySelector('body');
+        if (body) {
+            body.classList.remove('editor-mode');
+        }
+        
+        // Remove editor-specific stylesheets
+        const editorStylesheets = doc.querySelectorAll('link[href*="editor-styles.css"]');
+        editorStylesheets.forEach(link => link.remove());
     }
     
     previewChanges() {
@@ -935,3 +1026,9 @@ class EnhancedRealtimeEditor {
         }
     }
 }
+
+// Initialize the editor when the page loads
+let editor;
+document.addEventListener('DOMContentLoaded', function() {
+    editor = new EnhancedRealtimeEditor();
+});

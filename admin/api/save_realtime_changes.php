@@ -61,11 +61,10 @@ try {
     $cleanContent = preg_replace('/<div class="edit-overlay"[^>]*>.*?<\/div>/s', '', $cleanContent);
     $cleanContent = preg_replace('/<div class="element-type-badge"[^>]*>.*?<\/div>/s', '', $cleanContent);
     
-    // Clean up editor classes
+    // Clean up editor classes more precisely
     $cleanContent = preg_replace('/\s*editable-element\s*/', ' ', $cleanContent);
     $cleanContent = preg_replace('/\s*editing\s*/', ' ', $cleanContent);
-    $cleanContent = preg_replace('/\s*class=""\s*/', '', $cleanContent);
-    $cleanContent = preg_replace('/\s*class="\s*"\s*/', '', $cleanContent);
+    $cleanContent = preg_replace('/\s*editor-mode\s*/', ' ', $cleanContent);
     
     // Remove editor attributes
     $cleanContent = preg_replace('/\s*data-editable="[^"]*"/', '', $cleanContent);
@@ -73,14 +72,21 @@ try {
     $cleanContent = preg_replace('/\s*data-original-classes="[^"]*"/', '', $cleanContent);
     $cleanContent = preg_replace('/\s*data-original-styles="[^"]*"/', '', $cleanContent);
     
-    // Clean up extra spaces in class attributes
-    $cleanContent = preg_replace('/class="([^"]*)"/', function($matches) {
+    // Clean up class attributes
+    $cleanContent = preg_replace_callback('/class="([^"]*)"/', function($matches) {
         $classes = trim(preg_replace('/\s+/', ' ', $matches[1]));
         return $classes ? 'class="' . $classes . '"' : '';
     }, $cleanContent);
     
     // Remove empty class attributes
     $cleanContent = preg_replace('/\s*class=""\s*/', '', $cleanContent);
+    
+    // Remove editor stylesheets
+    $cleanContent = preg_replace('/<link[^>]*editor-styles\.css[^>]*>/', '', $cleanContent);
+    
+    // Clean up multiple spaces and normalize whitespace
+    $cleanContent = preg_replace('/\s+/', ' ', $cleanContent);
+    $cleanContent = str_replace('> <', '><', $cleanContent);
     
     // Save the file
     $result = file_put_contents($filePath, $cleanContent);
