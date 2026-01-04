@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Test - App Craft Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-navy mb-6">Analytics System Test</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Analytics Tracking</h2>
+            <div class="space-y-4">
+                <button id="test-event" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Test Custom Event
+                </button>
+                <button id="test-click" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" data-track="test-button">
+                    Test Click Tracking
+                </button>
+                <a href="/contact" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block">
+                    Test Link Tracking
+                </a>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">Analytics API Test</h2>
+            <button id="fetch-analytics" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
+                Fetch Analytics Data
+            </button>
+            <div id="analytics-result" class="mt-4 p-4 bg-gray-50 rounded hidden">
+                <pre id="analytics-data" class="text-sm"></pre>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Console Output</h2>
+            <p class="text-gray-600">Check the browser console for analytics tracking logs.</p>
+        </div>
+    </div>
+
+    <script src="assets/analytics.js"></script>
+    <script>
+        document.getElementById('test-event').addEventListener('click', function() {
+            if (window.analytics) {
+                window.analytics.trackEvent('test', 'button_click', 'test-event-button', 1);
+                console.log('Custom event tracked');
+            }
+        });
+        
+        document.getElementById('fetch-analytics').addEventListener('click', function() {
+            fetch('/api/analytics.php?period=7')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('analytics-result').classList.remove('hidden');
+                    document.getElementById('analytics-data').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('analytics-result').classList.remove('hidden');
+                    document.getElementById('analytics-data').textContent = 'Error: ' + error.message;
+                });
+        });
+    </script>
+</body>
+</html>

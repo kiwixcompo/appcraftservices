@@ -1262,3 +1262,249 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 });
+// Captcha functionality for contact form
+let captchaAnswer = 0;
+
+function generateCaptcha() {
+    const num1 = Math.floor(Math.random() * 20) + 1;
+    const num2 = Math.floor(Math.random() * 20) + 1;
+    const operations = ['+', '-', '*'];
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    
+    let question, answer;
+    
+    switch(operation) {
+        case '+':
+            question = `${num1} + ${num2}`;
+            answer = num1 + num2;
+            break;
+        case '-':
+            // Ensure positive result
+            const larger = Math.max(num1, num2);
+            const smaller = Math.min(num1, num2);
+            question = `${larger} - ${smaller}`;
+            answer = larger - smaller;
+            break;
+        case '*':
+            // Use smaller numbers for multiplication
+            const smallNum1 = Math.floor(Math.random() * 10) + 1;
+            const smallNum2 = Math.floor(Math.random() * 10) + 1;
+            question = `${smallNum1} × ${smallNum2}`;
+            answer = smallNum1 * smallNum2;
+            break;
+    }
+    
+    document.getElementById('captcha-question').textContent = question;
+    document.getElementById('captcha-correct').value = answer;
+    captchaAnswer = answer;
+    
+    // Clear previous answer
+    const answerInput = document.getElementById('captcha-answer');
+    if (answerInput) {
+        answerInput.value = '';
+        answerInput.classList.remove('border-green-500', 'border-red-500');
+    }
+}
+
+// Validate captcha answer
+function validateCaptcha() {
+    const userAnswer = parseInt(document.getElementById('captcha-answer').value);
+    const correctAnswer = parseInt(document.getElementById('captcha-correct').value);
+    const answerInput = document.getElementById('captcha-answer');
+    
+    if (userAnswer === correctAnswer) {
+        answerInput.classList.remove('border-red-500');
+        answerInput.classList.add('border-green-500');
+        return true;
+    } else {
+        answerInput.classList.remove('border-green-500');
+        answerInput.classList.add('border-red-500');
+        return false;
+    }
+}
+
+// Initialize captcha when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate initial captcha
+    if (document.getElementById('captcha-question')) {
+        generateCaptcha();
+        
+        // Validate captcha on input change
+        const captchaInput = document.getElementById('captcha-answer');
+        if (captchaInput) {
+            captchaInput.addEventListener('input', validateCaptcha);
+        }
+    }
+});
+
+// Enhanced contact form handling with captcha validation
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contact-form');
+    
+    if (contactForm) {
+        // Override the existing form handler
+        contactForm.removeEventListener('submit', arguments.callee);
+        
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate captcha first
+            if (!validateCaptcha()) {
+                // Show captcha error
+                let errorDiv = document.getElementById('captcha-error-message');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'captcha-error-message';
+                    errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg';
+                    contactForm.parentNode.insertBefore(errorDiv, contactForm.nextSibling);
+                }
+                
+                errorDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span><strong>Incorrect Answer:</strong> Please solve the math problem correctly to verify you're human.</span>
+                    </div>
+                    <button onclick="this.parentElement.style.display='none'; generateCaptcha();" class="mt-2 text-sm text-red-600 hover:text-red-800 underline">Try New Question</button>
+                `;
+                errorDiv.style.display = 'block';
+                
+                // Focus on captcha input
+                document.getElementById('captcha-answer').focus();
+                return;
+            }
+            
+            // Hide any previous captcha errors
+            const captchaError = document.getElementById('captcha-error-message');
+            if (captchaError) {
+                captchaError.style.display = 'none';
+            }
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const submitText = document.getElementById('submit-text');
+            const submitIcon = document.getElementById('submit-icon');
+            const loadingIcon = document.getElementById('loading-icon');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = 'Sending...';
+            if (submitIcon) submitIcon.classList.add('hidden');
+            if (loadingIcon) loadingIcon.classList.remove('hidden');
+            
+            try {
+                // Collect form data
+                const formData = new FormData(contactForm);
+                const data = {};
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                
+                console.log('Submitting form data:', data);
+                
+                // Determine API path based on current location
+                const apiPath = window.location.pathname.includes('/contact') ? 
+                    '../api/contact.php' : 'api/contact.php';
+                
+                console.log('Using API path:', apiPath);
+                
+                // Send to API
+                const response = await fetch(apiPath, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                // Robust JSON parsing
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (err) {
+                    console.error('Server returned non-JSON:', text);
+                    throw new Error('Server returned an invalid response format.');
+                }
+                
+                console.log('Parsed result:', result);
+                
+                if (result.success) {
+                    // Hide form and show success message
+                    contactForm.style.display = 'none';
+                    const successMessage = document.getElementById('success-message');
+                    if (successMessage) {
+                        successMessage.classList.remove('hidden');
+                        successMessage.innerHTML = `
+                            <div class="flex items-center justify-center flex-col text-center p-6">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Message Sent Successfully!</h3>
+                                <p class="text-gray-600 mb-2">Thank you for reaching out. We'll get back to you within 24 hours.</p>
+                                <p class="text-sm text-gray-500 mb-4">Your message has been received and saved to our system.</p>
+                                <p class="text-xs text-gray-400 mb-4">Reference ID: ${result.message_id || 'N/A'}</p>
+                                <div class="flex gap-4">
+                                    <button onclick="location.reload()" class="bg-electric-blue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300 font-medium">Send Another Message</button>
+                                    <a href="/schedule" class="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition duration-300 font-medium">Schedule Consultation</a>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Fallback if success message element doesn't exist
+                        alert('Message sent successfully! We\'ll get back to you within 24 hours.');
+                        contactForm.reset();
+                        generateCaptcha(); // Generate new captcha
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Send Message';
+                        if (submitIcon) submitIcon.classList.remove('hidden');
+                        if (loadingIcon) loadingIcon.classList.add('hidden');
+                    }
+                } else {
+                    throw new Error(result.message || 'Failed to send message');
+                }
+                
+            } catch (error) {
+                console.error('Submission Error:', error);
+                
+                // Show error message with better UX
+                const errorMessage = error.message || 'An unexpected error occurred';
+                
+                // Create or update error display
+                let errorDiv = document.getElementById('error-message');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'error-message';
+                    errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg';
+                    contactForm.parentNode.insertBefore(errorDiv, contactForm.nextSibling);
+                }
+                
+                errorDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span><strong>Error:</strong> ${errorMessage}</span>
+                    </div>
+                    <button onclick="this.parentElement.style.display='none'" class="mt-2 text-sm text-red-600 hover:text-red-800 underline">Dismiss</button>
+                `;
+                errorDiv.style.display = 'block';
+                
+                // Generate new captcha on error
+                generateCaptcha();
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = 'Send Message';
+                if (submitIcon) submitIcon.classList.remove('hidden');
+                if (loadingIcon) loadingIcon.classList.add('hidden');
+            }
+        });
+    }
+});

@@ -145,7 +145,29 @@
                                 </select>
                             </div>
                             
-                            <button type="submit" id="submit-btn" class="w-full bg-electric-blue text-white py-3 sm:py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 flex items-center justify-center min-h-[44px] text-base">
+                            <!-- Captcha Verification -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Security Verification *</label>
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span id="captcha-question" class="text-lg font-semibold text-navy"></span>
+                                        <span class="text-lg">=</span>
+                                        <input type="number" id="captcha-answer" name="captcha_answer" required 
+                                               class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent text-center"
+                                               placeholder="?">
+                                    </div>
+                                    <button type="button" onclick="generateCaptcha()" class="text-electric-blue hover:text-blue-700 text-sm font-medium">
+                                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        New Question
+                                    </button>
+                                </div>
+                                <input type="hidden" id="captcha-correct" name="captcha_correct" value="">
+                                <p class="text-xs text-gray-500 mt-2">Please solve the math problem to verify you're human</p>
+                            </div>
+                            
+                            <button type="submit" id="submit-btn" class="w-full bg-electric-blue text-white py-3 sm:py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 flex items-center justify-center min-h-[44px] text-base disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span id="submit-text">Send Message</span>
                                 <svg id="submit-icon" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -271,7 +293,7 @@
                     </div>
                     <h3 class="text-xl font-semibold text-navy mb-2">Schedule Direct</h3>
                     <p class="text-gray-600 mb-4">Book a consultation slot that works for you</p>
-                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">View Calendar</a>
+                    <a href="/schedule" class="text-blue-600 hover:text-blue-700 font-medium">View Calendar</a>
                 </div>
             </div>
         </div>
@@ -288,20 +310,21 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
                     <ul class="space-y-2">
-                        <li><a href="/appcraftservices/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
-                        <li><a href="/appcraftservices/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
-                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
-                        <li><a href="/appcraftservices/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
-                        <li><a href="/appcraftservices/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
+                        <li><a href="/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
+                        <li><a href="/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
+                        <li><a href="/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
+                        <li><a href="/terms" class="text-gray-300 hover:text-white transition duration-300">Terms & Conditions</a></li>
                     </ul>
                 </div>
                 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Services</h4>
                     <ul class="space-y-2">
-                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
-                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
-                        <li><a href="/appcraftservices/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
                     </ul>
                 </div>
             </div>
@@ -315,6 +338,7 @@
     </footer>
 
     <script src="../assets/script.js"></script>
+    <script src="../assets/analytics.js"></script>
     
     <script>
         // Check if page is loaded in editor mode

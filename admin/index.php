@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+// Security headers to prevent "Dangerous Site" warnings
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Content-Security-Policy: default-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; img-src \'self\' data: https:; font-src \'self\' https://cdnjs.cloudflare.com; connect-src \'self\';');
+
 // Check if user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header('Location: login.php');
@@ -636,18 +643,19 @@ $content = array_merge($defaultContent, $content);
                         <div class="text-sm text-gray-600">Today's Messages</div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow text-center">
-                        <div class="text-3xl font-bold text-purple-600" id="response-rate">95%</div>
-                        <div class="text-sm text-gray-600">Response Rate</div>
+                        <div class="text-3xl font-bold text-purple-600" id="schedule-requests">0</div>
+                        <div class="text-sm text-gray-600">Schedule Requests</div>
                     </div>
                 </div>
                 
                 <div class="bg-white p-6 rounded-lg shadow">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-semibold">Contact Messages</h3>
-                        <div class="flex space-x-2">
-                            <button onclick="filterMessages('all')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">All</button>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="filterMessages('all')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium">All</button>
                             <button onclick="filterMessages('unread')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Unread</button>
                             <button onclick="filterMessages('today')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Today</button>
+                            <button onclick="filterMessages('schedule')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">📅 Consultations</button>
                             <button onclick="exportMessages()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                                 <i class="fas fa-download mr-2"></i>Export
                             </button>
@@ -1037,166 +1045,150 @@ $content = array_merge($defaultContent, $content);
 
             <!-- Analytics Tab -->
             <div id="analytics" class="tab-content p-6">
+                <!-- Analytics Filters -->
+                <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
+                            <select id="analytics-period" class="px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Page Filter</label>
+                            <select id="analytics-page" class="px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="">All Pages</option>
+                                <option value="/">Homepage</option>
+                                <option value="/services">Services</option>
+                                <option value="/pricing">Pricing</option>
+                                <option value="/contact">Contact</option>
+                                <option value="/process">Process</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Traffic Source</label>
+                            <select id="analytics-source" class="px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="">All Sources</option>
+                                <option value="direct">Direct</option>
+                                <option value="google">Google</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="refreshAnalytics()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                <i class="fas fa-refresh mr-2"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Overview Cards -->
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-lg shadow text-center">
-                        <div class="text-3xl font-bold text-blue-600" id="total-visitors">1,234</div>
+                        <div class="text-3xl font-bold text-blue-600" id="total-visitors">Loading...</div>
                         <div class="text-sm text-gray-600">Total Visitors</div>
-                        <div class="text-xs text-green-600 mt-1">+12% this month</div>
+                        <div class="text-xs mt-1" id="visitors-change">Loading...</div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow text-center">
-                        <div class="text-3xl font-bold text-green-600" id="page-views">5,678</div>
+                        <div class="text-3xl font-bold text-green-600" id="page-views">Loading...</div>
                         <div class="text-sm text-gray-600">Page Views</div>
-                        <div class="text-xs text-green-600 mt-1">+8% this month</div>
+                        <div class="text-xs mt-1" id="views-change">Loading...</div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow text-center">
-                        <div class="text-3xl font-bold text-purple-600" id="bounce-rate">32%</div>
+                        <div class="text-3xl font-bold text-purple-600" id="bounce-rate">Loading...</div>
                         <div class="text-sm text-gray-600">Bounce Rate</div>
-                        <div class="text-xs text-red-600 mt-1">-5% this month</div>
+                        <div class="text-xs mt-1" id="bounce-change">Loading...</div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow text-center">
-                        <div class="text-3xl font-bold text-yellow-600" id="avg-session">2:45</div>
-                        <div class="text-sm text-gray-600">Avg. Session</div>
-                        <div class="text-xs text-green-600 mt-1">+15% this month</div>
+                        <div class="text-3xl font-bold text-yellow-600" id="avg-load-time">Loading...</div>
+                        <div class="text-sm text-gray-600">Avg. Load Time</div>
+                        <div class="text-xs mt-1" id="load-time-change">Loading...</div>
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Traffic Chart -->
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">Traffic Overview</h3>
-                        <div class="h-64 flex items-center justify-center bg-gray-50 rounded">
-                            <div class="text-center text-gray-500">
-                                <i class="fas fa-chart-line text-4xl mb-4"></i>
-                                <p>Traffic chart will be displayed here</p>
-                                <p class="text-sm">Connect Google Analytics for real data</p>
-                            </div>
+                        <div class="h-64" id="traffic-chart">
+                            <canvas id="traffic-canvas" width="400" height="200"></canvas>
                         </div>
                     </div>
                     
+                    <!-- Top Pages -->
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">Top Pages</h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                                <div>
-                                    <div class="font-medium">Homepage</div>
-                                    <div class="text-sm text-gray-600">/</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-semibold text-blue-600">2,345</div>
-                                    <div class="text-sm text-gray-600">views</div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                                <div>
-                                    <div class="font-medium">Services</div>
-                                    <div class="text-sm text-gray-600">/services</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-semibold text-blue-600">1,234</div>
-                                    <div class="text-sm text-gray-600">views</div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                                <div>
-                                    <div class="font-medium">Pricing</div>
-                                    <div class="text-sm text-gray-600">/pricing</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-semibold text-blue-600">987</div>
-                                    <div class="text-sm text-gray-600">views</div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                                <div>
-                                    <div class="font-medium">Contact</div>
-                                    <div class="text-sm text-gray-600">/contact</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-semibold text-blue-600">654</div>
-                                    <div class="text-sm text-gray-600">views</div>
-                                </div>
+                        <div id="top-pages-list">
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading page data...</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Traffic Sources -->
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">Traffic Sources</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Direct</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">45%</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Google</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-green-600 h-2 rounded-full" style="width: 35%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">35%</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Social Media</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-purple-600 h-2 rounded-full" style="width: 15%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">15%</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Referrals</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-yellow-600 h-2 rounded-full" style="width: 5%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">5%</span>
-                                </div>
+                        <div id="traffic-sources-list">
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-spinner fa-spin"></i>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Device Types -->
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">Device Types</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Desktop</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 60%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">60%</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Mobile</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-green-600 h-2 rounded-full" style="width: 35%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">35%</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm">Tablet</span>
-                                <div class="flex items-center">
-                                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-purple-600 h-2 rounded-full" style="width: 5%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">5%</span>
-                                </div>
+                        <div id="device-types-list">
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-spinner fa-spin"></i>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Browsers -->
                     <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">Conversion Funnel</h3>
+                        <h3 class="text-lg font-semibold mb-4">Top Browsers</h3>
+                        <div id="browsers-list">
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Visitors -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold mb-4">Recent Visitors</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Page</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-visitors-list" class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        <i class="fas fa-spinner fa-spin mr-2"></i>Loading recent visitors...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
                         <div class="space-y-4">
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-blue-600">1,234</div>
