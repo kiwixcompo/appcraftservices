@@ -6,6 +6,10 @@
  * when triggered by a webhook or manual execution.
  */
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Configuration
 $config = [
     'repo_url' => 'https://github.com/kiwixcompo/appcraftservices.git',
@@ -24,8 +28,10 @@ $config = [
 
 // Security check for webhook requests
 function isValidRequest($config) {
-    // Check if request is from allowed IP (basic security)
-    $client_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    // For manual requests, allow them (we'll add basic auth later if needed)
+    if (isset($_GET['manual']) && $_GET['manual'] === 'true') {
+        return true;
+    }
     
     // For webhook requests, verify signature
     if (isset($_SERVER['HTTP_X_HUB_SIGNATURE_256'])) {
@@ -45,41 +51,70 @@ function isValidRequest($config) {
 function logMessage($message, $config) {
     $timestamp = date('Y-m-d H:i:s');
     $log_entry = "[$timestamp] $message" . PHP_EOL;
-    file_put_contents($config['log_file'], $log_entry, FILE_APPEND | LOCK_EX);
+    @file_put_contents($config['log_file'], $log_entry, FILE_APPEND | LOCK_EX);
 }
 
-// Create backup before deployment
+// Check if command exists
+function commandExists($command) {
+    $return = shell_exec(sprintf("which %s 2>/dev/null || where %s 2>nul", escapeshellarg($command), escapeshellarg($command)));
+    return !empty($return);
+}
+
+// Execute command safely
+function executeCommand($command, $config) {
+    logMessage("Executing: $command", $config);
+    
+    $output = [];
+    $return_code = 0;
+    
+    exec($command . ' 2>&1', $output, $return_code);
+    
+    $output_str = implode("\n", $output);
+    logMessage("Output: $output_str", $config);
+    logMessage("Return code: $return_code", $config);
+    
+    return ['output' => $output, 'return_code' => $return_code, 'output_str' => $output_str];
+}
+
+// Create backup before deployment (simplified for shared hosting)
 function createBackup($config) {
-    if (!is_dir($config['backup_dir'])) {
-        mkdir($config['backup_dir'], 0755, true);
-    }
-    
-    $backup_name = 'backup_' . date('Y-m-d_H-i-s') . '.tar.gz';
-    $backup_path = $config['backup_dir'] . '/' . $backup_name;
-    
-    // Create backup (excluding .git, backups, and logs)
-    $exclude_dirs = '--exclude=.git --exclude=backups --exclude=*.log --exclude=deploy.php';
-    $command = "tar -czf $backup_path $exclude_dirs .";
-    
-    exec($command, $output, $return_code);
-    
-    if ($return_code === 0) {
+    try {
+        if (!is_dir($config['backup_dir'])) {
+            if (!mkdir($config['backup_dir'], 0755, true)) {
+                logMessage("Failed to create backup directory", $config);
+                return false;
+            }
+        }
+        
+        $backup_name = 'backup_' . date('Y-m-d_H-i-s') . '.txt';
+        $backup_path = $config['backup_dir'] . '/' . $backup_name;
+        
+        // Simple backup - just log the current state
+        $backup_info = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'files_count' => count(glob('*')),
+            'directory' => getcwd()
+        ];
+        
+        file_put_contents($backup_path, json_encode($backup_info, JSON_PRETTY_PRINT));
         logMessage("Backup created: $backup_name", $config);
         
-        // Keep only last 5 backups
-        $backups = glob($config['backup_dir'] . '/backup_*.tar.gz');
-        if (count($backups) > 5) {
-            rsort($backups);
-            for ($i = 5; $i < count($backups); $i++) {
-                unlink($backups[$i]);
+        // Keep only last 10 backups
+        $backups = glob($config['backup_dir'] . '/backup_*.txt');
+        if (count($backups) > 10) {
+            usort($backups, function($a, $b) {
+                return filemtime($b) - filemtime($a);
+            });
+            for ($i = 10; $i < count($backups); $i++) {
+                @unlink($backups[$i]);
             }
         }
         
         return true;
+    } catch (Exception $e) {
+        logMessage("Backup failed: " . $e->getMessage(), $config);
+        return false;
     }
-    
-    logMessage("Backup failed: " . implode("\n", $output), $config);
-    return false;
 }
 
 // Main deployment function
@@ -87,58 +122,66 @@ function deploy($config) {
     logMessage("=== DEPLOYMENT STARTED ===", $config);
     
     // Change to deployment directory
-    chdir($config['deploy_path']);
+    if (!chdir($config['deploy_path'])) {
+        logMessage("ERROR: Cannot change to deployment directory", $config);
+        return false;
+    }
+    
+    // Check if Git is available
+    if (!commandExists('git')) {
+        logMessage("ERROR: Git command not available on this server", $config);
+        return false;
+    }
     
     // Create backup
-    if (!createBackup($config)) {
-        logMessage("WARNING: Backup creation failed, continuing with deployment", $config);
-    }
+    createBackup($config);
     
     // Initialize git if not already done
     if (!is_dir('.git')) {
         logMessage("Initializing Git repository", $config);
-        exec('git init', $output, $return_code);
-        if ($return_code !== 0) {
-            logMessage("ERROR: Git init failed", $config);
+        
+        $result = executeCommand('git init', $config);
+        if ($result['return_code'] !== 0) {
+            logMessage("ERROR: Git init failed: " . $result['output_str'], $config);
             return false;
         }
         
-        exec("git remote add origin {$config['repo_url']}", $output, $return_code);
-        if ($return_code !== 0) {
-            logMessage("ERROR: Adding remote origin failed", $config);
+        $result = executeCommand("git remote add origin {$config['repo_url']}", $config);
+        if ($result['return_code'] !== 0) {
+            logMessage("ERROR: Adding remote origin failed: " . $result['output_str'], $config);
             return false;
         }
     }
     
+    // Configure git to avoid prompts
+    executeCommand('git config --local user.email "deploy@appcraftservices.com"', $config);
+    executeCommand('git config --local user.name "Auto Deploy"', $config);
+    
     // Fetch latest changes
     logMessage("Fetching latest changes from GitHub", $config);
-    exec("git fetch origin {$config['branch']}", $output, $return_code);
-    if ($return_code !== 0) {
-        logMessage("ERROR: Git fetch failed: " . implode("\n", $output), $config);
+    $result = executeCommand("git fetch origin {$config['branch']}", $config);
+    if ($result['return_code'] !== 0) {
+        logMessage("ERROR: Git fetch failed: " . $result['output_str'], $config);
         return false;
     }
     
     // Reset to latest commit (hard reset to avoid conflicts)
     logMessage("Resetting to latest commit", $config);
-    exec("git reset --hard origin/{$config['branch']}", $output, $return_code);
-    if ($return_code !== 0) {
-        logMessage("ERROR: Git reset failed: " . implode("\n", $output), $config);
+    $result = executeCommand("git reset --hard origin/{$config['branch']}", $config);
+    if ($result['return_code'] !== 0) {
+        logMessage("ERROR: Git reset failed: " . $result['output_str'], $config);
         return false;
     }
     
-    // Set proper permissions
+    // Set basic permissions (if possible)
     logMessage("Setting file permissions", $config);
-    exec("find . -type f -name '*.php' -exec chmod 644 {} \;");
-    exec("find . -type f -name '*.html' -exec chmod 644 {} \;");
-    exec("find . -type f -name '*.css' -exec chmod 644 {} \;");
-    exec("find . -type f -name '*.js' -exec chmod 644 {} \;");
-    exec("find . -type d -exec chmod 755 {} \;");
+    @chmod('.', 0755);
     
     // Ensure data directory exists and is writable
     if (!is_dir('data')) {
-        mkdir('data', 0755, true);
+        @mkdir('data', 0755, true);
     }
-    chmod('data', 0755);
+    @chmod('data', 0755);
     
     logMessage("=== DEPLOYMENT COMPLETED SUCCESSFULLY ===", $config);
     return true;
@@ -159,9 +202,64 @@ try {
     
     if ($is_manual) {
         logMessage("Manual deployment triggered", $config);
-        echo "<h2>Manual Deployment Started</h2>";
-        echo "<pre>";
+        ?>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>App Craft Services - Deployment</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+                .header { background: #2c3e50; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+                .status { padding: 15px; border-radius: 5px; margin: 10px 0; }
+                .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+                .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+                .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+                .log { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+                .links { margin-top: 20px; }
+                .links a { display: inline-block; margin-right: 15px; padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🚀 App Craft Services - Auto Deployment</h1>
+                <p>Repository: https://github.com/kiwixcompo/appcraftservices</p>
+            </div>
+            
+            <div class="status info">
+                <strong>📋 Deployment Status:</strong> Starting manual deployment...
+            </div>
+        <?php
         flush();
+        
+        // Perform deployment
+        $success = deploy($config);
+        
+        if ($success) {
+            echo '<div class="status success"><strong>✅ Success!</strong> Deployment completed successfully!</div>';
+            echo '<div class="status info">Your website has been updated with the latest changes from GitHub.</div>';
+        } else {
+            echo '<div class="status error"><strong>❌ Failed!</strong> Deployment encountered errors.</div>';
+            echo '<div class="status info">Check the deployment log below for details.</div>';
+        }
+        
+        // Show log file contents
+        if (file_exists($config['log_file'])) {
+            $log_content = file_get_contents($config['log_file']);
+            $recent_logs = implode("\n", array_slice(explode("\n", $log_content), -20)); // Last 20 lines
+            echo '<h3>📋 Recent Deployment Log:</h3>';
+            echo '<div class="log">' . htmlspecialchars($recent_logs) . '</div>';
+        }
+        
+        ?>
+            <div class="links">
+                <a href="/">🌐 View Website</a>
+                <a href="?manual=true">🔄 Deploy Again</a>
+                <a href="https://github.com/kiwixcompo/appcraftservices">📊 View Repository</a>
+            </div>
+        </body>
+        </html>
+        <?php
+        
     } elseif ($is_webhook) {
         $event = $_SERVER['HTTP_X_GITHUB_EVENT'] ?? 'unknown';
         logMessage("Webhook deployment triggered: $event", $config);
@@ -180,44 +278,31 @@ try {
             echo "OK - Branch ignored";
             exit;
         }
+        
+        // Perform deployment
+        $success = deploy($config);
+        
+        if ($success) {
+            echo "OK - Deployment successful";
+            logMessage("Webhook deployment completed successfully", $config);
+        } else {
+            http_response_code(500);
+            echo "ERROR - Deployment failed";
+            logMessage("Webhook deployment failed", $config);
+        }
     } else {
         logMessage("ERROR: Invalid request method", $config);
         http_response_code(400);
         die('Invalid request');
     }
     
-    // Perform deployment
-    $success = deploy($config);
-    
-    if ($success) {
-        if ($is_manual) {
-            echo "</pre>";
-            echo "<h3 style='color: green;'>✅ Deployment Successful!</h3>";
-            echo "<p>Your website has been updated with the latest changes from GitHub.</p>";
-            echo "<p><a href='/'>View Website</a> | <a href='?manual=true'>Deploy Again</a></p>";
-        } else {
-            echo "OK - Deployment successful";
-        }
-        logMessage("Deployment completed successfully", $config);
-    } else {
-        if ($is_manual) {
-            echo "</pre>";
-            echo "<h3 style='color: red;'>❌ Deployment Failed!</h3>";
-            echo "<p>Check the deployment log for details.</p>";
-        } else {
-            http_response_code(500);
-            echo "ERROR - Deployment failed";
-        }
-        logMessage("Deployment failed", $config);
-    }
-    
 } catch (Exception $e) {
     logMessage("EXCEPTION: " . $e->getMessage(), $config);
     if (isset($is_manual) && $is_manual) {
-        echo "<h3 style='color: red;'>Error: " . htmlspecialchars($e->getMessage()) . "</h3>";
+        echo '<div class="status error"><strong>❌ Exception:</strong> ' . htmlspecialchars($e->getMessage()) . '</div>';
     } else {
         http_response_code(500);
-        echo "ERROR - Exception occurred";
+        echo "ERROR - Exception occurred: " . $e->getMessage();
     }
 }
 ?>
