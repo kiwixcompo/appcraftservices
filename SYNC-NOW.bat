@@ -1,14 +1,15 @@
 @echo off
-title App Craft Services - Quick Sync
+title App Craft Services - Auto-Deploy Sync
 color 0A
 
 echo.
 echo  ╔══════════════════════════════════════════════════════════════╗
 echo  ║                    APP CRAFT SERVICES                        ║
-echo  ║                      QUICK SYNC TOOL                         ║
+echo  ║                   AUTO-DEPLOY SYNC TOOL                      ║
 echo  ╚══════════════════════════════════════════════════════════════╝
 echo.
 echo  Repository: https://github.com/kiwixcompo/appcraftservices
+echo  Live Site:  https://appcraftservices.com
 echo  ══════════════════════════════════════════════════════════════
 echo.
 
@@ -35,7 +36,7 @@ if errorlevel 1 (
     set "timestamp=%dt:~0,4%-%dt:~4,2%-%dt:~6,2% %dt:~8,2%:%dt:~10,2%"
     
     echo  [SYNC] Committing changes...
-    git commit -m "Auto-sync: !timestamp!" >nul
+    git commit -m "Auto-sync: %timestamp%" >nul
     
     echo  [SYNC] Uploading to GitHub...
     git push origin main >nul 2>&1
@@ -49,9 +50,22 @@ if errorlevel 1 (
     )
     
     echo.
-    echo  ✅ SUCCESS! Your changes are now live on GitHub
+    echo  ✅ SUCCESS! Changes uploaded to GitHub
     echo.
-    echo  View at: https://github.com/kiwixcompo/appcraftservices
+    echo  [DEPLOY] Triggering auto-deployment to live site...
+    
+    REM Trigger manual deployment (fallback if webhook fails)
+    curl -s "https://appcraftservices.com/deploy.php?manual=true" >nul 2>&1
+    
+    if errorlevel 1 (
+        echo  ⚠️  Manual deployment trigger failed - webhook should handle it
+    ) else (
+        echo  ✅ Live site deployment triggered successfully!
+    )
+    
+    echo.
+    echo  🌐 Your changes will be live at: https://appcraftservices.com
+    echo  📊 View repository: https://github.com/kiwixcompo/appcraftservices
     echo.
 ) else (
     echo.

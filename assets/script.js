@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Contact form handling
+// Contact form handling - UPDATED FIX
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contact-form');
     const successMessage = document.getElementById('success-message');
@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show loading state
             submitBtn.disabled = true;
             submitText.textContent = 'Sending...';
-            submitIcon.classList.add('hidden');
-            loadingIcon.classList.remove('hidden');
+            if (submitIcon) submitIcon.classList.add('hidden');
+            if (loadingIcon) loadingIcon.classList.remove('hidden');
             
             try {
                 // Collect form data
@@ -47,8 +47,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     data[key] = value;
                 }
                 
+                console.log('Submitting form data:', data);
+                
+                // Determine API path based on current location
+                // If we are in /contact/, go up one level. If at root, go into api.
+                const apiPath = window.location.pathname.includes('/contact') ? 
+                    '../api/contact.php' : 'api/contact.php';
+                
+                console.log('Using API path:', apiPath);
+                
                 // Send to API
-                const response = await fetch('/appcraftservices/api/contact.php', {
+                const response = await fetch(apiPath, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -56,37 +65,85 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(data)
                 });
                 
-                const result = await response.json();
+                console.log('Response status:', response.status);
+                
+                // Robust JSON parsing
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (err) {
+                    console.error('Server returned non-JSON:', text);
+                    throw new Error('Server returned an invalid response format.');
+                }
+                
+                console.log('Parsed result:', result);
                 
                 if (result.success) {
                     // Hide form and show success message
                     contactForm.style.display = 'none';
-                    successMessage.classList.remove('hidden');
-                    successMessage.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Message sent successfully!</p>
-                                <p class="text-sm">We'll get back to you within 24 hours. Check your email for confirmation.</p>
-                                <p class="text-xs mt-1">Reference ID: ${result.message_id}</p>
+                    if (successMessage) {
+                        successMessage.classList.remove('hidden');
+                        successMessage.innerHTML = `
+                            <div class="flex items-center justify-center flex-col text-center p-6">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Message Sent Successfully!</h3>
+                                <p class="text-gray-600 mb-2">Thank you for reaching out. We'll get back to you within 24 hours.</p>
+                                <p class="text-sm text-gray-500 mb-4">Your message has been received and saved to our system.</p>
+                                <p class="text-xs text-gray-400 mb-4">Reference ID: ${result.message_id || 'N/A'}</p>
+                                <button onclick="location.reload()" class="bg-electric-blue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300 font-medium">Send Another Message</button>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        // Fallback if success message element doesn't exist
+                        alert('Message sent successfully! We\'ll get back to you within 24 hours.');
+                        contactForm.reset();
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Send Message';
+                        if (submitIcon) submitIcon.classList.remove('hidden');
+                        if (loadingIcon) loadingIcon.classList.add('hidden');
+                    }
                 } else {
                     throw new Error(result.message || 'Failed to send message');
                 }
                 
             } catch (error) {
-                // Show error message
-                alert('Error sending message: ' + error.message + '. Please try again or contact us directly at williamsaonen@gmail.com');
+                console.error('Submission Error:', error);
+                
+                // Show error message with better UX
+                const errorMessage = error.message || 'An unexpected error occurred';
+                
+                // Create or update error display
+                let errorDiv = document.getElementById('error-message');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'error-message';
+                    errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg';
+                    contactForm.parentNode.insertBefore(errorDiv, contactForm.nextSibling);
+                }
+                
+                errorDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span><strong>Error:</strong> ${errorMessage}</span>
+                    </div>
+                    <button onclick="this.parentElement.style.display='none'" class="mt-2 text-sm text-red-600 hover:text-red-800 underline">Dismiss</button>
+                `;
+                errorDiv.style.display = 'block';
                 
                 // Reset button state
                 submitBtn.disabled = false;
                 submitText.textContent = 'Send Message';
-                submitIcon.classList.remove('hidden');
-                loadingIcon.classList.add('hidden');
+                if (submitIcon) submitIcon.classList.remove('hidden');
+                if (loadingIcon) loadingIcon.classList.add('hidden');
             }
         });
     }
@@ -96,17 +153,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Show admin login directly with key combination (Ctrl+Shift+A)
 document.addEventListener('keydown', function(e) {
-    // Debug: log all key combinations
-    if (e.ctrlKey || e.shiftKey || e.altKey) {
-        console.log('Key combination pressed:', {
-            key: e.key,
-            ctrl: e.ctrlKey,
-            shift: e.shiftKey,
-            alt: e.altKey,
-            code: e.code
-        });
-    }
-    
     if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault();
         console.log('Admin login triggered by Ctrl+Shift+A');
@@ -117,16 +163,13 @@ document.addEventListener('keydown', function(e) {
 // Alternative: Triple-click on logo to show admin login
 document.addEventListener('DOMContentLoaded', function() {
     const logos = document.querySelectorAll('.logo-admin-trigger');
-    console.log('Found logo elements:', logos.length);
     
-    logos.forEach((logo, index) => {
-        console.log('Setting up admin trigger for logo', index);
+    logos.forEach((logo) => {
         let clickCount = 0;
         let clickTimer = null;
         
         logo.addEventListener('click', function(e) {
             clickCount++;
-            console.log('Logo clicked, count:', clickCount);
             
             if (clickCount === 1) {
                 clickTimer = setTimeout(() => {
@@ -145,18 +188,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Admin login function - redirect to admin page
 function showAdminLogin() {
-    // Redirect directly to admin login page
-    window.location.href = '/appcraftservices/admin/login.php';
+    // Determine path based on current location
+    const adminPath = window.location.pathname.includes('/contact') ? 
+        '../admin/login.php' : 'admin/login.php';
+    window.location.href = adminPath;
 }
-
-// Dynamic year in footer
-document.addEventListener('DOMContentLoaded', function() {
-    const currentYear = new Date().getFullYear();
-    const yearElement = document.getElementById('current-year');
-    if (yearElement) {
-        yearElement.textContent = currentYear;
-    }
-});
 
 // Real-time Review System
 class ReviewSystem {
@@ -184,7 +220,11 @@ class ReviewSystem {
     async loadInitialReviews() {
         this.isLoading = true;
         try {
-            const response = await fetch('/appcraftservices/api/reviews/get_approved_reviews.php?limit=6&offset=0');
+            // Adjust path based on location
+            const apiPath = window.location.pathname.includes('/contact') ? 
+                '../api/reviews/get_approved_reviews.php' : 'api/reviews/get_approved_reviews.php';
+
+            const response = await fetch(`${apiPath}?limit=6&offset=0`);
             const data = await response.json();
             
             if (data.success) {
@@ -195,8 +235,6 @@ class ReviewSystem {
                 this.renderReviews();
                 this.updateStats(data.statistics);
                 this.updateLoadMoreButton();
-            } else {
-                this.showError('Failed to load reviews');
             }
         } catch (error) {
             console.error('Error loading reviews:', error);
@@ -216,7 +254,10 @@ class ReviewSystem {
         loadMoreBtn.disabled = true;
         
         try {
-            const response = await fetch(`/appcraftservices/api/reviews/get_approved_reviews.php?limit=6&offset=${this.currentOffset}`);
+            const apiPath = window.location.pathname.includes('/contact') ? 
+                '../api/reviews/get_approved_reviews.php' : 'api/reviews/get_approved_reviews.php';
+
+            const response = await fetch(`${apiPath}?limit=6&offset=${this.currentOffset}`);
             const data = await response.json();
             
             if (data.success) {
@@ -343,17 +384,14 @@ class ReviewSystem {
     
     startLiveUpdates() {
         if (typeof EventSource === 'undefined') {
-            console.warn('Server-Sent Events not supported');
             return;
         }
         
         try {
-            this.eventSource = new EventSource('/appcraftservices/api/reviews/live_updates.php');
-            
-            this.eventSource.addEventListener('connected', (event) => {
-                console.log('Connected to review updates');
-                this.showLiveIndicator(true);
-            });
+            const apiPath = window.location.pathname.includes('/contact') ? 
+                '../api/reviews/live_updates.php' : 'api/reviews/live_updates.php';
+
+            this.eventSource = new EventSource(apiPath);
             
             this.eventSource.addEventListener('review_update', (event) => {
                 const data = JSON.parse(event.data);
@@ -363,20 +401,10 @@ class ReviewSystem {
             });
             
             this.eventSource.addEventListener('error', (event) => {
-                console.warn('Live updates connection error');
-                this.showLiveIndicator(false);
-                
-                // Retry connection after 30 seconds
-                setTimeout(() => {
-                    if (this.eventSource.readyState === EventSource.CLOSED) {
-                        this.startLiveUpdates();
-                    }
-                }, 30000);
-            });
-            
-            this.eventSource.addEventListener('disconnected', (event) => {
-                console.log('Disconnected from review updates');
-                this.showLiveIndicator(false);
+                // Silently fail or retry
+                if (this.eventSource.readyState === EventSource.CLOSED) {
+                    // Optional: logic to reconnect
+                }
             });
             
         } catch (error) {
@@ -385,13 +413,9 @@ class ReviewSystem {
     }
     
     handleNewReviews(newReviews) {
-        // Add new reviews to the beginning of the array
         this.reviews = [...newReviews, ...this.reviews];
-        
-        // Show notification
         this.showNotification(`${newReviews.length} new client review${newReviews.length > 1 ? 's' : ''} added!`, 'success');
         
-        // Add new reviews to the top of the container
         const container = document.getElementById('reviews-container');
         if (container) {
             newReviews.reverse().forEach(review => {
@@ -399,32 +423,22 @@ class ReviewSystem {
                 reviewElement.innerHTML = this.createReviewHTML(review);
                 const reviewDiv = reviewElement.firstElementChild;
                 
-                // Add highlight animation with startup-focused styling
                 reviewDiv.classList.add('bg-blue-50', 'border-blue-300', 'ring-2', 'ring-blue-200');
                 reviewDiv.style.opacity = '0';
                 reviewDiv.style.transform = 'translateY(-20px)';
                 
                 container.insertBefore(reviewDiv, container.firstChild);
                 
-                // Animate in
                 setTimeout(() => {
                     reviewDiv.style.transition = 'all 0.5s ease';
                     reviewDiv.style.opacity = '1';
                     reviewDiv.style.transform = 'translateY(0)';
                 }, 100);
                 
-                // Remove highlight after animation
                 setTimeout(() => {
                     reviewDiv.classList.remove('bg-blue-50', 'border-blue-300', 'ring-2', 'ring-blue-200');
                 }, 3000);
             });
-        }
-    }
-    
-    showLiveIndicator(show) {
-        const indicator = document.getElementById('live-indicator');
-        if (indicator) {
-            indicator.style.display = show ? 'block' : 'none';
         }
     }
     
@@ -446,8 +460,6 @@ class ReviewSystem {
         `;
         
         document.body.appendChild(notification);
-        
-        // Auto remove after 5 seconds
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.remove();
@@ -487,21 +499,15 @@ class ReviewSystem {
     }
     
     escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
-    }
-    
-    destroy() {
-        if (this.eventSource) {
-            this.eventSource.close();
-        }
     }
 }
 
 // Initialize review system when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Only initialize on pages with reviews section
     if (document.getElementById('reviews-container')) {
         window.reviewSystem = new ReviewSystem();
     }
@@ -520,7 +526,6 @@ class ImageOptimizer {
     }
     
     setupLazyLoading() {
-        // Use Intersection Observer for lazy loading
         if ('IntersectionObserver' in window) {
             const imageObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -535,12 +540,10 @@ class ImageOptimizer {
                 threshold: 0.01
             });
             
-            // Observe all images with data-src attribute
             document.querySelectorAll('img[data-src]').forEach(img => {
                 imageObserver.observe(img);
             });
         } else {
-            // Fallback for older browsers
             this.loadAllImages();
         }
     }
@@ -561,19 +564,16 @@ class ImageOptimizer {
     }
     
     optimizeImages() {
-        // Add loading="lazy" to images that don't have it
         document.querySelectorAll('img:not([loading])').forEach(img => {
             img.setAttribute('loading', 'lazy');
         });
         
-        // Add proper alt attributes for accessibility
         document.querySelectorAll('img:not([alt])').forEach(img => {
             img.setAttribute('alt', '');
         });
     }
     
     setupProgressiveLoading() {
-        // Progressive loading for heavy content sections
         const contentSections = document.querySelectorAll('.progressive-load');
         
         if ('IntersectionObserver' in window) {
@@ -605,16 +605,9 @@ class PerformanceOptimizer {
         this.optimizeCSS();
         this.optimizeJavaScript();
         this.setupResourceHints();
-        this.monitorPerformance();
     }
     
     optimizeCSS() {
-        // Remove unused CSS classes (basic implementation)
-        this.deferNonCriticalCSS();
-    }
-    
-    deferNonCriticalCSS() {
-        // Defer non-critical CSS loading
         const nonCriticalCSS = document.querySelectorAll('link[rel="stylesheet"][data-defer]');
         nonCriticalCSS.forEach(link => {
             link.media = 'print';
@@ -625,10 +618,7 @@ class PerformanceOptimizer {
     }
     
     optimizeJavaScript() {
-        // Debounce scroll events
         this.debounceScrollEvents();
-        
-        // Optimize event listeners
         this.optimizeEventListeners();
     }
     
@@ -640,12 +630,11 @@ class PerformanceOptimizer {
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 if (originalScroll) originalScroll.call(this, e);
-            }, 16); // ~60fps
+            }, 16);
         };
     }
     
     optimizeEventListeners() {
-        // Use passive listeners for better performance
         const passiveEvents = ['scroll', 'touchstart', 'touchmove', 'wheel'];
         
         passiveEvents.forEach(eventType => {
@@ -660,79 +649,17 @@ class PerformanceOptimizer {
     }
     
     setupResourceHints() {
-        // Add preconnect for external resources
         this.addPreconnect('https://cdn.tailwindcss.com');
         this.addPreconnect('https://cdnjs.cloudflare.com');
-        
-        // Preload critical resources
-        this.preloadCriticalResources();
     }
     
     addPreconnect(url) {
-        const link = document.createElement('link');
-        link.rel = 'preconnect';
-        link.href = url;
-        document.head.appendChild(link);
-    }
-    
-    preloadCriticalResources() {
-        // Preload critical fonts
-        const criticalFonts = [
-            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
-        ];
-        
-        criticalFonts.forEach(fontUrl => {
+        if (!document.querySelector(`link[href="${url}"]`)) {
             const link = document.createElement('link');
-            link.rel = 'preload';
-            link.href = fontUrl;
-            link.as = 'style';
+            link.rel = 'preconnect';
+            link.href = url;
             document.head.appendChild(link);
-        });
-    }
-    
-    monitorPerformance() {
-        // Monitor Core Web Vitals
-        if ('PerformanceObserver' in window) {
-            this.observeLCP();
-            this.observeFID();
-            this.observeCLS();
         }
-    }
-    
-    observeLCP() {
-        // Largest Contentful Paint
-        const observer = new PerformanceObserver((list) => {
-            const entries = list.getEntries();
-            const lastEntry = entries[entries.length - 1];
-            console.log('LCP:', lastEntry.startTime);
-        });
-        observer.observe({ entryTypes: ['largest-contentful-paint'] });
-    }
-    
-    observeFID() {
-        // First Input Delay
-        const observer = new PerformanceObserver((list) => {
-            const entries = list.getEntries();
-            entries.forEach(entry => {
-                console.log('FID:', entry.processingStart - entry.startTime);
-            });
-        });
-        observer.observe({ entryTypes: ['first-input'] });
-    }
-    
-    observeCLS() {
-        // Cumulative Layout Shift
-        let clsValue = 0;
-        const observer = new PerformanceObserver((list) => {
-            const entries = list.getEntries();
-            entries.forEach(entry => {
-                if (!entry.hadRecentInput) {
-                    clsValue += entry.value;
-                }
-            });
-            console.log('CLS:', clsValue);
-        });
-        observer.observe({ entryTypes: ['layout-shift'] });
     }
 }
 
@@ -757,20 +684,15 @@ class MobileOptimizer {
     }
     
     optimizeForMobile() {
-        // Reduce animations on mobile for better performance
         if (this.isLowEndDevice()) {
             document.body.classList.add('reduce-motion');
         }
         
-        // Optimize images for mobile
         this.optimizeMobileImages();
-        
-        // Defer non-essential scripts
         this.deferNonEssentialScripts();
     }
     
     isLowEndDevice() {
-        // Simple heuristic for low-end devices
         return navigator.hardwareConcurrency <= 2 || 
                navigator.deviceMemory <= 2 ||
                /Android.*Chrome\/[0-5]/.test(navigator.userAgent);
@@ -778,12 +700,9 @@ class MobileOptimizer {
     
     optimizeMobileImages() {
         document.querySelectorAll('img').forEach(img => {
-            // Add mobile-specific optimizations
             if (!img.hasAttribute('loading')) {
                 img.setAttribute('loading', 'lazy');
             }
-            
-            // Set appropriate sizes for responsive images
             if (!img.hasAttribute('sizes') && img.hasAttribute('srcset')) {
                 img.setAttribute('sizes', '(max-width: 768px) 100vw, 50vw');
             }
@@ -791,7 +710,6 @@ class MobileOptimizer {
     }
     
     deferNonEssentialScripts() {
-        // Defer analytics and non-critical scripts on mobile
         const nonEssentialScripts = document.querySelectorAll('script[data-defer-mobile]');
         nonEssentialScripts.forEach(script => {
             if (script.src) {
@@ -804,10 +722,8 @@ class MobileOptimizer {
     }
     
     setupTouchOptimizations() {
-        // Improve touch responsiveness
         document.addEventListener('touchstart', function() {}, { passive: true });
         
-        // Prevent zoom on input focus (iOS)
         const inputs = document.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
             if (!input.hasAttribute('style')) {
@@ -817,22 +733,18 @@ class MobileOptimizer {
     }
     
     optimizeViewport() {
-        // Ensure proper viewport configuration
         let viewport = document.querySelector('meta[name="viewport"]');
         if (!viewport) {
             viewport = document.createElement('meta');
             viewport.name = 'viewport';
             document.head.appendChild(viewport);
         }
-        
-        // Optimize viewport for mobile
         viewport.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
     }
 }
 
 // Initialize optimizations when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize performance optimizations
     new ImageOptimizer();
     new PerformanceOptimizer();
     new MobileOptimizer();
@@ -841,12 +753,329 @@ document.addEventListener('DOMContentLoaded', function() {
 // Service Worker registration for caching (if available)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/appcraftservices/sw.js')
+        // Adjust sw path based on location
+        const swPath = window.location.pathname.includes('/contact') ? '../sw.js' : 'sw.js';
+        
+        navigator.serviceWorker.register(swPath)
             .then(function(registration) {
                 console.log('ServiceWorker registration successful');
             })
             .catch(function(err) {
-                console.log('ServiceWorker registration failed');
+                // Silently fail
             });
     });
 }
+
+// Project Portfolio Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const projectCards = document.querySelectorAll('.project-card');
+    const modal = document.getElementById('project-modal');
+    const closeModal = document.getElementById('close-modal');
+    
+    // Verify elements exist
+    if (!modal || !closeModal || projectCards.length === 0) {
+        console.warn('Project modal elements not found or no project cards available');
+        return;
+    }
+    
+    // Handle image loading for project cards
+    const projectImages = document.querySelectorAll('.project-card img');
+    projectImages.forEach(img => {
+        if (img.complete) {
+            img.classList.add('loaded');
+        } else {
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
+            });
+            img.addEventListener('error', function() {
+                console.warn('Failed to load project image:', this.src);
+                // Keep the gradient background as fallback
+                this.style.display = 'none';
+            });
+        }
+    });
+    
+    // Project data with logo configurations
+    const projectData = {
+        'mealmate': {
+            title: 'MealMate',
+            logo: {
+                image: 'assets/projects/MealMate.png',
+                alt: 'MealMate Logo'
+            },
+            description: 'A comprehensive meal planning and nutrition tracking application that helps users maintain healthy eating habits through intelligent recipe suggestions, automated grocery lists, and personalized dietary management.',
+            tags: ['Health', 'Nutrition', 'Lifestyle'],
+            features: [
+                'Smart meal planning with AI-powered recipe suggestions',
+                'Comprehensive nutrition tracking and analysis',
+                'Automated grocery list generation',
+                'Dietary preference and restriction management',
+                'Calorie and macro tracking with visual analytics',
+                'Integration with popular fitness apps'
+            ],
+            tech: ['React', 'Node.js', 'MongoDB', 'Nutrition API', 'PWA']
+        },
+        'notifyme': {
+            title: 'Notify Me - Remote Job Alerts',
+            logo: {
+                image: 'assets/projects/Notify Me.png',
+                alt: 'Notify Me - Remote Job Alerts Logo'
+            },
+            description: 'Get instant alerts for new remote jobs from your favorite sources. A comprehensive job alert system that manages RSS feeds, filters by category, and ensures you never miss an opportunity in the remote work market.',
+            tags: ['Job Alerts', 'Remote Work', 'PWA'],
+            features: [
+                'User-managed RSS feeds with add, edit, delete functionality and optional API backup',
+                'Fetches jobs from multiple remote job sources automatically',
+                'Modern dashboard with category filtering, source grouping, and advanced search',
+                'Progressive Web App (PWA) with installable interface and offline support',
+                'Background sync for failed requests ensuring no missed opportunities',
+                'Mobile-friendly, responsive design optimized for all devices',
+                'Profile management and customizable user settings',
+                'Real-time job notifications and alert management'
+            ],
+            tech: ['Node.js', 'MongoDB', 'PWA', 'RSS Feeds', 'Background Sync']
+        },
+        'automated-restaurant': {
+            title: 'Automated Restaurant',
+            logo: {
+                image: 'assets/projects/Automated Restaurant.png',
+                alt: 'Automated Restaurant Logo'
+            },
+            description: 'A complete restaurant management ecosystem that streamlines operations through automated ordering, intelligent inventory tracking, and optimized kitchen workflow management for enhanced efficiency.',
+            tags: ['Restaurant', 'Automation', 'POS'],
+            features: [
+                'Automated order processing and kitchen display system',
+                'Real-time inventory tracking with low-stock alerts',
+                'Kitchen workflow optimization and timing coordination',
+                'Customer ordering system with customization options',
+                'Staff scheduling and performance analytics',
+                'Integration with payment processors and delivery platforms'
+            ],
+            tech: ['Angular', 'Django', 'PostgreSQL', 'Redis', 'Payment APIs']
+        },
+        'quickbudgetai': {
+            title: 'QuickBudgetAI',
+            logo: {
+                image: 'assets/projects/QuickBudgetAI.png',
+                alt: 'QuickBudgetAI Logo'
+            },
+            description: 'An AI-powered personal finance application that automatically categorizes expenses, provides intelligent budget recommendations, and helps users achieve their financial goals through smart insights.',
+            tags: ['FinTech', 'AI', 'Personal Finance'],
+            features: [
+                'AI-powered expense categorization and analysis',
+                'Intelligent budget recommendations and adjustments',
+                'Financial goal setting and progress tracking',
+                'Bank account integration and transaction sync',
+                'Spending pattern analysis and insights',
+                'Bill reminder and payment scheduling'
+            ],
+            tech: ['React Native', 'Python', 'TensorFlow', 'Plaid API', 'AWS']
+        },
+        'clearpath': {
+            title: 'ClearPath Client Services',
+            logo: {
+                image: 'assets/projects/ClearPath Client Services.png',
+                alt: 'ClearPath Client Services Logo'
+            },
+            description: 'A comprehensive client relationship management platform designed to streamline service delivery through advanced project tracking, communication tools, and performance optimization features.',
+            tags: ['CRM', 'Project Management', 'Client Services'],
+            features: [
+                'Advanced client relationship and project tracking',
+                'Integrated communication and collaboration tools',
+                'Service delivery optimization and workflow automation',
+                'Performance analytics and reporting dashboard',
+                'Document management and client portal access',
+                'Billing integration and invoice management'
+            ],
+            tech: ['React', 'Laravel', 'MySQL', 'WebSocket', 'AWS S3']
+        },
+        'willpdf': {
+            title: 'WillPDF',
+            logo: {
+                image: 'assets/projects/WillPDF.png',
+                alt: 'WillPDF Logo'
+            },
+            description: 'A sophisticated legal document generation platform that creates customized wills and estate planning documents through guided workflows and intelligent form completion.',
+            tags: ['LegalTech', 'Document Generation', 'Estate Planning'],
+            features: [
+                'Guided will creation with intelligent form completion',
+                'Customizable estate planning document templates',
+                'Legal compliance checking and validation',
+                'Secure document storage and access management',
+                'Digital signature integration and witness management',
+                'State-specific legal requirement adaptation'
+            ],
+            tech: ['Vue.js', 'Node.js', 'MongoDB', 'PDF Generation', 'DocuSign API']
+        },
+        'tsu-staff': {
+            title: 'TSU Staff Profile',
+            logo: {
+                image: 'assets/projects/TSU Staff Profile.png',
+                alt: 'TSU Staff Profile Logo'
+            },
+            description: 'A comprehensive university staff directory and profile management system featuring role-based access control, organizational hierarchy visualization, and advanced search capabilities.',
+            tags: ['Education', 'Directory', 'University'],
+            features: [
+                'Comprehensive staff directory with advanced search',
+                'Role-based access control and permission management',
+                'Organizational hierarchy visualization and navigation',
+                'Profile management with photo and credential tracking',
+                'Department and course assignment management',
+                'Integration with university authentication systems'
+            ],
+            tech: ['Angular', 'ASP.NET Core', 'SQL Server', 'Active Directory', 'Azure']
+        },
+        'federal-leave': {
+            title: 'Federal California Leave Assistant',
+            logo: {
+                image: 'assets/projects/Federal California Leave Assistant.png',
+                alt: 'Federal California Leave Assistant Logo'
+            },
+            description: 'An advanced HR compliance tool that automates California state leave calculations and federal FMLA requirements, ensuring businesses maintain full compliance with complex employment regulations.',
+            tags: ['HR Tech', 'Compliance', 'Legal'],
+            features: [
+                'Automated California state leave calculation and tracking',
+                'Federal FMLA compliance monitoring and reporting',
+                'Employee eligibility assessment and documentation',
+                'Integration with payroll and HR management systems',
+                'Compliance reporting and audit trail generation',
+                'Real-time regulation updates and notifications'
+            ],
+            tech: ['React', 'Spring Boot', 'PostgreSQL', 'Government APIs', 'Docker']
+        }
+    };
+    
+    // Add click event to project cards
+    projectCards.forEach((card, index) => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Always use currentTarget (the element the event listener is attached to)
+            // instead of this, which might be different due to event bubbling
+            const projectCard = e.currentTarget;
+            const projectKey = projectCard.getAttribute('data-project');
+            
+            const project = projectData[projectKey];
+            
+            if (project) {
+                showProjectModal(project);
+            } else {
+                console.error('Project data not found for:', projectKey);
+            }
+        });
+    });
+    
+    // Close modal events
+    if (closeModal) {
+        closeModal.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideProjectModal();
+        });
+    }
+    
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideProjectModal();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+            hideProjectModal();
+        }
+    });
+    
+    function showProjectModal(project) {
+        if (!modal) {
+            console.error('Modal element not found');
+            return;
+        }
+        
+        // Update small modal logo in header
+        const logoContainer = document.getElementById('modal-logo-container');
+        if (logoContainer) {
+            logoContainer.className = 'w-16 h-16 rounded-lg flex items-center justify-center bg-gray-50 p-2';
+            logoContainer.innerHTML = `<img src="${project.logo.image}" alt="${project.logo.alt}" class="w-full h-full object-contain rounded-lg">`;
+        }
+
+        // Update large featured logo
+        const largeLogo = document.getElementById('modal-large-logo');
+        if (largeLogo) {
+            largeLogo.innerHTML = `
+                <img src="${project.logo.image}" 
+                     alt="${project.logo.alt}" 
+                     class="w-32 h-32 md:w-40 md:h-40 object-contain mx-auto relative z-10"
+                     style="max-width: 200px; max-height: 200px;">
+            `;
+        }
+
+        // Update project title below large logo
+        const modalProjectTitle = document.getElementById('modal-project-title');
+        if (modalProjectTitle) {
+            modalProjectTitle.textContent = project.title;
+        }
+        
+        // Update modal content
+        const titleElement = document.getElementById('modal-title');
+        if (titleElement) {
+            titleElement.textContent = project.title;
+        }
+        
+        const descriptionElement = document.getElementById('modal-description');
+        if (descriptionElement) {
+            descriptionElement.textContent = project.description;
+        }
+        
+        // Update tags
+        const tagsContainer = document.getElementById('modal-tags');
+        if (tagsContainer) {
+            tagsContainer.innerHTML = project.tags.map(tag => 
+                `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${tag}</span>`
+            ).join('');
+        }
+        
+        // Update features
+        const featuresContainer = document.getElementById('modal-features');
+        if (featuresContainer) {
+            featuresContainer.innerHTML = `
+                <div>
+                    <h4 class="text-lg font-semibold text-navy mb-3">Key Features:</h4>
+                    <ul class="space-y-3">
+                        ${project.features.map(feature => 
+                            `<li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-gray-700 leading-relaxed">${feature}</span>
+                            </li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Update tech stack
+        const techContainer = document.getElementById('modal-tech-list');
+        if (techContainer) {
+            techContainer.innerHTML = project.tech.map(tech => 
+                `<span class="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full font-medium">${tech}</span>`
+            ).join('');
+        }
+        
+        // Show modal
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function hideProjectModal() {
+        if (!modal) return;
+        
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+});

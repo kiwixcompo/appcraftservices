@@ -618,3 +618,309 @@ img.loaded {
         -moz-osx-font-smoothing: grayscale;
     }
 }
+
+/* Project Portfolio Modal Styles */
+.project-card {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.project-card * {
+    pointer-events: none;
+}
+
+.project-card {
+    pointer-events: auto;
+}
+
+/* Ensure modal is properly positioned */
+#project-modal {
+    z-index: 9999;
+}
+
+#project-modal.hidden {
+    display: none !important;
+}
+
+#project-modal:not(.hidden) {
+    display: flex !important;
+}
+
+/* Modal animation */
+#project-modal .bg-white {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Close button styling */
+#close-modal {
+    transition: all 0.2s ease;
+}
+
+#close-modal:hover {
+    background-color: #f3f4f6;
+    transform: scale(1.1);
+}
+
+/* Project card hover effects */
+.project-card:hover {
+    transform: translateY(-2px);
+}
+
+.project-card:active {
+    transform: translateY(0);
+}
+
+/* Debug styles for troubleshooting */
+.debug-project-card {
+    border: 2px solid red !important;
+}
+
+.debug-modal {
+    border: 3px solid blue !important;
+}
+/* Project Logo Styling */
+.project-card img {
+    transition: transform 0.3s ease;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.project-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Modal logo styling */
+#modal-logo-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Ensure images load properly */
+.project-card img[src*=".png"] {
+    background-color: transparent;
+}
+
+/* Loading state for images */
+.project-card img {
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.project-card img.loaded,
+.project-card img[complete] {
+    opacity: 1;
+}
+
+/* Fallback for broken images */
+.project-card img[alt]:after {
+    content: attr(alt);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+    white-space: nowrap;
+}
+/* Large Modal Logo Styling */
+#modal-large-logo {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+#modal-large-logo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+#modal-large-logo img {
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+#modal-large-logo:hover img {
+    transform: scale(1.05);
+}
+
+/* Enhanced Modal Styling */
+#project-modal .bg-white {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Modal content improvements */
+#modal-content h4 {
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+#modal-content h4:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 3rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--electric-blue-color), var(--navy-color));
+    border-radius: 1px;
+}
+
+/* Feature list improvements */
+#modal-features ul li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+#modal-features ul li:last-child {
+    border-bottom: none;
+}
+
+/* Tech stack improvements */
+#modal-tech-list span {
+    transition: all 0.2s ease;
+}
+
+#modal-tech-list span:hover {
+    background-color: var(--electric-blue-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Responsive modal adjustments */
+@media (max-width: 768px) {
+    #project-modal .max-w-4xl {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    #modal-large-logo img {
+        width: 120px !important;
+        height: 120px !important;
+    }
+    
+    #project-modal .p-6 {
+        padding: 1rem;
+    }
+}
+
+/* Modal animation improvements */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+#project-modal:not(.hidden) .bg-white {
+    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Logo loading animation */
+#modal-large-logo img {
+    opacity: 0;
+    animation: logoFadeIn 0.6s ease-out 0.2s forwards;
+}
+
+@keyframes logoFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+/* Enhanced logo presentation */
+#modal-large-logo {
+    position: relative;
+}
+
+#modal-large-logo::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, var(--electric-blue-color), var(--navy-color), var(--electric-blue-color));
+    border-radius: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+#modal-large-logo:hover::before {
+    opacity: 0.1;
+}
+
+/* Project title styling */
+#modal-project-title {
+    background: linear-gradient(135deg, var(--navy-color), var(--electric-blue-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleSlideUp 0.5s ease-out 0.3s both;
+}
+
+@keyframes titleSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Decorative elements animation */
+#modal-large-logo .absolute {
+    animation: decorativeFloat 3s ease-in-out infinite;
+}
+
+#modal-large-logo .absolute:nth-child(2) {
+    animation-delay: 1s;
+}
+
+#modal-large-logo .absolute:nth-child(3) {
+    animation-delay: 2s;
+}
+
+@keyframes decorativeFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(180deg);
+    }
+}
+
+/* Logo container glow effect */
+#modal-large-logo img {
+    position: relative;
+    z-index: 10;
+}
+
+#modal-large-logo img:hover {
+    filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
+}

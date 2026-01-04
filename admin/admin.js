@@ -2,7 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Setup Navigation Event Listeners
-    // This replaces the reliance on inline 'onclick' and handles the logic reliably.
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     
     sidebarItems.forEach(item => {
@@ -27,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure dashboard is visible by default if no hash
         showTab('dashboard');
     }
+
+    // 3. Load initial dashboard data (recent messages, stats)
+    if (typeof loadMessages === 'function') loadMessages();
 });
 
 // Tab Management Function
@@ -48,7 +50,6 @@ function showTab(tabName) {
     }
 
     // Highlight the corresponding sidebar item
-    // We select the link based on its href attribute
     const activeLink = document.querySelector(`.sidebar-item[href="#${tabName}"]`);
     if (activeLink) {
         activeLink.classList.add('active');
@@ -74,7 +75,6 @@ function showTab(tabName) {
     }
 
     // Load tab-specific data
-    // We check if the functions exist before calling them to prevent errors
     if (tabName === 'messages') {
         if (typeof loadMessages === 'function') loadMessages();
     } else if (tabName === 'payments') {
@@ -84,11 +84,10 @@ function showTab(tabName) {
     } else if (tabName === 'reviews') {
         if (typeof loadReviews === 'function') loadReviews();
     } else if (tabName === 'invoices') {
-        // Initialize invoice form if the function exists (it might be in index.php or invoice.js)
         if (typeof initializeInvoiceForm === 'function') {
             initializeInvoiceForm();
         } else if (typeof loadInvoices === 'function') {
-            loadInvoices(); // Fallback to loading list if init form is missing
+            loadInvoices(); 
         }
     } else if (tabName === 'content') {
         if (typeof loadContentData === 'function') loadContentData();
@@ -148,7 +147,6 @@ async function loadContentData() {
         };
 
         if (content.site_info) {
-            setVal('site-name', content.site_info.title); // Note: ID might be 'site-name' or 'site_title' in HTML, checking both
             const siteTitleEl = document.querySelector('input[name="site_title"]');
             if (siteTitleEl) siteTitleEl.value = content.site_info.title || '';
             
@@ -179,9 +177,6 @@ async function loadContentData() {
         // Clear existing value props and reload
         const valuePropsContainer = document.getElementById('value-props');
         if (valuePropsContainer && content.value_props) {
-            // Remove existing items except the first template if necessary, 
-            // but your PHP loop renders them. We might want to clear them to ensure JS state matches JSON.
-            // For now, we will assume the PHP rendered initial state is correct, or clear and rebuild:
             valuePropsContainer.innerHTML = '';
             content.value_props.forEach(prop => {
                 addValuePropFromData(prop.title, prop.description);
@@ -282,14 +277,16 @@ function showNotification(message, type = 'info') {
 }
 
 function escapeHtml(text) {
-    if (!text) return '';
+    if (!text && text !== 0) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
 function formatDate(dateString) {
+    if (!dateString) return '';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
 
@@ -461,7 +458,7 @@ async function loadMessages(filter = 'all') {
         if (!response.ok) throw new Error('Network response was not ok');
         const messages = await response.json();
 
-        // Update message statistics
+        // 1. Update Message Statistics
         const totalMessages = messages.length;
         const unreadMessages = messages.filter(m => !m.read).length;
         const todayMessages = messages.filter(m => {
@@ -470,36 +467,103 @@ async function loadMessages(filter = 'all') {
             return messageDate.toDateString() === today.toDateString();
         }).length;
 
-        const totalMsgEl = document.getElementById('total-messages');
-        const unreadMsgEl = document.getElementById('unread-messages');
-        const todayMsgEl = document.getElementById('today-messages');
-        const msgCountEl = document.getElementById('message-count');
+        // Safely update elements if they exist
+        const setEl = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+        
+        setEl('total-messages', totalMessages);
+        setEl('unread-messages', unreadMessages);
+        setEl('today-messages', todayMessages);
+        setEl('message-count', unreadMessages); // Notification badge
 
-        if (totalMsgEl) totalMsgEl.textContent = totalMessages;
-        if (unreadMsgEl) unreadMsgEl.textContent = unreadMessages;
-        if (todayMsgEl) todayMsgEl.textContent = todayMessages;
-        if (msgCountEl) msgCountEl.textContent = unreadMessages;
-
+        // 2. Populate Full Message List (Messages Tab)
         const messagesList = document.getElementById('messages-list');
         if (messagesList) {
             if (messages.length === 0) {
-                messagesList.innerHTML = '<p class="text-gray-500">No messages found</p>';
+                messagesList.innerHTML = '<p class="text-gray-500 text-center py-4">No messages found</p>';
             } else {
                 messagesList.innerHTML = ''; 
                 messages.forEach(message => { 
-                    const li = document.createElement('li'); 
-                    li.textContent = `${message.from_name}: ${message.subject} - ${formatDate(message.created_at)}`; 
-                    messagesList.appendChild(li); 
+                    // Use fallback values if fields are missing
+                    const name = message.name || 'Unknown';
+                    const projectType = message.project_type || 'General Inquiry';
+                    const msgText = message.message || 'No content';
+                    const date = formatDate(message.created_at);
+                    const email = message.email || '';
+                    
+                    const div = document.createElement('div');
+                    div.className = 'bg-white border border-gray-200 rounded-lg p-4 mb-3 hover:shadow-md transition duration-200';
+                    div.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="flex items-center">
+                                    <h4 class="font-bold text-gray-800 text-lg mr-2">${escapeHtml(name)}</h4>
+                                    ${!message.read ? '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-medium">New</span>' : ''}
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">${escapeHtml(email)} • ${escapeHtml(projectType)}</p>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                ${date}
+                            </div>
+                        </div>
+                        <div class="mt-2 text-gray-700 bg-gray-50 p-3 rounded text-sm">
+                            ${escapeHtml(msgText)}
+                        </div>
+                        <div class="mt-3 flex space-x-3 text-sm">
+                            <button onclick="replyToMessage('${message.id}', '${email}')" class="text-blue-600 hover:text-blue-800 font-medium">
+                                <i class="fas fa-reply mr-1"></i> Reply
+                            </button>
+                            <button onclick="markAsRead('${message.id}')" class="text-gray-600 hover:text-gray-800 font-medium">
+                                <i class="fas fa-check mr-1"></i> Mark Read
+                            </button>
+                            <button onclick="deleteMessage('${message.id}')" class="text-red-600 hover:text-red-800 font-medium">
+                                <i class="fas fa-trash mr-1"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                    messagesList.appendChild(div); 
+                });
+            }
+        }
+
+        // 3. Populate Recent Messages Widget (Dashboard Tab)
+        const recentList = document.getElementById('recent-messages');
+        if (recentList) {
+            if (messages.length === 0) {
+                recentList.innerHTML = '<p class="text-gray-500 text-sm">No messages yet</p>';
+            } else {
+                recentList.innerHTML = '';
+                // Take top 5 messages
+                messages.slice(0, 5).forEach(message => {
+                    const name = message.name || 'Unknown';
+                    const projectType = message.project_type || 'Inquiry';
+                    const initial = name.charAt(0).toUpperCase();
+                    
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center py-3 border-b border-gray-100 last:border-0';
+                    item.innerHTML = `
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3 flex-shrink-0">
+                            ${initial}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">
+                                ${escapeHtml(name)}
+                            </p>
+                            <p class="text-xs text-gray-500 truncate">
+                                ${escapeHtml(projectType)}
+                            </p>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            ${new Date(message.created_at).toLocaleDateString(undefined, {month:'short', day:'numeric'})}
+                        </div>
+                    `;
+                    recentList.appendChild(item);
                 });
             }
         }
 
     } catch (error) {
-        const messagesList = document.getElementById('messages-list');
-        if (messagesList) {
-            messagesList.innerHTML = '<p class="text-gray-500">No messages yet (or API not available)</p>';
-        }
         console.warn('Error loading messages:', error);
+        // Do not overwrite with error message if simple network fail, keeps old data or blank
     }
 }
 
