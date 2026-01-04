@@ -1188,28 +1188,77 @@ $content = array_merge($defaultContent, $content);
                         </table>
                     </div>
                 </div>
-            </div>
-                        <div class="space-y-4">
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-blue-600">1,234</div>
-                                <div class="text-sm text-gray-600">Visitors</div>
+
+                <!-- Google Analytics Integration -->
+                <div class="bg-white p-6 rounded-lg shadow mt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Google Analytics Integration</h3>
+                            <p class="text-sm text-gray-600 mt-1">Connect your Google Analytics account to view real-time traffic data</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div id="ga-status" class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Google Analytics is not connected. Add your tracking ID to enable real-time analytics.
+                        </p>
+                    </div>
+
+                    <form id="ga-settings-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Google Analytics Tracking ID</label>
+                            <input type="text" id="ga-tracking-id" placeholder="G-XXXXXXXXXX or UA-XXXXXXXXX-X" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="">
+                            <p class="text-xs text-gray-500 mt-1">Find your tracking ID in Google Analytics settings</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Measurement ID (GA4)</label>
+                            <input type="text" id="ga-measurement-id" placeholder="G-XXXXXXXXXX" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="">
+                            <p class="text-xs text-gray-500 mt-1">Optional: For Google Analytics 4 properties</p>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="font-medium text-blue-900 mb-2">How to find your Tracking ID:</h4>
+                            <ol class="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                                <li>Go to <a href="https://analytics.google.com" target="_blank" class="underline hover:text-blue-600">Google Analytics</a></li>
+                                <li>Select your property</li>
+                                <li>Go to Admin → Property Settings</li>
+                                <li>Copy your Tracking ID (starts with G- or UA-)</li>
+                            </ol>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                                <i class="fas fa-save mr-2"></i>Save Analytics Settings
+                            </button>
+                            <button type="button" onclick="testGAConnection()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200">
+                                <i class="fas fa-check-circle mr-2"></i>Test Connection
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="ga-data-section" class="mt-8 pt-8 border-t border-gray-200" style="display: none;">
+                        <h4 class="font-semibold text-gray-900 mb-4">Real-Time Analytics from Google</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg">
+                                <div class="text-sm text-gray-600 mb-1">Active Users (Real-time)</div>
+                                <div class="text-3xl font-bold text-blue-600" id="ga-active-users">-</div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-xl font-bold text-green-600">456</div>
-                                <div class="text-sm text-gray-600">Page Views</div>
-                                <div class="text-xs text-gray-500">37% conversion</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-lg font-bold text-yellow-600">89</div>
-                                <div class="text-sm text-gray-600">Contact Forms</div>
-                                <div class="text-xs text-gray-500">19% conversion</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-lg font-bold text-purple-600">12</div>
-                                <div class="text-sm text-gray-600">Leads</div>
-                                <div class="text-xs text-gray-500">13% conversion</div>
+                            <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg">
+                                <div class="text-sm text-gray-600 mb-1">Sessions (Today)</div>
+                                <div class="text-3xl font-bold text-green-600" id="ga-sessions">-</div>
                             </div>
                         </div>
+                        <p class="text-xs text-gray-500 mt-4">
+                            <i class="fas fa-sync-alt mr-1"></i>
+                            Data updates automatically. Full analytics available in <a href="https://analytics.google.com" target="_blank" class="text-blue-600 hover:underline">Google Analytics</a>
+                        </p>
                     </div>
                 </div>
             </div>

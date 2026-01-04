@@ -6,18 +6,13 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^localhost [OR]
 RewriteCond %{HTTP_HOST} ^127\.0\.0\.1 [OR]
 RewriteCond %{HTTP_HOST} ^192\.168\.
-
-# Set base for local development
-RewriteRule ^(.*)$ - [E=BASE:/appcraftservices/]
+RewriteBase /appcraftservices/
 
 # For production, set base to root
 RewriteCond %{HTTP_HOST} !^localhost [AND]
 RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [AND]
 RewriteCond %{HTTP_HOST} !^192\.168\.
-RewriteRule ^(.*)$ - [E=BASE:/]
-
-# Set the base directory
-RewriteBase %{ENV:BASE}
+RewriteBase /
 
 # Handle directory-based URLs (e.g., /process -> /process/index.html)
 RewriteCond %{REQUEST_FILENAME} !-f

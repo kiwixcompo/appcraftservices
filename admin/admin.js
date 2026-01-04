@@ -1152,3 +1152,129 @@ function showAnalyticsError() {
     document.getElementById('device-types-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
     document.getElementById('browsers-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
 }
+
+
+// Google Analytics Integration
+document.addEventListener('DOMContentLoaded', function() {
+    const gaForm = document.getElementById('ga-settings-form');
+    if (gaForm) {
+        gaForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const trackingId = document.getElementById('ga-tracking-id').value.trim();
+            const measurementId = document.getElementById('ga-measurement-id').value.trim();
+            
+            if (!trackingId) {
+                alert('Please enter a Google Analytics Tracking ID');
+                return;
+            }
+            
+            try {
+                // Save to settings
+                const response = await fetch('api/save_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ga_tracking_id: trackingId,
+                        ga_measurement_id: measurementId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update status
+                    const statusDiv = document.getElementById('ga-status');
+                    statusDiv.innerHTML = `
+                        <p class="text-sm text-green-800">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Google Analytics connected successfully! Tracking ID: ${trackingId}
+                        </p>
+                    `;
+                    statusDiv.className = 'mb-6 p-4 bg-green-50 border border-green-200 rounded-lg';
+                    
+                    // Show data section
+                    document.getElementById('ga-data-section').style.display = 'block';
+                    
+                    // Inject GA script
+                    injectGoogleAnalytics(trackingId, measurementId);
+                    
+                    alert('Google Analytics settings saved successfully!');
+                } else {
+                    alert('Error saving settings: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error saving Google Analytics settings');
+            }
+        });
+        
+        // Load existing settings
+        loadGASettings();
+    }
+});
+
+function loadGASettings() {
+    fetch('api/get_analytics.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.ga_tracking_id) {
+                document.getElementById('ga-tracking-id').value = data.ga_tracking_id;
+                document.getElementById('ga-measurement-id').value = data.ga_measurement_id || '';
+                
+                // Update status
+                const statusDiv = document.getElementById('ga-status');
+                statusDiv.innerHTML = `
+                    <p class="text-sm text-green-800">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Google Analytics connected! Tracking ID: ${data.ga_tracking_id}
+                    </p>
+                `;
+                statusDiv.className = 'mb-6 p-4 bg-green-50 border border-green-200 rounded-lg';
+                
+                // Show data section
+                document.getElementById('ga-data-section').style.display = 'block';
+                
+                // Inject GA script
+                injectGoogleAnalytics(data.ga_tracking_id, data.ga_measurement_id);
+            }
+        })
+        .catch(error => console.log('No GA settings found yet'));
+}
+
+function injectGoogleAnalytics(trackingId, measurementId) {
+    // Inject Google Analytics script
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingId || measurementId}`;
+    document.head.appendChild(script);
+    
+    // Initialize gtag
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', trackingId || measurementId);
+}
+
+function testGAConnection() {
+    const trackingId = document.getElementById('ga-tracking-id').value.trim();
+    const measurementId = document.getElementById('ga-measurement-id').value.trim();
+    
+    if (!trackingId && !measurementId) {
+        alert('Please enter a Tracking ID or Measurement ID first');
+        return;
+    }
+    
+    // Test by sending a test event
+    if (window.gtag) {
+        gtag('event', 'test_event', {
+            'event_category': 'admin_test',
+            'event_label': 'GA Connection Test'
+        });
+        alert('Test event sent! Check your Google Analytics Real-time view within 30 seconds.');
+    } else {
+        alert('Google Analytics script not loaded yet. Please save settings first.');
+    }
+}

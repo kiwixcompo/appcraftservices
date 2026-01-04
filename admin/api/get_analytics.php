@@ -11,6 +11,18 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 header('Content-Type: application/json');
 
 try {
+    // Load GA settings from settings.json
+    $settingsFile = '../../data/settings.json';
+    $gaSettings = [];
+    
+    if (file_exists($settingsFile)) {
+        $settings = json_decode(file_get_contents($settingsFile), true) ?: [];
+        $gaSettings = [
+            'ga_tracking_id' => $settings['ga_tracking_id'] ?? '',
+            'ga_measurement_id' => $settings['ga_measurement_id'] ?? ''
+        ];
+    }
+    
     // In a real application, this would fetch from Google Analytics API or database
     // For now, we'll return sample data
     
@@ -53,7 +65,9 @@ try {
             ['stage' => 'Page Views', 'count' => 456, 'conversion' => 37],
             ['stage' => 'Contact Forms', 'count' => 89, 'conversion' => 19],
             ['stage' => 'Leads', 'count' => 12, 'conversion' => 13]
-        ]
+        ],
+        'ga_tracking_id' => $gaSettings['ga_tracking_id'],
+        'ga_measurement_id' => $gaSettings['ga_measurement_id']
     ];
     
     echo json_encode($analytics);
