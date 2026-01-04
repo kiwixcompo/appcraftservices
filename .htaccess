@@ -1,18 +1,8 @@
 # Clean URLs for appcraftservices.com
 RewriteEngine On
 
-# Detect environment and set base accordingly
-# For local development with /appcraftservices/ path
-RewriteCond %{HTTP_HOST} ^localhost [OR]
-RewriteCond %{HTTP_HOST} ^127\.0\.0\.1 [OR]
-RewriteCond %{HTTP_HOST} ^192\.168\.
-RewriteBase /appcraftservices/
-
-# For production, set base to root
-RewriteCond %{HTTP_HOST} !^localhost [AND]
-RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [AND]
-RewriteCond %{HTTP_HOST} !^192\.168\.
-RewriteBase /
+# Prevent directory browsing
+Options -Indexes
 
 # Handle directory-based URLs (e.g., /process -> /process/index.html)
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -26,9 +16,6 @@ RewriteCond %{REQUEST_URI} !^/appcraftservices/admin/
 RewriteCond %{REQUEST_URI} !^/data/
 RewriteCond %{REQUEST_URI} !^/appcraftservices/data/
 RewriteRule ^([^/]+)/?$ $1/index.html [L]
-
-# Prevent directory browsing
-Options -Indexes
 
 # Security headers
 Header always set X-Content-Type-Options nosniff
