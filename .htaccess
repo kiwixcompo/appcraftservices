@@ -41,9 +41,11 @@ Header always unset X-Powered-By
 
 # Cache control headers - Disable caching for HTML and API
 <FilesMatch "\.(html|php|json)$">
-    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0"
     Header set Pragma "no-cache"
-    Header set Expires "0"
+    Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+    Header set Last-Modified "Thu, 01 Jan 1970 00:00:00 GMT"
+    Header set ETag ""
 </FilesMatch>
 
 # Cache static assets with versioning

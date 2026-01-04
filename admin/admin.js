@@ -440,9 +440,30 @@ async function markAsRead(messageId) {
     }
 }
 
-function deleteMessage(messageId) {
-    if (confirm('Are you sure you want to delete this message?')) {
-        showNotification('Delete functionality coming soon!', 'info');
+async function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
+        try {
+            const response = await fetch('api/delete_message.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: messageId })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('Message deleted successfully!', 'success');
+                // Reload messages to update the display
+                loadMessages();
+            } else {
+                showNotification('Error deleting message: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting message:', error);
+            showNotification('Error deleting message. Please try again.', 'error');
+        }
     }
 }
 
@@ -457,8 +478,51 @@ function filterMessages(filter) {
     loadMessages(filter);
 }
 
-function exportMessages() {
-    showNotification('Export functionality coming soon!', 'info');
+async function exportMessages() {
+    try {
+        const response = await fetch('api/get_messages.php');
+        if (!response.ok) throw new Error('Failed to fetch messages');
+        const messages = await response.json();
+        
+        if (messages.length === 0) {
+            showNotification('No messages to export', 'info');
+            return;
+        }
+        
+        // Create CSV content
+        const headers = ['Date', 'Name', 'Email', 'Phone', 'Company', 'Project Type', 'Timeline', 'Budget', 'Message', 'Status'];
+        const csvContent = [
+            headers.join(','),
+            ...messages.map(msg => [
+                msg.created_at || '',
+                `"${(msg.name || '').replace(/"/g, '""')}"`,
+                msg.email || '',
+                msg.phone || '',
+                `"${(msg.company || '').replace(/"/g, '""')}"`,
+                `"${(msg.project_type || '').replace(/"/g, '""')}"`,
+                `"${(msg.timeline || '').replace(/"/g, '""')}"`,
+                `"${(msg.budget || '').replace(/"/g, '""')}"`,
+                `"${(msg.message || '').replace(/"/g, '""')}"`,
+                msg.read ? 'Read' : 'Unread'
+            ].join(','))
+        ].join('\n');
+        
+        // Create and download file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `messages_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('Messages exported successfully!', 'success');
+    } catch (error) {
+        console.error('Error exporting messages:', error);
+        showNotification('Error exporting messages. Please try again.', 'error');
+    }
 }
 
 // Enhanced Message Management System

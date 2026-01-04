@@ -233,9 +233,9 @@ try {
             $clientBody .= "• You'll receive a detailed project roadmap and timeline\n\n";
             
             $clientBody .= "💡 In the meantime:\n";
-            $clientBody .= "• Check out our portfolio: https://appcraftservices.com/#portfolio\n";
+            $clientBody .= "• Check out our recent projects: https://appcraftservices.com/#recent-projects\n";
             $clientBody .= "• Learn about our process: https://appcraftservices.com/process\n";
-            $clientBody .= "• View our startup packages: https://appcraftservices.com/startup-packages\n\n";
+            $clientBody .= "• View our pricing options: https://appcraftservices.com/pricing\n\n";
             
             $clientBody .= "📞 Need immediate assistance?\n";
             $clientBody .= "Feel free to reply to this email with any additional questions or urgent requirements.\n\n";
