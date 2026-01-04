@@ -4,6 +4,14 @@ RewriteEngine On
 # Prevent directory browsing
 Options -Indexes
 
+# Detect environment and handle routing accordingly
+# For localhost - ensure /appcraftservices/ prefix is maintained
+RewriteCond %{HTTP_HOST} ^localhost [OR]
+RewriteCond %{HTTP_HOST} ^127\.0\.0\.1 [OR]
+RewriteCond %{HTTP_HOST} ^192\.168\.
+RewriteCond %{REQUEST_URI} !^/appcraftservices/
+RewriteRule ^(.*)$ /appcraftservices/$1 [R=301,L]
+
 # Handle directory-based URLs (e.g., /process -> /process/index.html)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -22,8 +30,14 @@ Header always set X-Content-Type-Options nosniff
 Header always set X-Frame-Options SAMEORIGIN
 Header always set X-XSS-Protection "1; mode=block"
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
-Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+Header always set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.googletagmanager.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;"
+
+# Remove server signature
+ServerTokens Prod
+Header unset Server
+Header always unset X-Powered-By
 
 # Cache control headers - Disable caching for HTML and API
 <FilesMatch "\.(html|php|json)$">
