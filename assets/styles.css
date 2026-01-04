@@ -924,3 +924,325 @@ img.loaded {
 #modal-large-logo img:hover {
     filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
 }
+/* Projects Slider Styles */
+.projects-slider-container {
+    position: relative;
+    overflow: hidden;
+}
+
+#projects-slider {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.project-slide {
+    flex: 0 0 25%; /* Show 4 projects at once */
+    padding: 0 0.5rem;
+}
+
+/* Navigation buttons */
+#prev-btn, #next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--navy-color);
+}
+
+#prev-btn {
+    left: -24px;
+}
+
+#next-btn {
+    right: -24px;
+}
+
+#prev-btn:hover, #next-btn:hover {
+    background: var(--electric-blue-color);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+#prev-btn:disabled, #next-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f3f4f6;
+    color: #9ca3af;
+}
+
+#prev-btn:disabled:hover, #next-btn:disabled:hover {
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: #f3f4f6;
+    color: #9ca3af;
+}
+
+/* Slider indicators */
+.slider-indicator {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-indicator:hover {
+    transform: scale(1.2);
+}
+
+.slider-indicator.bg-electric-blue {
+    background-color: var(--electric-blue-color) !important;
+}
+
+.slider-indicator.bg-gray-300 {
+    background-color: #d1d5db !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 1024px) {
+    .project-slide {
+        flex: 0 0 33.333%; /* Show 3 projects on tablet */
+    }
+}
+
+@media (max-width: 768px) {
+    .project-slide {
+        flex: 0 0 50%; /* Show 2 projects on mobile */
+    }
+    
+    #prev-btn, #next-btn {
+        width: 40px;
+        height: 40px;
+        left: -20px;
+        right: -20px;
+    }
+    
+    #prev-btn {
+        left: -20px;
+    }
+    
+    #next-btn {
+        right: -20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .project-slide {
+        flex: 0 0 100%; /* Show 1 project on small mobile */
+    }
+    
+    #prev-btn, #next-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    #prev-btn {
+        left: -18px;
+    }
+    
+    #next-btn {
+        right: -18px;
+    }
+}
+
+/* Smooth scrolling for touch devices */
+.projects-slider-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Project card enhancements for slider */
+.project-slide .project-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-slide .project-card > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-slide .project-card .aspect-square {
+    flex: 1;
+}
+
+/* Animation for slide transitions */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.project-slide {
+    animation: slideIn 0.6s ease-out;
+}
+
+/* Hover effects for slider navigation */
+.projects-slider-container:hover #prev-btn,
+.projects-slider-container:hover #next-btn {
+    opacity: 1;
+}
+
+#prev-btn, #next-btn {
+    opacity: 0.7;
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+#prev-btn:focus, #next-btn:focus {
+    outline: 2px solid var(--electric-blue-color);
+    outline-offset: 2px;
+}
+
+.slider-indicator:focus {
+    outline: 2px solid var(--electric-blue-color);
+    outline-offset: 2px;
+}
+
+/* Loading state for slider */
+.slider-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.slider-loading #projects-slider {
+    transition: none;
+}
+
+/* Auto-slide pause indicator */
+.slider-paused::after {
+    content: '⏸️';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 20;
+}
+
+/* Gradient fade edges for better visual flow */
+.projects-slider-container::before,
+.projects-slider-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.projects-slider-container::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.projects-slider-container::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
+}
+
+/* Enhanced project card styling for slider */
+.project-slide .project-card .bg-white {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.project-slide .project-card:hover .bg-white {
+    border-color: var(--electric-blue-color);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+/* Slider progress indicator */
+.slider-progress {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: #e5e7eb;
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+.slider-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--electric-blue-color);
+    border-radius: 1px;
+    transition: width 0.3s ease;
+}
+
+/* Touch feedback for mobile */
+@media (max-width: 768px) {
+    .project-slide .project-card:active {
+        transform: scale(0.98);
+    }
+    
+    .project-slide .project-card:active .bg-white {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Reduced motion support for slider */
+@media (prefers-reduced-motion: reduce) {
+    #projects-slider {
+        transition: none !important;
+    }
+    
+    .project-slide {
+        animation: none !important;
+    }
+    
+    #prev-btn, #next-btn {
+        transition: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    #prev-btn, #next-btn {
+        border: 2px solid #000;
+        background: #fff;
+        color: #000;
+    }
+    
+    .slider-indicator {
+        border: 1px solid #000;
+    }
+}
+
+/* Print styles - hide slider controls */
+@media print {
+    #prev-btn, #next-btn, .slider-indicator {
+        display: none !important;
+    }
+    
+    .project-slide {
+        flex: 0 0 25% !important;
+    }
+}

@@ -1079,3 +1079,186 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
     }
 });
+
+// Projects Slider Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('projects-slider');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const indicators = document.querySelectorAll('.slider-indicator');
+    
+    if (!slider || !prevBtn || !nextBtn) {
+        return; // Exit if slider elements don't exist
+    }
+    
+    let currentSlide = 0;
+    const totalSlides = 2; // We have 8 projects, showing 4 at a time = 2 slides
+    const slideWidth = 100; // 100% width per slide
+    
+    // Update slider position
+    function updateSlider() {
+        const translateX = -currentSlide * slideWidth;
+        slider.style.transform = `translateX(${translateX}%)`;
+        
+        // Update navigation buttons
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
+        
+        // Update indicators
+        indicators.forEach((indicator, index) => {
+            if (index === currentSlide) {
+                indicator.classList.remove('bg-gray-300');
+                indicator.classList.add('bg-electric-blue');
+            } else {
+                indicator.classList.remove('bg-electric-blue');
+                indicator.classList.add('bg-gray-300');
+            }
+        });
+    }
+    
+    // Previous slide
+    prevBtn.addEventListener('click', function() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlider();
+        }
+    });
+    
+    // Next slide
+    nextBtn.addEventListener('click', function() {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            updateSlider();
+        }
+    });
+    
+    // Indicator clicks
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', function() {
+            currentSlide = index;
+            updateSlider();
+        });
+    });
+    
+    // Auto-slide functionality (optional)
+    let autoSlideInterval;
+    
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(() => {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+            } else {
+                currentSlide = 0;
+            }
+            updateSlider();
+        }, 5000); // Change slide every 5 seconds
+    }
+    
+    function stopAutoSlide() {
+        if (autoSlideInterval) {
+            clearInterval(autoSlideInterval);
+        }
+    }
+    
+    // Start auto-slide
+    startAutoSlide();
+    
+    // Pause auto-slide on hover
+    const sliderContainer = slider.parentElement.parentElement;
+    sliderContainer.addEventListener('mouseenter', stopAutoSlide);
+    sliderContainer.addEventListener('mouseleave', startAutoSlide);
+    
+    // Pause auto-slide when user interacts
+    prevBtn.addEventListener('click', () => {
+        stopAutoSlide();
+        setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        stopAutoSlide();
+        setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+    });
+    
+    indicators.forEach(indicator => {
+        indicator.addEventListener('click', () => {
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+        });
+    });
+    
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+    
+    sliderContainer.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        stopAutoSlide();
+    });
+    
+    sliderContainer.addEventListener('touchmove', function(e) {
+        endX = e.touches[0].clientX;
+    });
+    
+    sliderContainer.addEventListener('touchend', function() {
+        const threshold = 50; // Minimum swipe distance
+        const diff = startX - endX;
+        
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0 && currentSlide < totalSlides - 1) {
+                // Swipe left - next slide
+                currentSlide++;
+                updateSlider();
+            } else if (diff < 0 && currentSlide > 0) {
+                // Swipe right - previous slide
+                currentSlide--;
+                updateSlider();
+            }
+        }
+        
+        setTimeout(startAutoSlide, 10000); // Resume auto-slide after 10 seconds
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        // Only handle keyboard navigation if the slider is visible
+        const sliderSection = document.querySelector('.project-slider-section');
+        if (!sliderSection || !isElementInViewport(sliderSection)) {
+            return;
+        }
+        
+        if (e.key === 'ArrowLeft' && currentSlide > 0) {
+            currentSlide--;
+            updateSlider();
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 10000);
+        } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+            currentSlide++;
+            updateSlider();
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 10000);
+        }
+    });
+    
+    // Helper function to check if element is in viewport
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+    
+    // Initialize slider
+    updateSlider();
+    
+    // Responsive handling
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            updateSlider();
+        }, 250);
+    });
+});

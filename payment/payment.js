@@ -114,7 +114,7 @@ async function handleStripePayment(event) {
     
     try {
         // Create payment intent on server
-        const response = await fetch('/appcraftservices/api/payments/create_payment.php', {
+        const response = await fetch('/api/payments/create_payment.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ async function handleStripePayment(event) {
 // Handle successful payment
 function handlePaymentSuccess(paymentData) {
     // Redirect to success page or show success message
-    window.location.href = '/appcraftservices/payment/success.html?payment_method=' + paymentData.payment_method + '&amount=' + paymentData.amount;
+    window.location.href = '/payment/success.html?payment_method=' + paymentData.payment_method + '&amount=' + paymentData.amount;
 }
 
 // Update amount based on selection

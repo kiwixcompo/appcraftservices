@@ -3,16 +3,16 @@
 
 const CACHE_NAME = 'app-craft-services-v1';
 const STATIC_CACHE_URLS = [
-    '/appcraftservices/',
-    '/appcraftservices/index.html',
-    '/appcraftservices/assets/styles.css',
-    '/appcraftservices/assets/script.js',
-    '/appcraftservices/assets/logo.png',
-    '/appcraftservices/assets/favicon.ico',
-    '/appcraftservices/contact/',
-    '/appcraftservices/services/',
-    '/appcraftservices/pricing/',
-    '/appcraftservices/process/'
+    '/',
+    '/index.html',
+    '/assets/styles.css',
+    '/assets/script.js',
+    '/assets/logo.png',
+    '/assets/favicon.ico',
+    '/contact/',
+    '/services/',
+    '/pricing/',
+    '/process/'
 ];
 
 // Install event - cache static assets
@@ -95,7 +95,7 @@ self.addEventListener('fetch', event => {
                     
                     // Return offline page for navigation requests
                     if (event.request.mode === 'navigate') {
-                        return caches.match('/appcraftservices/');
+                        return caches.match('/');
                     }
                     
                     throw error;
@@ -118,7 +118,7 @@ async function syncContactForm() {
         
         for (const form of pendingForms) {
             try {
-                const response = await fetch('/appcraftservices/api/contact.php', {
+                const response = await fetch('/api/contact.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -156,8 +156,8 @@ self.addEventListener('push', event => {
         const data = event.data.json();
         const options = {
             body: data.body,
-            icon: '/appcraftservices/assets/logo.png',
-            badge: '/appcraftservices/assets/favicon.ico',
+            icon: '/assets/logo.png',
+            badge: '/assets/favicon.ico',
             vibrate: [100, 50, 100],
             data: {
                 dateOfArrival: Date.now(),
@@ -167,12 +167,12 @@ self.addEventListener('push', event => {
                 {
                     action: 'explore',
                     title: 'View Details',
-                    icon: '/appcraftservices/assets/favicon.ico'
+                    icon: '/assets/favicon.ico'
                 },
                 {
                     action: 'close',
                     title: 'Close',
-                    icon: '/appcraftservices/assets/favicon.ico'
+                    icon: '/assets/favicon.ico'
                 }
             ]
         };
@@ -189,7 +189,7 @@ self.addEventListener('notificationclick', event => {
     
     if (event.action === 'explore') {
         event.waitUntil(
-            clients.openWindow('/appcraftservices/')
+            clients.openWindow('/')
         );
     }
 });
