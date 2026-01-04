@@ -54,26 +54,16 @@ function logMessage($message, $config) {
     @file_put_contents($config['log_file'], $log_entry, FILE_APPEND | LOCK_EX);
 }
 
-// Check if command exists
+// Check if command exists (simplified for shared hosting)
 function commandExists($command) {
-    $return = shell_exec(sprintf("which %s 2>/dev/null || where %s 2>nul", escapeshellarg($command), escapeshellarg($command)));
-    return !empty($return);
+    // On shared hosting with disabled exec functions, assume Git is not available
+    return false;
 }
 
-// Execute command safely
+// Execute command safely (not available on this hosting)
 function executeCommand($command, $config) {
-    logMessage("Executing: $command", $config);
-    
-    $output = [];
-    $return_code = 0;
-    
-    exec($command . ' 2>&1', $output, $return_code);
-    
-    $output_str = implode("\n", $output);
-    logMessage("Output: $output_str", $config);
-    logMessage("Return code: $return_code", $config);
-    
-    return ['output' => $output, 'return_code' => $return_code, 'output_str' => $output_str];
+    logMessage("Command execution not available on this hosting: $command", $config);
+    return ['output' => [], 'return_code' => 1, 'output_str' => 'Command execution disabled'];
 }
 
 // Create backup before deployment (simplified for shared hosting)
@@ -117,19 +107,13 @@ function createBackup($config) {
     }
 }
 
-// Main deployment function
+// Main deployment function (Git method)
 function deploy($config) {
-    logMessage("=== DEPLOYMENT STARTED ===", $config);
+    logMessage("=== DEPLOYMENT STARTED (Git Method) ===", $config);
     
     // Change to deployment directory
     if (!chdir($config['deploy_path'])) {
         logMessage("ERROR: Cannot change to deployment directory", $config);
-        return false;
-    }
-    
-    // Check if Git is available
-    if (!commandExists('git')) {
-        logMessage("ERROR: Git command not available on this server", $config);
         return false;
     }
     
@@ -183,7 +167,154 @@ function deploy($config) {
     }
     @chmod('data', 0755);
     
-    logMessage("=== DEPLOYMENT COMPLETED SUCCESSFULLY ===", $config);
+    logMessage("=== DEPLOYMENT COMPLETED SUCCESSFULLY (Git Method) ===", $config);
+    return true;
+}
+
+// Alternative deployment using GitHub API (for shared hosting without Git)
+function deployWithoutGit($config) {
+    logMessage("=== DEPLOYMENT STARTED (GitHub API Method) ===", $config);
+    
+    // Create backup
+    createBackup($config);
+    
+    // GitHub API URL to get repository contents
+    $api_url = "https://api.github.com/repos/kiwixcompo/appcraftservices/zipball/{$config['branch']}";
+    
+    logMessage("Downloading repository from GitHub API", $config);
+    
+    // Download the repository as a ZIP file
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'header' => [
+                'User-Agent: AppCraftServices-Deploy/1.0'
+            ],
+            'timeout' => 60
+        ]
+    ]);
+    
+    $zip_content = @file_get_contents($api_url, false, $context);
+    
+    if ($zip_content === false) {
+        logMessage("ERROR: Failed to download repository from GitHub", $config);
+        return false;
+    }
+    
+    // Save ZIP file temporarily
+    $temp_zip = $config['deploy_path'] . '/temp_deploy.zip';
+    if (file_put_contents($temp_zip, $zip_content) === false) {
+        logMessage("ERROR: Failed to save temporary ZIP file", $config);
+        return false;
+    }
+    
+    logMessage("Repository downloaded successfully, extracting files", $config);
+    
+    // Extract ZIP file
+    if (class_exists('ZipArchive')) {
+        $zip = new ZipArchive;
+        if ($zip->open($temp_zip) === TRUE) {
+            // Extract to temporary directory
+            $temp_dir = $config['deploy_path'] . '/temp_extract';
+            if (!is_dir($temp_dir)) {
+                mkdir($temp_dir, 0755, true);
+            }
+            
+            $zip->extractTo($temp_dir);
+            $zip->close();
+            
+            // Find the extracted folder (GitHub creates a folder with commit hash)
+            $extracted_folders = glob($temp_dir . '/*', GLOB_ONLYDIR);
+            if (empty($extracted_folders)) {
+                logMessage("ERROR: No extracted folder found", $config);
+                @unlink($temp_zip);
+                return false;
+            }
+            
+            $source_dir = $extracted_folders[0];
+            
+            // Copy files from extracted folder to deployment directory
+            if (copyDirectory($source_dir, $config['deploy_path'])) {
+                logMessage("Files copied successfully", $config);
+                
+                // Clean up temporary files
+                @unlink($temp_zip);
+                removeDirectory($temp_dir);
+                
+                logMessage("=== DEPLOYMENT COMPLETED SUCCESSFULLY ===", $config);
+                return true;
+            } else {
+                logMessage("ERROR: Failed to copy files", $config);
+                @unlink($temp_zip);
+                removeDirectory($temp_dir);
+                return false;
+            }
+        } else {
+            logMessage("ERROR: Failed to open ZIP file", $config);
+            @unlink($temp_zip);
+            return false;
+        }
+    } else {
+        logMessage("ERROR: ZipArchive class not available", $config);
+        @unlink($temp_zip);
+        return false;
+    }
+}
+
+// Copy directory recursively
+function copyDirectory($source, $destination) {
+    if (!is_dir($source)) {
+        return false;
+    }
+    
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+    
+    foreach ($iterator as $item) {
+        $target = $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+        
+        if ($item->isDir()) {
+            if (!is_dir($target)) {
+                @mkdir($target, 0755, true);
+            }
+        } else {
+            // Skip certain files
+            $filename = basename($target);
+            if (in_array($filename, ['deploy.php', 'deploy.log']) || 
+                strpos($target, '/backups/') !== false ||
+                strpos($target, '/.git/') !== false) {
+                continue;
+            }
+            
+            @copy($item, $target);
+        }
+    }
+    
+    return true;
+}
+
+// Remove directory recursively
+function removeDirectory($dir) {
+    if (!is_dir($dir)) {
+        return false;
+    }
+    
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+    
+    foreach ($iterator as $item) {
+        if ($item->isDir()) {
+            @rmdir($item);
+        } else {
+            @unlink($item);
+        }
+    }
+    
+    @rmdir($dir);
     return true;
 }
 
@@ -231,8 +362,10 @@ try {
         <?php
         flush();
         
-        // Perform deployment
-        $success = deploy($config);
+        // Perform deployment using GitHub API method (Git not available on shared hosting)
+        echo '<div class="status info">📦 Using GitHub API deployment method...</div>';
+        flush();
+        $success = deployWithoutGit($config);
         
         if ($success) {
             echo '<div class="status success"><strong>✅ Success!</strong> Deployment completed successfully!</div>';
@@ -279,8 +412,8 @@ try {
             exit;
         }
         
-        // Perform deployment
-        $success = deploy($config);
+        // Perform deployment using GitHub API method (Git not available on shared hosting)
+        $success = deployWithoutGit($config);
         
         if ($success) {
             echo "OK - Deployment successful";
