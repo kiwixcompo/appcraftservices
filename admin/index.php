@@ -1467,6 +1467,7 @@ $content = array_merge($defaultContent, $content);
         </div>
     </div>
 
+    <script src="../assets/config.js"></script>
     <script src="admin.js"></script>
     <script>
         // Invoice functionality

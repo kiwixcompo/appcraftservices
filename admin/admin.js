@@ -49,6 +49,63 @@ function showTab(tabName) {
         selectedTab.classList.add('active');
     }
 
+    // Find and activate corresponding sidebar item
+    const targetSidebarItem = document.querySelector(`.sidebar-item[href="#${tabName}"]`);
+    if (targetSidebarItem) {
+        targetSidebarItem.classList.add('active');
+    }
+
+    // Update page title
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+        const tabTitles = {
+            'dashboard': 'Dashboard',
+            'content': 'Content Management',
+            'pages': 'Page Editor',
+            'design': 'Design & Styling',
+            'reviews': 'Reviews',
+            'messages': 'Messages',
+            'invoices': 'Invoices',
+            'payments': 'Payments',
+            'analytics': 'Analytics',
+            'settings': 'Settings'
+        };
+        pageTitle.textContent = tabTitles[tabName] || 'Dashboard';
+    }
+
+    // Load tab-specific data
+    if (tabName === 'analytics') {
+        // Add event listeners for analytics filters
+        const periodSelect = document.getElementById('analytics-period');
+        const pageSelect = document.getElementById('analytics-page');
+        const sourceSelect = document.getElementById('analytics-source');
+        
+        if (periodSelect && !periodSelect.dataset.listenerAdded) {
+            periodSelect.addEventListener('change', refreshAnalytics);
+            periodSelect.dataset.listenerAdded = 'true';
+        }
+        if (pageSelect && !pageSelect.dataset.listenerAdded) {
+            pageSelect.addEventListener('change', refreshAnalytics);
+            pageSelect.dataset.listenerAdded = 'true';
+        }
+        if (sourceSelect && !sourceSelect.dataset.listenerAdded) {
+            sourceSelect.addEventListener('change', refreshAnalytics);
+            sourceSelect.dataset.listenerAdded = 'true';
+        }
+        
+        // Load analytics data
+        refreshAnalytics();
+    } else if (tabName === 'messages') {
+        if (typeof loadMessages === 'function') loadMessages();
+    } else if (tabName === 'reviews') {
+        if (typeof loadReviews === 'function') loadReviews();
+    } else if (tabName === 'invoices') {
+        if (typeof loadInvoices === 'function') loadInvoices();
+    } else if (tabName === 'payments') {
+        if (typeof loadPayments === 'function') loadPayments();
+    }
+}
+
     // Highlight the corresponding sidebar item
     const activeLink = document.querySelector(`.sidebar-item[href="#${tabName}"]`);
     if (activeLink) {

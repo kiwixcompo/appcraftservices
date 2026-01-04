@@ -1,16 +1,35 @@
 # Clean URLs for appcraftservices.com
 RewriteEngine On
 
-# Set the base directory to root
-RewriteBase /
+# Detect environment and set base accordingly
+# For local development with /appcraftservices/ path
+RewriteCond %{HTTP_HOST} ^localhost [OR]
+RewriteCond %{HTTP_HOST} ^127\.0\.0\.1 [OR]
+RewriteCond %{HTTP_HOST} ^192\.168\.
+
+# Set base for local development
+RewriteRule ^(.*)$ - [E=BASE:/appcraftservices/]
+
+# For production, set base to root
+RewriteCond %{HTTP_HOST} !^localhost [AND]
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [AND]
+RewriteCond %{HTTP_HOST} !^192\.168\.
+RewriteRule ^(.*)$ - [E=BASE:/]
+
+# Set the base directory
+RewriteBase %{ENV:BASE}
 
 # Handle directory-based URLs (e.g., /process -> /process/index.html)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/assets/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/assets/
 RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/api/
 RewriteCond %{REQUEST_URI} !^/admin/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/admin/
 RewriteCond %{REQUEST_URI} !^/data/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/data/
 RewriteRule ^([^/]+)/?$ $1/index.html [L]
 
 # Prevent directory browsing
@@ -21,15 +40,44 @@ Header always set X-Content-Type-Options nosniff
 Header always set X-Frame-Options DENY
 Header always set X-XSS-Protection "1; mode=block"
 
-# Cache static assets
+# Cache control headers - Disable caching for HTML and API
+<FilesMatch "\.(html|php|json)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+# Cache static assets with versioning
 <IfModule mod_expires.c>
     ExpiresActive On
+    
+    # HTML and PHP - no cache
+    ExpiresByType text/html "now"
+    ExpiresByType application/x-httpd-php "now"
+    
+    # Images - 1 month
     ExpiresByType image/jpg "access plus 1 month"
     ExpiresByType image/jpeg "access plus 1 month"
     ExpiresByType image/gif "access plus 1 month"
     ExpiresByType image/png "access plus 1 month"
-    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    
+    # CSS and JavaScript - 1 week (shorter for development)
+    ExpiresByType text/css "access plus 1 week"
     ExpiresByType application/pdf "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType application/x-javascript "access plus 1 week"
+    
+    # Fonts - 1 month
+    ExpiresByType font/ttf "access plus 1 month"
+    ExpiresByType font/otf "access plus 1 month"
+    ExpiresByType font/woff "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 month"
+</IfModule>
+
+# Add ETag for cache validation
+<IfModule mod_headers.c>
+    Header append Vary Accept-Encoding
 </IfModule>

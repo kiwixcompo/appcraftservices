@@ -102,6 +102,8 @@ try {
         'phone' => $phone,
         'company' => $company,
         'project_type' => $projectType,
+        'funding_stage' => trim($input['funding-stage'] ?? ''),
+        'investor_deadline' => trim($input['investor-deadline'] ?? ''),
         'timeline' => $timeline,
         'budget' => $budget,
         'message' => $message,
@@ -115,6 +117,21 @@ try {
     $dataDir = __DIR__ . '/../data';
     if (!file_exists($dataDir)) {
         mkdir($dataDir, 0755, true);
+    }
+    
+    // Calculate lead score
+    $leadScore = 0;
+    $qualificationLevel = 'Needs Qualification';
+    try {
+        // Include lead scoring class
+        require_once __DIR__ . '/lead-scoring.php';
+        $scorer = new LeadScorer();
+        $scoreResult = $scorer->calculateScore($messageData);
+        $leadScore = $scoreResult['total_score'];
+        $qualificationLevel = $scoreResult['qualification_level'];
+        $messageData['lead_score'] = $scoreResult;
+    } catch (Exception $e) {
+        error_log("Lead scoring error: " . $e->getMessage());
     }
     
     $messagesFile = $dataDir . '/messages.json';
