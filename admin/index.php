@@ -144,7 +144,7 @@ $content = array_merge($defaultContent, $content);
                     <i class="fas fa-cog mr-3"></i>
                     Settings
                 </a>
-                <a href="logout.php" class="flex items-center px-4 py-3 hover:bg-gray-700 text-red-300">
+                <a href="logout.php" class="flex items-center px-4 py-3 hover:bg-gray-700 text-gray-300">
                     <i class="fas fa-sign-out-alt mr-3"></i>
                     Logout
                 </a>
@@ -784,7 +784,7 @@ $content = array_merge($defaultContent, $content);
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Tax Rate (%)</label>
-                                        <input type="number" id="tax-rate" step="0.01" min="0" max="100" class="w-full p-3 border border-gray-300 rounded-md" value="0">
+                                        <input type="number" id="tax-rate-1" step="0.01" min="0" max="100" class="w-full p-3 border border-gray-300 rounded-md" value="0">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
@@ -980,7 +980,7 @@ $content = array_merge($defaultContent, $content);
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Tax Rate (%)</label>
-                                <input type="number" id="tax-rate" step="0.01" min="0" max="100" class="w-full p-3 border border-gray-300 rounded-md" value="0">
+                                <input type="number" id="tax-rate-2" step="0.01" min="0" max="100" class="w-full p-3 border border-gray-300 rounded-md" value="0">
                             </div>
                             <div>
                                 <label class="flex items-center">
@@ -1209,33 +1209,6 @@ $content = array_merge($defaultContent, $content);
                                 <div class="text-sm text-gray-600">Leads</div>
                                 <div class="text-xs text-gray-500">13% conversion</div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-4">Analytics Integration</h3>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-medium mb-2">Google Analytics</h4>
-                            <p class="text-sm text-gray-600 mb-4">Connect your Google Analytics account for detailed insights</p>
-                            <button onclick="connectGoogleAnalytics()" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-                                Connect Google Analytics
-                            </button>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-medium mb-2">Facebook Pixel</h4>
-                            <p class="text-sm text-gray-600 mb-4">Track conversions and optimize ad campaigns</p>
-                            <button onclick="setupFacebookPixel()" class="w-full bg-blue-800 text-white py-2 px-4 rounded hover:bg-blue-900">
-                                Setup Facebook Pixel
-                            </button>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-medium mb-2">Custom Tracking</h4>
-                            <p class="text-sm text-gray-600 mb-4">Add custom tracking codes and events</p>
-                            <button onclick="manageCustomTracking()" class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
-                                Manage Tracking
-                            </button>
                         </div>
                     </div>
                 </div>

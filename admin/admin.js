@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     sidebarItems.forEach(item => {
         item.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent the default jump/hash change
+            e.preventDefault();
             
-            // Get the target tab ID from the href attribute (e.g., "#dashboard" -> "dashboard")
+            // Get the target tab ID from the href attribute
             const href = this.getAttribute('href');
             if (href && href.startsWith('#')) {
                 const tabId = href.substring(1);
@@ -17,17 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 2. Initialize the default tab (if needed)
-    // Check if there is a hash in the URL, otherwise default to dashboard
+    // 2. Initialize the default tab
     const hash = window.location.hash.replace('#', '');
     if (hash && document.getElementById(hash)) {
         showTab(hash);
     } else {
-        // Ensure dashboard is visible by default if no hash
         showTab('dashboard');
     }
 
-    // 3. Load initial dashboard data (recent messages, stats)
+    // 3. Load initial dashboard data
     if (typeof loadMessages === 'function') loadMessages();
 });
 
@@ -103,51 +101,6 @@ function showTab(tabName) {
         if (typeof loadInvoices === 'function') loadInvoices();
     } else if (tabName === 'payments') {
         if (typeof loadPayments === 'function') loadPayments();
-    }
-}
-
-    // Highlight the corresponding sidebar item
-    const activeLink = document.querySelector(`.sidebar-item[href="#${tabName}"]`);
-    if (activeLink) {
-        activeLink.classList.add('active');
-    }
-
-    // Update page title
-    const titles = {
-        'dashboard': 'Dashboard',
-        'content': 'Content Management',
-        'pages': 'Page Editor',
-        'design': 'Design & Styling',
-        'messages': 'Messages',
-        'invoices': 'Invoice Management',
-        'payments': 'Payment Settings',
-        'analytics': 'Analytics',
-        'settings': 'Settings',
-        'reviews': 'Review Management'
-    };
-
-    const pageTitleEl = document.getElementById('page-title');
-    if (pageTitleEl) {
-        pageTitleEl.textContent = titles[tabName] || 'Dashboard';
-    }
-
-    // Load tab-specific data
-    if (tabName === 'messages') {
-        if (typeof loadMessages === 'function') loadMessages();
-    } else if (tabName === 'payments') {
-        if (typeof loadPaymentData === 'function') loadPaymentData();
-    } else if (tabName === 'analytics') {
-        if (typeof loadAnalyticsData === 'function') loadAnalyticsData();
-    } else if (tabName === 'reviews') {
-        if (typeof loadReviews === 'function') loadReviews();
-    } else if (tabName === 'invoices') {
-        if (typeof initializeInvoiceForm === 'function') {
-            initializeInvoiceForm();
-        } else if (typeof loadInvoices === 'function') {
-            loadInvoices(); 
-        }
-    } else if (tabName === 'content') {
-        if (typeof loadContentData === 'function') loadContentData();
     }
 }
 
@@ -843,24 +796,6 @@ function showMessageModal(message) {
     
     document.body.appendChild(modal);
 }
-                            <p class="text-xs text-gray-500 truncate">
-                                ${escapeHtml(projectType)}
-                            </p>
-                        </div>
-                        <div class="text-xs text-gray-400">
-                            ${new Date(message.created_at).toLocaleDateString(undefined, {month:'short', day:'numeric'})}
-                        </div>
-                    `;
-                    recentList.appendChild(item);
-                });
-            }
-        }
-
-    } catch (error) {
-        console.warn('Error loading messages:', error);
-        // Do not overwrite with error message if simple network fail, keeps old data or blank
-    }
-}
 
 async function loadPaymentData() {
     try {
@@ -1216,66 +1151,4 @@ function showAnalyticsError() {
     document.getElementById('traffic-sources-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
     document.getElementById('device-types-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
     document.getElementById('browsers-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
-}
-
-// Auto-refresh analytics when tab is shown
-function showTab(tabName) {
-    if (!tabName) return;
-
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(tab => tab.classList.remove('active'));
-
-    // Remove active class from all sidebar items
-    const sidebarItems = document.querySelectorAll('.sidebar-item');
-    sidebarItems.forEach(item => item.classList.remove('active'));
-
-    // Show selected tab content
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.classList.add('active');
-    }
-
-    // Find and activate corresponding sidebar item
-    const targetSidebarItem = document.querySelector(`.sidebar-item[href="#${tabName}"]`);
-    if (targetSidebarItem) {
-        targetSidebarItem.classList.add('active');
-    }
-
-    // Update page title
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-        const tabTitles = {
-            'dashboard': 'Dashboard',
-            'content': 'Content Management',
-            'pages': 'Page Editor',
-            'design': 'Design & Styling',
-            'reviews': 'Reviews',
-            'messages': 'Messages',
-            'invoices': 'Invoices',
-            'payments': 'Payments',
-            'analytics': 'Analytics',
-            'settings': 'Settings'
-        };
-        pageTitle.textContent = tabTitles[tabName] || 'Dashboard';
-    }
-
-    // Load tab-specific data
-    if (tabName === 'analytics') {
-        // Add event listeners for analytics filters
-        document.getElementById('analytics-period').addEventListener('change', refreshAnalytics);
-        document.getElementById('analytics-page').addEventListener('change', refreshAnalytics);
-        document.getElementById('analytics-source').addEventListener('change', refreshAnalytics);
-        
-        // Load analytics data
-        refreshAnalytics();
-    } else if (tabName === 'messages') {
-        if (typeof loadMessages === 'function') loadMessages();
-    } else if (tabName === 'reviews') {
-        if (typeof loadReviews === 'function') loadReviews();
-    } else if (tabName === 'invoices') {
-        if (typeof loadInvoices === 'function') loadInvoices();
-    } else if (tabName === 'payments') {
-        if (typeof loadPayments === 'function') loadPayments();
-    }
 }
