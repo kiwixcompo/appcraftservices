@@ -1,0 +1,4 @@
+Contact: security@appcraftservices.com
+Expires: 2027-01-04T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://appcraftservices.com/.well-known/security.txt

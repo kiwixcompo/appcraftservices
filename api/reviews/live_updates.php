@@ -5,11 +5,23 @@
  * Requirements: 2.2
  */
 
+// Prevent direct access - only allow from EventSource
+if (empty($_SERVER['HTTP_ACCEPT']) || strpos($_SERVER['HTTP_ACCEPT'], 'text/event-stream') === false) {
+    http_response_code(400);
+    echo json_encode(['error' => 'This endpoint is for Server-Sent Events only']);
+    exit;
+}
+
 // Set headers for Server-Sent Events
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Cache-Control');
+
+// Disable output buffering for SSE
+if (ob_get_level()) {
+    ob_end_clean();
+}
 
 require_once '../../config/database.php';
 
@@ -96,9 +108,10 @@ try {
     // Get initial timestamp
     $lastCheck = getLatestReviewTimestamp($conn);
     
-    // Keep connection alive and check for updates
-    $maxExecutionTime = 300; // 5 minutes
+    // Keep connection alive and check for updates (max 5 minutes)
+    $maxExecutionTime = 300;
     $startTime = time();
+    $heartbeatCounter = 0;
     
     while (time() - $startTime < $maxExecutionTime) {
         // Check for new reviews
@@ -118,7 +131,8 @@ try {
         }
         
         // Send heartbeat every 30 seconds
-        if (time() % 30 === 0) {
+        $heartbeatCounter++;
+        if ($heartbeatCounter % 6 === 0) { // 6 * 5 seconds = 30 seconds
             sendSSE([
                 'type' => 'heartbeat',
                 'timestamp' => date('c'),
