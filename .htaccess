@@ -34,16 +34,12 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 Header unset Server
 Header always unset X-Powered-By
 
-# Cache control headers - Disable caching for HTML and API with Chrome-friendly headers
+# Cache control headers - Disable caching for HTML and API
 <FilesMatch "\.(html|php|json)$">
-    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0"
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
     Header set Pragma "no-cache"
     Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
-    Header set Last-Modified "Thu, 01 Jan 1970 00:00:00 GMT"
     Header unset ETag
-    # Force Chrome to bypass security cache
-    Header set X-Cache-Control "no-cache"
-    Header set Clear-Site-Data "\"cache\", \"storage\""
 </FilesMatch>
 
 # Cache static assets with versioning

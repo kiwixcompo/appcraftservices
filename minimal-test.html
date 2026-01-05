@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Test - App Craft Services</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .success {
+            color: #28a745;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Chrome Security Issue RESOLVED!</h1>
+        
+        <div class="success">
+            ✅ No automatic API calls<br>
+            ✅ No service worker registration<br>
+            ✅ No analytics tracking<br>
+            ✅ No EventSource connections<br>
+            ✅ No complex security headers<br>
+            ✅ Pure HTML/CSS/JS only
+        </div>
+        
+        <div class="info">
+            <strong>This page loads successfully without Chrome security warnings.</strong><br>
+            If you can see this page without the "Dangerous site" warning, 
+            the issue has been resolved.
+        </div>
+        
+        <h2>App Craft Services</h2>
+        <p>Turn Your Startup Ideas Into Reality</p>
+        
+        <div style="margin: 30px 0;">
+            <a href="/" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                Go to Main Website
+            </a>
+        </div>
+        
+        <hr style="margin: 30px 0;">
+        
+        <h3>Diagnostic Information</h3>
+        <div id="diagnostic-info" style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px;">
+            Loading diagnostic info...
+        </div>
+    </div>
+
+    <script>
+        // Simple diagnostic script - no API calls
+        document.addEventListener('DOMContentLoaded', function() {
+            const diagnosticInfo = document.getElementById('diagnostic-info');
+            
+            const info = {
+                'User Agent': navigator.userAgent,
+                'URL': window.location.href,
+                'Referrer': document.referrer || 'Direct access',
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'Pathname': window.location.pathname,
+                'Timestamp': new Date().toISOString(),
+                'Screen Resolution': screen.width + 'x' + screen.height,
+                'Viewport Size': window.innerWidth + 'x' + window.innerHeight,
+                'Service Worker Support': 'serviceWorker' in navigator ? 'Yes' : 'No',
+                'Local Storage': typeof(Storage) !== "undefined" ? 'Yes' : 'No'
+            };
+            
+            let html = '';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<strong>${key}:</strong> ${value}<br>`;
+            }
+            
+            diagnosticInfo.innerHTML = html;
+            
+            console.log('Minimal test page loaded successfully - no security warnings should appear');
+        });
+    </script>
+</body>
+</html>
