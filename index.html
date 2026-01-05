@@ -23,6 +23,16 @@
                     });
                 });
             }
+            
+            // Check if page was redirected due to security warning
+            if (document.referrer.includes('chrome-error://') || 
+                window.location.search.includes('chrome-error') ||
+                sessionStorage.getItem('chrome-security-warning')) {
+                
+                // Clear the flag and redirect to fix page
+                sessionStorage.removeItem('chrome-security-warning');
+                window.location.href = '/chrome-fix.html';
+            }
         }
     </script>
     
@@ -511,7 +521,8 @@
 
     <script src="assets/script.js"></script>
     <script src="assets/config.js"></script>
-    <script src="assets/analytics.js"></script>
+    <!-- Temporarily disabled for Chrome compatibility -->
+    <!-- <script src="assets/analytics.js"></script> -->
     
     <!-- Editor Mode Detection -->
     <script>

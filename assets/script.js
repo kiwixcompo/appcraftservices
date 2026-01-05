@@ -383,6 +383,11 @@ class ReviewSystem {
     }
     
     startLiveUpdates() {
+        // Temporarily disabled to fix Chrome security warnings
+        // EventSource connections can trigger Chrome's security flags
+        console.log('Live updates temporarily disabled for Chrome compatibility');
+        return;
+        
         if (typeof EventSource === 'undefined') {
             return;
         }

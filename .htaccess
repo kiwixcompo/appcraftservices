@@ -8,6 +8,10 @@ Options -Indexes
 RewriteCond %{QUERY_STRING} ^chrome-fix=1$ [NC]
 RewriteRule ^(.*)$ /chrome-fix.html [L]
 
+# Chrome test page redirect
+RewriteCond %{QUERY_STRING} ^chrome-test=1$ [NC]
+RewriteRule ^(.*)$ /test-chrome.html [L]
+
 # Detect environment and handle routing accordingly
 # For localhost - ensure /appcraftservices/ prefix is maintained
 RewriteCond %{HTTP_HOST} ^localhost [OR]
