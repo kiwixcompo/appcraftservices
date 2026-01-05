@@ -1,14 +1,13 @@
 // Service Worker for App Craft Services
 // Provides caching for better mobile performance
+// Updated for Chrome compatibility
 
-const CACHE_NAME = 'app-craft-services-v1';
+const CACHE_NAME = 'app-craft-services-v2-chrome-fix';
 const STATIC_CACHE_URLS = [
     '/',
     '/index.html',
     '/assets/styles.css',
     '/assets/script.js',
-    '/assets/logo.png',
-    '/assets/favicon.ico',
     '/contact/',
     '/services/',
     '/pricing/',

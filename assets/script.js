@@ -750,19 +750,30 @@ document.addEventListener('DOMContentLoaded', function() {
     new MobileOptimizer();
 });
 
-// Service Worker registration for caching (if available)
+// Service Worker registration for caching (if available) - Chrome compatibility update
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        // Adjust sw path based on location
-        const swPath = window.location.pathname.includes('/contact') ? '../sw.js' : 'sw.js';
-        
-        navigator.serviceWorker.register(swPath)
-            .then(function(registration) {
-                console.log('ServiceWorker registration successful');
-            })
-            .catch(function(err) {
-                // Silently fail
-            });
+        // Force unregister old service workers first
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+            }
+        }).then(function() {
+            // Register new service worker after clearing old ones
+            const swPath = window.location.pathname.includes('/contact') ? '../sw.js' : 'sw.js';
+            
+            navigator.serviceWorker.register(swPath + '?v=' + Date.now())
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                    // Force immediate activation
+                    if (registration.waiting) {
+                        registration.waiting.postMessage({command: 'skipWaiting'});
+                    }
+                })
+                .catch(function(err) {
+                    // Silently fail
+                });
+        });
     });
 }
 
