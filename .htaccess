@@ -4,10 +4,6 @@ RewriteEngine On
 # Prevent directory browsing
 Options -Indexes
 
-# Chrome test page redirect
-RewriteCond %{QUERY_STRING} ^chrome-test=1$ [NC]
-RewriteRule ^(.*)$ /test-chrome.html [L]
-
 # Detect environment and handle routing accordingly
 # For localhost - ensure /appcraftservices/ prefix is maintained
 RewriteCond %{HTTP_HOST} ^localhost [OR]
@@ -29,18 +25,10 @@ RewriteCond %{REQUEST_URI} !^/data/
 RewriteCond %{REQUEST_URI} !^/appcraftservices/data/
 RewriteRule ^([^/]+)/?$ $1/index.html [L]
 
-# Security headers - Chrome-friendly configuration
+# Security headers - Simple and Chrome-friendly
 Header always set X-Content-Type-Options nosniff
 Header always set X-Frame-Options SAMEORIGIN
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
-
-# Only set HSTS for HTTPS connections
-<If "%{HTTPS} == 'on'">
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-</If>
-
-# Relaxed CSP to prevent Chrome security warnings
-Header always set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; img-src 'self' data: https: blob:; font-src 'self' https: data:; connect-src 'self' https:; media-src 'self' https: data:; object-src 'none'; base-uri 'self';"
 
 # Remove server signature
 Header unset Server

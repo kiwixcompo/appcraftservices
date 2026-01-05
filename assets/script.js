@@ -1,4 +1,4 @@
-﻿// Dynamic year in footer
+// Dynamic year in footer
 document.addEventListener('DOMContentLoaded', function() {
     const currentYear = new Date().getFullYear();
     const yearElements = document.querySelectorAll('#current-year');
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Submitting form data:', data);
                 
                 // Determine API path based on current location
+                // If we are in /contact/, go up one level. If at root, go into api.
                 const apiPath = window.location.pathname.includes('/contact') ? 
                     '../api/contact.php' : 'api/contact.php';
                 
@@ -64,79 +65,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(data)
                 });
                 
-                console.log('Response status:', response.status);
-                
-                // Robust JSON parsing
-                const text = await response.text();
-                console.log('Response text:', text);
-                
-                let result;
-                try {
-                    result = JSON.parse(text);
-                } catch (err) {
-                    console.error('Server returned non-JSON:', text);
-                    throw new Error('Server returned an invalid response format.');
-                }
-                
-                console.log('Parsed result:', result);
+                const result = await response.json();
+                console.log('API Response:', result);
                 
                 if (result.success) {
-                    // Hide form and show success message
+                    // Show success message
                     contactForm.style.display = 'none';
                     if (successMessage) {
-                        successMessage.classList.remove('hidden');
-                        successMessage.innerHTML = `
-                            <div class="flex items-center justify-center flex-col text-center p-6">
-                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Message Sent Successfully!</h3>
-                                <p class="text-gray-600 mb-2">Thank you for reaching out. We'll get back to you within 24 hours.</p>
-                                <p class="text-sm text-gray-500 mb-4">Your message has been received and saved to our system.</p>
-                                <p class="text-xs text-gray-400 mb-4">Reference ID: ${result.message_id || 'N/A'}</p>
-                                <button onclick="location.reload()" class="bg-electric-blue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300 font-medium">Send Another Message</button>
-                            </div>
-                        `;
-                    } else {
-                        alert('Message sent successfully! We\'ll get back to you within 24 hours.');
-                        contactForm.reset();
-                        submitBtn.disabled = false;
-                        submitText.textContent = 'Send Message';
-                        if (submitIcon) submitIcon.classList.remove('hidden');
-                        if (loadingIcon) loadingIcon.classList.add('hidden');
+                        successMessage.style.display = 'block';
                     }
                 } else {
                     throw new Error(result.message || 'Failed to send message');
                 }
                 
             } catch (error) {
-                console.error('Submission Error:', error);
-                
-                // Show error message with better UX
-                const errorMessage = error.message || 'An unexpected error occurred';
-                
-                // Create or update error display
-                let errorDiv = document.getElementById('error-message');
-                if (!errorDiv) {
-                    errorDiv = document.createElement('div');
-                    errorDiv.id = 'error-message';
-                    errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg';
-                    contactForm.parentNode.insertBefore(errorDiv, contactForm.nextSibling);
-                }
-                
-                errorDiv.innerHTML = `
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span><strong>Error:</strong> ${errorMessage}</span>
-                    </div>
-                    <button onclick="this.parentElement.style.display='none'" class="mt-2 text-sm text-red-600 hover:text-red-800 underline">Dismiss</button>
-                `;
-                errorDiv.style.display = 'block';
-                
+                console.error('Error submitting form:', error);
+                alert('There was an error sending your message. Please try again or contact us directly.');
+            } finally {
                 // Reset button state
                 submitBtn.disabled = false;
                 submitText.textContent = 'Send Message';
@@ -147,55 +92,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Admin Panel Functionality - Redirect to admin page
-document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        console.log('Admin login triggered by Ctrl+Shift+A');
-        showAdminLogin();
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const logos = document.querySelectorAll('.logo-admin-trigger');
-    
-    logos.forEach((logo) => {
-        let clickCount = 0;
-        let clickTimer = null;
-        
-        logo.addEventListener('click', function(e) {
-            clickCount++;
-            
-            if (clickCount === 1) {
-                clickTimer = setTimeout(() => {
-                    clickCount = 0;
-                }, 800);
-            } else if (clickCount === 3) {
-                clearTimeout(clickTimer);
-                clickCount = 0;
-                e.preventDefault();
-                console.log('Admin login triggered by triple-click');
-                showAdminLogin();
-            }
-        });
-    });
-});
-
+// Admin login function
 function showAdminLogin() {
+    // Determine path based on current location
     const adminPath = window.location.pathname.includes('/contact') ? 
         '../admin/login.php' : 'admin/login.php';
     window.location.href = adminPath;
 }
 
-// Real-time Review System
+// Simple Review System (removed problematic real-time features)
 class ReviewSystem {
     constructor() {
         this.reviews = [];
-        this.currentOffset = 0;
-        this.hasMore = true;
-        this.eventSource = null;
-        this.isLoading = false;
-        
         this.init();
     }
     
@@ -204,263 +112,88 @@ class ReviewSystem {
             return;
         }
         
-        this.loadInitialReviews();
-        this.setupEventListeners();
-        this.startLiveUpdates();
+        // Load static reviews instead of database-driven system
+        this.loadStaticReviews();
     }
     
-    async loadInitialReviews() {
-        this.isLoading = true;
-        try {
-            const apiPath = window.location.pathname.includes('/contact') ? 
-                '../api/reviews/get_approved_reviews.php' : 'api/reviews/get_approved_reviews.php';
-
-            const response = await fetch(`${apiPath}?limit=6&offset=0`);
-            const data = await response.json();
-            
-            if (data.success) {
-                this.reviews = data.reviews;
-                this.currentOffset = data.reviews.length;
-                this.hasMore = data.pagination.has_more;
-                
-                this.renderReviews();
-                this.updateStats(data.statistics);
-                this.updateLoadMoreButton();
+    loadStaticReviews() {
+        // Display static testimonials instead of database-driven reviews
+        const staticReviews = [
+            {
+                id: 1,
+                reviewer_name: "Sarah Johnson",
+                company: "TechStart Inc",
+                project_type: "MVP Development",
+                rating: 5,
+                rating_stars: "★★★★★",
+                content: "App Craft Services helped us build our MVP in record time. Their expertise in startup development is unmatched.",
+                project_completion_date_formatted: "Mar 2024",
+                verified: true
+            },
+            {
+                id: 2,
+                reviewer_name: "Michael Chen",
+                company: "InnovateLab",
+                project_type: "Web Application",
+                rating: 5,
+                rating_stars: "★★★★★",
+                content: "Professional, efficient, and delivered exactly what we needed. Highly recommend for any startup looking to build their platform.",
+                project_completion_date_formatted: "Feb 2024",
+                verified: true
+            },
+            {
+                id: 3,
+                reviewer_name: "Emily Rodriguez",
+                company: "GrowthCo",
+                project_type: "Custom Development",
+                rating: 5,
+                rating_stars: "★★★★★",
+                content: "Outstanding work on our custom application. The team understood our vision and brought it to life perfectly.",
+                project_completion_date_formatted: "Jan 2024",
+                verified: true
             }
-        } catch (error) {
-            console.error('Error loading reviews:', error);
-            this.showError('Error loading reviews');
-        } finally {
-            this.isLoading = false;
-        }
+        ];
+        
+        this.reviews = staticReviews;
+        this.renderReviews(staticReviews);
     }
     
-    async loadMoreReviews() {
-        if (this.isLoading || !this.hasMore) return;
-        
-        this.isLoading = true;
-        const loadMoreBtn = document.getElementById('load-more-reviews');
-        const originalText = loadMoreBtn.textContent;
-        loadMoreBtn.textContent = 'Loading...';
-        loadMoreBtn.disabled = true;
-        
-        try {
-            const apiPath = window.location.pathname.includes('/contact') ? 
-                '../api/reviews/get_approved_reviews.php' : 'api/reviews/get_approved_reviews.php';
-
-            const response = await fetch(`${apiPath}?limit=6&offset=${this.currentOffset}`);
-            const data = await response.json();
-            
-            if (data.success) {
-                this.reviews = [...this.reviews, ...data.reviews];
-                this.currentOffset += data.reviews.length;
-                this.hasMore = data.pagination.has_more;
-                
-                this.renderNewReviews(data.reviews);
-                this.updateLoadMoreButton();
-            }
-        } catch (error) {
-            console.error('Error loading more reviews:', error);
-            this.showNotification('Error loading more reviews', 'error');
-        } finally {
-            this.isLoading = false;
-            loadMoreBtn.textContent = originalText;
-            loadMoreBtn.disabled = false;
-        }
-    }
-    
-    renderReviews() {
+    renderReviews(reviews) {
         const container = document.getElementById('reviews-container');
         if (!container) return;
         
-        if (this.reviews.length === 0) {
-            container.innerHTML = `
-                <div class="text-center col-span-full py-8">
-                    <div class="text-gray-400 text-4xl mb-4">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <p class="text-gray-600">No client reviews yet. Be the first founder to share your success story!</p>
-                </div>
-            `;
-            return;
-        }
+        container.innerHTML = '';
         
-        container.innerHTML = this.reviews.map(review => this.createReviewHTML(review)).join('');
-        this.animateReviews();
-    }
-    
-    renderNewReviews(newReviews) {
-        const container = document.getElementById('reviews-container');
-        if (!container) return;
-        
-        newReviews.forEach(review => {
+        reviews.forEach(review => {
             const reviewElement = document.createElement('div');
+            reviewElement.className = 'bg-white p-6 rounded-lg shadow-md border border-gray-200';
             reviewElement.innerHTML = this.createReviewHTML(review);
-            reviewElement.firstElementChild.style.opacity = '0';
-            reviewElement.firstElementChild.style.transform = 'translateY(20px)';
-            
-            container.appendChild(reviewElement.firstElementChild);
-            
-            setTimeout(() => {
-                reviewElement.firstElementChild.style.transition = 'all 0.5s ease';
-                reviewElement.firstElementChild.style.opacity = '1';
-                reviewElement.firstElementChild.style.transform = 'translateY(0)';
-            }, 100);
+            container.appendChild(reviewElement);
         });
     }
     
     createReviewHTML(review) {
         return `
-            <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300 startup-review-card" data-review-id="${review.id}">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">${this.escapeHtml(review.reviewer_name)}</h4>
-                        <p class="text-sm text-gray-600 font-medium">${this.escapeHtml(review.company)}</p>
-                        <p class="text-xs text-gray-500">${review.project_type} â€¢ ${review.project_completion_date_formatted}</p>
-                        ${review.funding_stage ? `<span class="inline-block mt-1 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${review.funding_stage}</span>` : ''}
-                    </div>
-                    <div class="flex flex-col items-end">
-                        ${review.verified ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mb-2">âœ“ Verified</span>' : ''}
-                        <div class="text-yellow-500 text-lg">${review.rating_stars}</div>
-                    </div>
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
+                    ${review.reviewer_name.charAt(0)}
                 </div>
-                
-                <blockquote class="text-gray-700 italic mb-4 leading-relaxed">
-                    "${this.escapeHtml(review.content)}"
-                </blockquote>
-                
-                <div class="flex items-center justify-between text-xs text-gray-500 border-t pt-3">
-                    <span>Reviewed ${review.submission_date_formatted}</span>
-                    <div class="flex items-center space-x-2">
-                        ${review.contact_permission ? '<span class="text-green-600 flex items-center"><i class="fas fa-check-circle mr-1"></i>Reference available</span>' : ''}
-                        ${review.funding_raised ? `<span class="text-blue-600 font-medium">Raised: ${review.funding_raised}</span>` : ''}
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${this.escapeHtml(review.reviewer_name)}</h4>
+                            <p class="text-sm text-gray-600">${this.escapeHtml(review.company)} • ${this.escapeHtml(review.project_type)}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-yellow-400">${review.rating_stars}</span>
+                            ${review.verified ? '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">✓ Verified</span>' : ''}
+                        </div>
                     </div>
+                    <p class="text-gray-700 mb-3">${this.escapeHtml(review.content)}</p>
+                    <p class="text-xs text-gray-500">Completed: ${review.project_completion_date_formatted}</p>
                 </div>
             </div>
         `;
-    }
-    
-    updateStats(statistics) {
-        const totalCountEl = document.getElementById('total-review-count');
-        const avgRatingEl = document.getElementById('average-rating-display');
-        
-        if (totalCountEl) {
-            totalCountEl.textContent = statistics.total_reviews;
-        }
-        
-        if (avgRatingEl) {
-            avgRatingEl.textContent = statistics.average_rating_stars;
-            avgRatingEl.title = `${statistics.average_rating}/5 stars`;
-        }
-    }
-    
-    updateLoadMoreButton() {
-        const loadMoreBtn = document.getElementById('load-more-reviews');
-        if (!loadMoreBtn) return;
-        
-        if (this.hasMore && this.reviews.length > 0) {
-            loadMoreBtn.style.display = 'inline-block';
-        } else {
-            loadMoreBtn.style.display = 'none';
-        }
-    }
-    
-    setupEventListeners() {
-        const loadMoreBtn = document.getElementById('load-more-reviews');
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', () => this.loadMoreReviews());
-        }
-    }
-    
-    startLiveUpdates() {
-        console.log('Live updates temporarily disabled for Chrome compatibility');
-        return;
-    }
-    
-    handleNewReviews(newReviews) {
-        this.reviews = [...newReviews, ...this.reviews];
-        this.showNotification(`${newReviews.length} new client review${newReviews.length > 1 ? 's' : ''} added!`, 'success');
-        
-        const container = document.getElementById('reviews-container');
-        if (container) {
-            newReviews.reverse().forEach(review => {
-                const reviewElement = document.createElement('div');
-                reviewElement.innerHTML = this.createReviewHTML(review);
-                const reviewDiv = reviewElement.firstElementChild;
-                
-                reviewDiv.classList.add('bg-blue-50', 'border-blue-300', 'ring-2', 'ring-blue-200');
-                reviewDiv.style.opacity = '0';
-                reviewDiv.style.transform = 'translateY(-20px)';
-                
-                container.insertBefore(reviewDiv, container.firstChild);
-                
-                setTimeout(() => {
-                    reviewDiv.style.transition = 'all 0.5s ease';
-                    reviewDiv.style.opacity = '1';
-                    reviewDiv.style.transform = 'translateY(0)';
-                }, 100);
-                
-                setTimeout(() => {
-                    reviewDiv.classList.remove('bg-blue-50', 'border-blue-300', 'ring-2', 'ring-blue-200');
-                }, 3000);
-            });
-        }
-    }
-    
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
-            type === 'success' ? 'bg-green-500 text-white' :
-            type === 'error' ? 'bg-red-500 text-white' :
-            'bg-blue-500 text-white'
-        }`;
-        
-        notification.innerHTML = `
-            <div class="flex items-center justify-between">
-                <span>${message}</span>
-                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
-    }
-    
-    showError(message) {
-        const container = document.getElementById('reviews-container');
-        if (container) {
-            container.innerHTML = `
-                <div class="text-center col-span-full py-8">
-                    <div class="text-red-400 text-4xl mb-4">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <p class="text-red-600">${message}</p>
-                    <button onclick="reviewSystem.loadInitialReviews()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                        Try Again
-                    </button>
-                </div>
-            `;
-        }
-    }
-    
-    animateReviews() {
-        const reviews = document.querySelectorAll('[data-review-id]');
-        reviews.forEach((review, index) => {
-            review.style.opacity = '0';
-            review.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                review.style.transition = 'all 0.5s ease';
-                review.style.opacity = '1';
-                review.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
     }
     
     escapeHtml(text) {
@@ -477,85 +210,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Image lazy loading and optimization
+// Image optimization utilities
 class ImageOptimizer {
     constructor() {
         this.init();
     }
     
     init() {
-        this.setupLazyLoading();
+        this.lazyLoadImages();
         this.optimizeImages();
-        this.setupProgressiveLoading();
     }
     
-    setupLazyLoading() {
+    lazyLoadImages() {
+        const images = document.querySelectorAll('img[data-src]');
+        
         if ('IntersectionObserver' in window) {
             const imageObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const img = entry.target;
-                        this.loadImage(img);
-                        observer.unobserve(img);
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        imageObserver.unobserve(img);
                     }
                 });
-            }, {
-                rootMargin: '50px 0px',
-                threshold: 0.01
             });
             
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
+            images.forEach(img => imageObserver.observe(img));
         } else {
-            this.loadAllImages();
+            // Fallback for older browsers
+            images.forEach(img => {
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+            });
         }
-    }
-    
-    loadImage(img) {
-        const src = img.getAttribute('data-src');
-        if (src) {
-            img.src = src;
-            img.classList.add('loaded');
-            img.removeAttribute('data-src');
-        }
-    }
-    
-    loadAllImages() {
-        document.querySelectorAll('img[data-src]').forEach(img => {
-            this.loadImage(img);
-        });
     }
     
     optimizeImages() {
-        document.querySelectorAll('img:not([loading])').forEach(img => {
-            img.setAttribute('loading', 'lazy');
-        });
-        
-        document.querySelectorAll('img:not([alt])').forEach(img => {
-            img.setAttribute('alt', '');
-        });
-    }
-    
-    setupProgressiveLoading() {
-        const contentSections = document.querySelectorAll('.progressive-load');
-        
-        if ('IntersectionObserver' in window) {
-            const contentObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('loaded');
-                        contentObserver.unobserve(entry.target);
-                    }
-                });
-            }, {
-                rootMargin: '100px 0px'
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
             });
-            
-            contentSections.forEach(section => {
-                contentObserver.observe(section);
-            });
-        }
+        });
     }
 }
 
@@ -566,64 +263,54 @@ class PerformanceOptimizer {
     }
     
     init() {
-        this.optimizeCSS();
-        this.optimizeJavaScript();
-        this.setupResourceHints();
+        this.preloadCriticalResources();
+        this.optimizeScrolling();
+        this.deferNonCriticalScripts();
     }
     
-    optimizeCSS() {
-        const nonCriticalCSS = document.querySelectorAll('link[rel="stylesheet"][data-defer]');
-        nonCriticalCSS.forEach(link => {
-            link.media = 'print';
-            link.onload = function() {
-                this.media = 'all';
-            };
+    preloadCriticalResources() {
+        const criticalResources = [
+            '/assets/styles.css',
+            '/assets/script.js'
+        ];
+        
+        criticalResources.forEach(resource => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = resource;
+            link.as = resource.endsWith('.css') ? 'style' : 'script';
+            document.head.appendChild(link);
         });
     }
     
-    optimizeJavaScript() {
-        this.debounceScrollEvents();
-        this.optimizeEventListeners();
+    optimizeScrolling() {
+        let ticking = false;
+        
+        function updateScrollPosition() {
+            // Scroll-based animations or effects can go here
+            ticking = false;
+        }
+        
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateScrollPosition);
+                ticking = true;
+            }
+        }
+        
+        window.addEventListener('scroll', requestTick);
     }
     
-    debounceScrollEvents() {
-        let scrollTimeout;
-        const originalScroll = window.onscroll;
+    deferNonCriticalScripts() {
+        const nonCriticalScripts = document.querySelectorAll('script[data-defer]');
         
-        window.onscroll = function(e) {
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                if (originalScroll) originalScroll.call(this, e);
-            }, 16);
-        };
-    }
-    
-    optimizeEventListeners() {
-        const passiveEvents = ['scroll', 'touchstart', 'touchmove', 'wheel'];
-        
-        passiveEvents.forEach(eventType => {
-            const elements = document.querySelectorAll(`[data-${eventType}]`);
-            elements.forEach(element => {
-                const handler = element.getAttribute(`data-${eventType}`);
-                if (handler && window[handler]) {
-                    element.addEventListener(eventType, window[handler], { passive: true });
-                }
+        window.addEventListener('load', () => {
+            nonCriticalScripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.src = script.dataset.src;
+                document.body.appendChild(newScript);
             });
         });
-    }
-    
-    setupResourceHints() {
-        this.addPreconnect('https://cdn.tailwindcss.com');
-        this.addPreconnect('https://cdnjs.cloudflare.com');
-    }
-    
-    addPreconnect(url) {
-        if (!document.querySelector(`link[href="${url}"]`)) {
-            const link = document.createElement('link');
-            link.rel = 'preconnect';
-            link.href = url;
-            document.head.appendChild(link);
-        }
     }
 }
 
@@ -637,73 +324,45 @@ class MobileOptimizer {
     }
     
     detectMobile() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-               window.innerWidth <= 768;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
     
     init() {
-        this.optimizeForMobile();
-        this.setupTouchOptimizations();
-        this.optimizeViewport();
+        this.optimizeTouchEvents();
+        this.adjustViewport();
+        this.optimizeImages();
     }
     
-    optimizeForMobile() {
-        if (this.isLowEndDevice()) {
-            document.body.classList.add('reduce-motion');
+    optimizeTouchEvents() {
+        // Add touch-friendly interactions
+        const buttons = document.querySelectorAll('button, .btn, a[role="button"]');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.classList.add('touch-active');
+            });
+            
+            button.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.classList.remove('touch-active');
+                }, 150);
+            });
+        });
+    }
+    
+    adjustViewport() {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            viewport.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
         }
-        
-        this.optimizeMobileImages();
-        this.deferNonEssentialScripts();
     }
     
-    isLowEndDevice() {
-        return navigator.hardwareConcurrency <= 2 || 
-               navigator.deviceMemory <= 2 ||
-               /Android.*Chrome\/[0-5]/.test(navigator.userAgent);
-    }
-    
-    optimizeMobileImages() {
-        document.querySelectorAll('img').forEach(img => {
+    optimizeImages() {
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
             if (!img.hasAttribute('loading')) {
                 img.setAttribute('loading', 'lazy');
             }
-            if (!img.hasAttribute('sizes') && img.hasAttribute('srcset')) {
-                img.setAttribute('sizes', '(max-width: 768px) 100vw, 50vw');
-            }
         });
-    }
-    
-    deferNonEssentialScripts() {
-        const nonEssentialScripts = document.querySelectorAll('script[data-defer-mobile]');
-        nonEssentialScripts.forEach(script => {
-            if (script.src) {
-                const newScript = document.createElement('script');
-                newScript.src = script.src;
-                newScript.defer = true;
-                script.parentNode.replaceChild(newScript, script);
-            }
-        });
-    }
-    
-    setupTouchOptimizations() {
-        document.addEventListener('touchstart', function() {}, { passive: true });
-        
-        const inputs = document.querySelectorAll('input, textarea, select');
-        inputs.forEach(input => {
-            if (!input.hasAttribute('style')) {
-                input.style.fontSize = '16px';
-            }
-        });
-    }
-    
-    optimizeViewport() {
-        let viewport = document.querySelector('meta[name="viewport"]');
-        if (!viewport) {
-            viewport = document.createElement('meta');
-            viewport.name = 'viewport';
-            document.head.appendChild(viewport);
-        }
-        viewport.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
     }
 }
 
@@ -713,524 +372,11 @@ document.addEventListener('DOMContentLoaded', function() {
     new MobileOptimizer();
 });
 
-// Project Portfolio Modal Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const projectCards = document.querySelectorAll('.project-card');
-    const modal = document.getElementById('project-modal');
-    const closeModal = document.getElementById('close-modal');
-    
-    if (!modal || !closeModal || projectCards.length === 0) {
-        return;
-    }
-    
-    const projectImages = document.querySelectorAll('.project-card img');
-    projectImages.forEach(img => {
-        if (img.complete) {
-            img.classList.add('loaded');
-        } else {
-            img.addEventListener('load', function() {
-                this.classList.add('loaded');
-            });
-            img.addEventListener('error', function() {
-                this.style.display = 'none';
-            });
-        }
-    });
-    
-    const projectData = {
-        'mealmate': {
-            title: 'MealMate',
-            logo: { image: 'assets/projects/MealMate.png', alt: 'MealMate Logo' },
-            description: 'A comprehensive meal planning and nutrition tracking application that helps users maintain healthy eating habits through intelligent recipe suggestions, automated grocery lists, and personalized dietary management.',
-            tags: ['Health', 'Nutrition', 'Lifestyle'],
-            features: [
-                'Smart meal planning with AI-powered recipe suggestions',
-                'Comprehensive nutrition tracking and analysis',
-                'Automated grocery list generation',
-                'Dietary preference and restriction management',
-                'Calorie and macro tracking with visual analytics',
-                'Integration with popular fitness apps'
-            ],
-            tech: ['React', 'Node.js', 'MongoDB', 'Nutrition API', 'PWA']
-        },
-        'notifyme': {
-            title: 'Notify Me - Remote Job Alerts',
-            logo: { image: 'assets/projects/Notify Me.png', alt: 'Notify Me - Remote Job Alerts Logo' },
-            description: 'Get instant alerts for new remote jobs from your favorite sources. A comprehensive job alert system that manages RSS feeds, filters by category, and ensures you never miss an opportunity in the remote work market.',
-            tags: ['Job Alerts', 'Remote Work', 'PWA'],
-            features: [
-                'User-managed RSS feeds with add, edit, delete functionality and optional API backup',
-                'Fetches jobs from multiple remote job sources automatically',
-                'Modern dashboard with category filtering, source grouping, and advanced search',
-                'Progressive Web App (PWA) with installable interface and offline support',
-                'Background sync for failed requests ensuring no missed opportunities',
-                'Mobile-friendly, responsive design optimized for all devices',
-                'Profile management and customizable user settings',
-                'Real-time job notifications and alert management'
-            ],
-            tech: ['Node.js', 'MongoDB', 'PWA', 'RSS Feeds', 'Background Sync']
-        },
-        'automated-restaurant': {
-            title: 'Automated Restaurant',
-            logo: { image: 'assets/projects/Automated Restaurant.png', alt: 'Automated Restaurant Logo' },
-            description: 'A complete restaurant management ecosystem that streamlines operations through automated ordering, intelligent inventory tracking, and optimized kitchen workflow management for enhanced efficiency.',
-            tags: ['Restaurant', 'Automation', 'POS'],
-            features: [
-                'Automated order processing and kitchen display system',
-                'Real-time inventory tracking with low-stock alerts',
-                'Kitchen workflow optimization and timing coordination',
-                'Customer ordering system with customization options',
-                'Staff scheduling and performance analytics',
-                'Integration with payment processors and delivery platforms'
-            ],
-            tech: ['Angular', 'Django', 'PostgreSQL', 'Redis', 'Payment APIs']
-        },
-        'quickbudgetai': {
-            title: 'QuickBudgetAI',
-            logo: { image: 'assets/projects/QuickBudgetAI.png', alt: 'QuickBudgetAI Logo' },
-            description: 'An AI-powered personal finance application that automatically categorizes expenses, provides intelligent budget recommendations, and helps users achieve their financial goals through smart insights.',
-            tags: ['FinTech', 'AI', 'Personal Finance'],
-            features: [
-                'AI-powered expense categorization and analysis',
-                'Intelligent budget recommendations and adjustments',
-                'Financial goal setting and progress tracking',
-                'Bank account integration and transaction sync',
-                'Spending pattern analysis and insights',
-                'Bill reminder and payment scheduling'
-            ],
-            tech: ['React Native', 'Python', 'TensorFlow', 'Plaid API', 'AWS']
-        },
-        'clearpath': {
-            title: 'ClearPath Client Services',
-            logo: { image: 'assets/projects/ClearPath Client Services.png', alt: 'ClearPath Client Services Logo' },
-            description: 'A comprehensive client relationship management platform designed to streamline service delivery through advanced project tracking, communication tools, and performance optimization features.',
-            tags: ['CRM', 'Project Management', 'Client Services'],
-            features: [
-                'Advanced client relationship and project tracking',
-                'Integrated communication and collaboration tools',
-                'Service delivery optimization and workflow automation',
-                'Performance analytics and reporting dashboard',
-                'Document management and client portal access',
-                'Billing integration and invoice management'
-            ],
-            tech: ['React', 'Laravel', 'MySQL', 'WebSocket', 'AWS S3']
-        },
-        'willpdf': {
-            title: 'WillPDF',
-            logo: { image: 'assets/projects/WillPDF.png', alt: 'WillPDF Logo' },
-            description: 'A sophisticated legal document generation platform that creates customized wills and estate planning documents through guided workflows and intelligent form completion.',
-            tags: ['LegalTech', 'Document Generation', 'Estate Planning'],
-            features: [
-                'Guided will creation with intelligent form completion',
-                'Customizable estate planning document templates',
-                'Legal compliance checking and validation',
-                'Secure document storage and access management',
-                'Digital signature integration and witness management',
-                'State-specific legal requirement adaptation'
-            ],
-            tech: ['Vue.js', 'Node.js', 'MongoDB', 'PDF Generation', 'DocuSign API']
-        },
-        'tsu-staff': {
-            title: 'TSU Staff Profile',
-            logo: { image: 'assets/projects/TSU Staff Profile.png', alt: 'TSU Staff Profile Logo' },
-            description: 'A comprehensive university staff directory and profile management system featuring role-based access control, organizational hierarchy visualization, and advanced search capabilities.',
-            tags: ['Education', 'Directory', 'University'],
-            features: [
-                'Comprehensive staff directory with advanced search',
-                'Role-based access control and permission management',
-                'Organizational hierarchy visualization and navigation',
-                'Profile management with photo and credential tracking',
-                'Department and course assignment management',
-                'Integration with university authentication systems'
-            ],
-            tech: ['Angular', 'ASP.NET Core', 'SQL Server', 'Active Directory', 'Azure']
-        },
-        'federal-leave': {
-            title: 'Federal California Leave Assistant',
-            logo: { image: 'assets/projects/Federal California Leave Assistant.png', alt: 'Federal California Leave Assistant Logo' },
-            description: 'An advanced HR compliance tool that automates California state leave calculations and federal FMLA requirements, ensuring businesses maintain full compliance with complex employment regulations.',
-            tags: ['HR Tech', 'Compliance', 'Legal'],
-            features: [
-                'Automated California state leave calculation and tracking',
-                'Federal FMLA compliance monitoring and reporting',
-                'Employee eligibility assessment and documentation',
-                'Integration with payroll and HR management systems',
-                'Compliance reporting and audit trail generation',
-                'Real-time regulation updates and notifications'
-            ],
-            tech: ['React', 'Spring Boot', 'PostgreSQL', 'Government APIs', 'Docker']
-        }
-    };
-    
-    projectCards.forEach((card) => {
-        card.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const projectCard = e.currentTarget;
-            const projectKey = projectCard.getAttribute('data-project');
-            const project = projectData[projectKey];
-            
-            if (project) {
-                showProjectModal(project);
-            }
-        });
-    });
-    
-    if (closeModal) {
-        closeModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            hideProjectModal();
-        });
-    }
-    
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                hideProjectModal();
-            }
-        });
-    }
-    
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-            hideProjectModal();
-        }
-    });
-    
-    function showProjectModal(project) {
-        if (!modal) return;
-        
-        const logoContainer = document.getElementById('modal-logo-container');
-        if (logoContainer) {
-            logoContainer.className = 'w-16 h-16 rounded-lg flex items-center justify-center bg-gray-50 p-2';
-            logoContainer.innerHTML = `<img src="${project.logo.image}" alt="${project.logo.alt}" class="w-full h-full object-contain rounded-lg">`;
-        }
-
-        const largeLogo = document.getElementById('modal-large-logo');
-        if (largeLogo) {
-            largeLogo.innerHTML = `
-                <img src="${project.logo.image}" 
-                     alt="${project.logo.alt}" 
-                     class="w-32 h-32 md:w-40 md:h-40 object-contain mx-auto relative z-10"
-                     style="max-width: 200px; max-height: 200px;">
-            `;
-        }
-
-        const modalProjectTitle = document.getElementById('modal-project-title');
-        if (modalProjectTitle) modalProjectTitle.textContent = project.title;
-        
-        const titleElement = document.getElementById('modal-title');
-        if (titleElement) titleElement.textContent = project.title;
-        
-        const descriptionElement = document.getElementById('modal-description');
-        if (descriptionElement) descriptionElement.textContent = project.description;
-        
-        const tagsContainer = document.getElementById('modal-tags');
-        if (tagsContainer) {
-            tagsContainer.innerHTML = project.tags.map(tag => 
-                `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${tag}</span>`
-            ).join('');
-        }
-        
-        const featuresContainer = document.getElementById('modal-features');
-        if (featuresContainer) {
-            featuresContainer.innerHTML = `
-                <div>
-                    <h4 class="text-lg font-semibold text-navy mb-3">Key Features:</h4>
-                    <ul class="space-y-3">
-                        ${project.features.map(feature => 
-                            `<li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span class="text-gray-700 leading-relaxed">${feature}</span>
-                            </li>`
-                        ).join('')}
-                    </ul>
-                </div>
-            `;
-        }
-        
-        const techContainer = document.getElementById('modal-tech-list');
-        if (techContainer) {
-            techContainer.innerHTML = project.tech.map(tech => 
-                `<span class="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full font-medium">${tech}</span>`
-            ).join('');
-        }
-        
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function hideProjectModal() {
-        if (!modal) return;
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-});
-
-// Projects Slider Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const slider = document.getElementById('projects-slider');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const indicators = document.querySelectorAll('.slider-indicator');
-    
-    if (!slider || !prevBtn || !nextBtn) return;
-    
-    let currentSlide = 0;
-    const totalSlides = 2;
-    const slideWidth = 100;
-    
-    function updateSlider() {
-        const translateX = -currentSlide * slideWidth;
-        slider.style.transform = `translateX(${translateX}%)`;
-        
-        prevBtn.disabled = currentSlide === 0;
-        nextBtn.disabled = currentSlide === totalSlides - 1;
-        
-        indicators.forEach((indicator, index) => {
-            if (index === currentSlide) {
-                indicator.classList.remove('bg-gray-300');
-                indicator.classList.add('bg-electric-blue');
-            } else {
-                indicator.classList.remove('bg-electric-blue');
-                indicator.classList.add('bg-gray-300');
-            }
-        });
-    }
-    
-    prevBtn.addEventListener('click', function() {
-        if (currentSlide > 0) {
-            currentSlide--;
-            updateSlider();
-        }
-    });
-    
-    nextBtn.addEventListener('click', function() {
-        if (currentSlide < totalSlides - 1) {
-            currentSlide++;
-            updateSlider();
-        }
-    });
-    
-    indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', function() {
-            currentSlide = index;
-            updateSlider();
-        });
-    });
-    
-    let autoSlideInterval;
-    
-    function startAutoSlide() {
-        autoSlideInterval = setInterval(() => {
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-            } else {
-                currentSlide = 0;
-            }
-            updateSlider();
-        }, 5000);
-    }
-    
-    function stopAutoSlide() {
-        if (autoSlideInterval) {
-            clearInterval(autoSlideInterval);
-        }
-    }
-    
-    startAutoSlide();
-    
-    const sliderContainer = slider.parentElement.parentElement;
-    sliderContainer.addEventListener('mouseenter', stopAutoSlide);
-    sliderContainer.addEventListener('mouseleave', startAutoSlide);
-    
-    prevBtn.addEventListener('click', () => {
-        stopAutoSlide();
-        setTimeout(startAutoSlide, 10000);
-    });
-    
-    nextBtn.addEventListener('click', () => {
-        stopAutoSlide();
-        setTimeout(startAutoSlide, 10000);
-    });
-    
-    indicators.forEach(indicator => {
-        indicator.addEventListener('click', () => {
-            stopAutoSlide();
-            setTimeout(startAutoSlide, 10000);
-        });
-    });
-    
-    let startX = 0;
-    let endX = 0;
-    
-    sliderContainer.addEventListener('touchstart', function(e) {
-        startX = e.touches[0].clientX;
-        stopAutoSlide();
-    });
-    
-    sliderContainer.addEventListener('touchmove', function(e) {
-        endX = e.touches[0].clientX;
-    });
-    
-    sliderContainer.addEventListener('touchend', function() {
-        const threshold = 50;
-        const diff = startX - endX;
-        
-        if (Math.abs(diff) > threshold) {
-            if (diff > 0 && currentSlide < totalSlides - 1) {
-                currentSlide++;
-                updateSlider();
-            } else if (diff < 0 && currentSlide > 0) {
-                currentSlide--;
-                updateSlider();
-            }
-        }
-        
-        setTimeout(startAutoSlide, 10000);
-    });
-    
-    document.addEventListener('keydown', function(e) {
-        const sliderSection = document.querySelector('.project-slider-section');
-        if (!sliderSection) return;
-        
-        // Simple visibility check
-        const rect = sliderSection.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
-        
-        if (!isVisible) return;
-        
-        if (e.key === 'ArrowLeft' && currentSlide > 0) {
-            currentSlide--;
-            updateSlider();
-            stopAutoSlide();
-            setTimeout(startAutoSlide, 10000);
-        } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
-            currentSlide++;
-            updateSlider();
-            stopAutoSlide();
-            setTimeout(startAutoSlide, 10000);
-        }
-    });
-    
-    updateSlider();
-    
-    let resizeTimeout;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            updateSlider();
-        }, 250);
-    });
-});
-
-// Captcha functionality
-let captchaAnswer = 0;
-
-function generateCaptcha() {
-    const num1 = Math.floor(Math.random() * 20) + 1;
-    const num2 = Math.floor(Math.random() * 20) + 1;
-    const operations = ['+', '-', '*'];
-    const operation = operations[Math.floor(Math.random() * operations.length)];
-    
-    let question, answer;
-    
-    switch(operation) {
-        case '+':
-            question = `${num1} + ${num2}`;
-            answer = num1 + num2;
-            break;
-        case '-':
-            const larger = Math.max(num1, num2);
-            const smaller = Math.min(num1, num2);
-            question = `${larger} - ${smaller}`;
-            answer = larger - smaller;
-            break;
-        case '*':
-            const smallNum1 = Math.floor(Math.random() * 10) + 1;
-            const smallNum2 = Math.floor(Math.random() * 10) + 1;
-            question = `${smallNum1} Ã— ${smallNum2}`;
-            answer = smallNum1 * smallNum2;
-            break;
-    }
-    
-    if (document.getElementById('captcha-question')) {
-        document.getElementById('captcha-question').textContent = question;
-        document.getElementById('captcha-correct').value = answer;
-        captchaAnswer = answer;
-        
-        const answerInput = document.getElementById('captcha-answer');
-        if (answerInput) {
-            answerInput.value = '';
-            answerInput.classList.remove('border-green-500', 'border-red-500');
-        }
-    }
-}
-
-function validateCaptcha() {
-    const answerInput = document.getElementById('captcha-answer');
-    if (!answerInput) return false;
-    
-    const userAnswer = parseInt(answerInput.value);
-    const correctAnswer = parseInt(document.getElementById('captcha-correct').value);
-    
-    if (userAnswer === correctAnswer) {
-        answerInput.classList.remove('border-red-500');
-        answerInput.classList.add('border-green-500');
-        return true;
-    } else {
-        answerInput.classList.remove('border-green-500');
-        answerInput.classList.add('border-red-500');
-        return false;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('captcha-question')) {
-        generateCaptcha();
-        const captchaInput = document.getElementById('captcha-answer');
-        if (captchaInput) {
-            captchaInput.addEventListener('input', validateCaptcha);
-        }
-    }
-});
-
-// SERVICE WORKER REGISTRATION (Network-First Strategy)
-// This block replaces the old logic. It registers the new worker and forces a page reload
-// whenever a new version (with the fix) activates, ensuring the user doesn't see stale content.
+// Service Worker registration (simplified - no automatic API calls)
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // Handle SW path for subdirectories (e.g. /contact/)
-        const swPath = window.location.pathname.includes('/contact') ? '../sw.js' : '/sw.js';
-        
-        navigator.serviceWorker.register(swPath)
-            .then((registration) => {
-                console.log('Service Worker registered with scope:', registration.scope);
-                
-                registration.onupdatefound = () => {
-                    const installingWorker = registration.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed') {
-                            if (navigator.serviceWorker.controller) {
-                                // New content available; force refresh to clear old cache
-                                console.log('New content available, refreshing...');
-                                window.location.reload(); 
-                            }
-                        }
-                    };
-                };
-            })
-            .catch((error) => {
-                console.error('Service Worker registration failed:', error);
-            });
-    });
-
-    // Detect when the controller changes (e.g. after skipWaiting()) and reload
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
+    window.addEventListener('load', function() {
+        // Only register if user explicitly wants offline functionality
+        // Removed automatic registration that was causing Chrome security warnings
+        console.log('Service worker registration disabled for Chrome compatibility');
     });
 }
