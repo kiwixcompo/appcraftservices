@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Contact form handling - UPDATED FIX
+// Contact form handling
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contact-form');
     const successMessage = document.getElementById('success-message');
@@ -47,14 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     data[key] = value;
                 }
                 
-                console.log('Submitting form data:', data);
-                
                 // Determine API path based on current location
-                // If we are in /contact/, go up one level. If at root, go into api.
                 const apiPath = window.location.pathname.includes('/contact') ? 
                     '../api/contact.php' : 'api/contact.php';
-                
-                console.log('Using API path:', apiPath);
                 
                 // Send to API
                 const response = await fetch(apiPath, {
@@ -66,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 const result = await response.json();
-                console.log('API Response:', result);
                 
                 if (result.success) {
                     // Show success message
@@ -94,13 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Admin login function
 function showAdminLogin() {
-    // Determine path based on current location
     const adminPath = window.location.pathname.includes('/contact') ? 
         '../admin/login.php' : 'admin/login.php';
     window.location.href = adminPath;
 }
 
-// Simple Review System (removed problematic real-time features)
+// Simple Review System (Static version for safety)
 class ReviewSystem {
     constructor() {
         this.reviews = [];
@@ -111,13 +104,10 @@ class ReviewSystem {
         if (!document.getElementById('reviews-container')) {
             return;
         }
-        
-        // Load static reviews instead of database-driven system
         this.loadStaticReviews();
     }
     
     loadStaticReviews() {
-        // Display static testimonials instead of database-driven reviews
         const staticReviews = [
             {
                 id: 1,
@@ -223,7 +213,6 @@ class ImageOptimizer {
     
     lazyLoadImages() {
         const images = document.querySelectorAll('img[data-src]');
-        
         if ('IntersectionObserver' in window) {
             const imageObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -235,10 +224,8 @@ class ImageOptimizer {
                     }
                 });
             });
-            
             images.forEach(img => imageObserver.observe(img));
         } else {
-            // Fallback for older browsers
             images.forEach(img => {
                 img.src = img.dataset.src;
                 img.classList.remove('lazy');
@@ -273,7 +260,6 @@ class PerformanceOptimizer {
             '/assets/styles.css',
             '/assets/script.js'
         ];
-        
         criticalResources.forEach(resource => {
             const link = document.createElement('link');
             link.rel = 'preload';
@@ -285,25 +271,18 @@ class PerformanceOptimizer {
     
     optimizeScrolling() {
         let ticking = false;
-        
-        function updateScrollPosition() {
-            // Scroll-based animations or effects can go here
-            ticking = false;
-        }
-        
+        function updateScrollPosition() { ticking = false; }
         function requestTick() {
             if (!ticking) {
                 requestAnimationFrame(updateScrollPosition);
                 ticking = true;
             }
         }
-        
         window.addEventListener('scroll', requestTick);
     }
     
     deferNonCriticalScripts() {
         const nonCriticalScripts = document.querySelectorAll('script[data-defer]');
-        
         window.addEventListener('load', () => {
             nonCriticalScripts.forEach(script => {
                 const newScript = document.createElement('script');
@@ -334,13 +313,11 @@ class MobileOptimizer {
     }
     
     optimizeTouchEvents() {
-        // Add touch-friendly interactions
         const buttons = document.querySelectorAll('button, .btn, a[role="button"]');
         buttons.forEach(button => {
             button.addEventListener('touchstart', function() {
                 this.classList.add('touch-active');
             });
-            
             button.addEventListener('touchend', function() {
                 setTimeout(() => {
                     this.classList.remove('touch-active');
@@ -372,11 +349,33 @@ document.addEventListener('DOMContentLoaded', function() {
     new MobileOptimizer();
 });
 
-// Service Worker registration (simplified - no automatic API calls)
+// =========================================================
+// CRITICAL FIX: FORCE UNREGISTER BROKEN SERVICE WORKERS
+// =========================================================
+// This block detects the old "dangerous" Service Worker and kills it.
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        // Only register if user explicitly wants offline functionality
-        // Removed automatic registration that was causing Chrome security warnings
-        console.log('Service worker registration disabled for Chrome compatibility');
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            if (registrations.length > 0) {
+                console.log('Detected ' + registrations.length + ' old Service Worker(s). Unregistering now...');
+                
+                for(let registration of registrations) {
+                    registration.unregister().then(function(boolean) {
+                        if(boolean) {
+                            console.log('Service Worker successfully unregistered.');
+                            // Optional: Force a reload if it's the first time running this fix
+                            // to ensure the user instantly sees the clean version.
+                            if (!sessionStorage.getItem('sw_fix_applied')) {
+                                sessionStorage.setItem('sw_fix_applied', 'true');
+                                console.log('Reloading to clear cache...');
+                                window.location.reload();
+                            }
+                        }
+                    });
+                }
+            } else {
+                console.log('No Service Workers found. Site is clean.');
+            }
+        });
     });
 }
