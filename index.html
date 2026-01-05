@@ -11,31 +11,6 @@
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
-    <!-- Chrome Security Fix Detection -->
-    <script>
-        // Detect if Chrome is showing security warnings and provide fix
-        if (navigator.userAgent.includes('Chrome') && !navigator.userAgent.includes('Edg')) {
-            // Clear any cached security warnings
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    registrations.forEach(function(registration) {
-                        registration.unregister();
-                    });
-                });
-            }
-            
-            // Check if page was redirected due to security warning
-            if (document.referrer.includes('chrome-error://') || 
-                window.location.search.includes('chrome-error') ||
-                sessionStorage.getItem('chrome-security-warning')) {
-                
-                // Clear the flag and redirect to fix page
-                sessionStorage.removeItem('chrome-security-warning');
-                window.location.href = '/chrome-fix.html';
-            }
-        }
-    </script>
-    
     <!-- Verification for search engines -->
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">

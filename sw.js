@@ -1,194 +1,94 @@
-// Service Worker for App Craft Services
-// Provides caching for better mobile performance
-// Updated for Chrome compatibility
+// Service Worker for App Craft Services - Network First Strategy
+// Fixes "stale content" issues by prioritizing the network over the cache
 
-const CACHE_NAME = 'app-craft-services-v2-chrome-fix';
-const STATIC_CACHE_URLS = [
+const CACHE_NAME = 'appcraft-v3-network-first'; // Incremented version
+const DYNAMIC_CACHE = 'appcraft-dynamic-v3';
+
+// Core assets to cache immediately
+const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/assets/styles.css',
     '/assets/script.js',
+    '/assets/logo.png',
+    '/assets/favicon.ico',
     '/contact/',
     '/services/',
     '/pricing/',
     '/process/'
 ];
 
-// Install event - cache static assets
-self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Caching static assets');
-                return cache.addAll(STATIC_CACHE_URLS);
-            })
-            .catch(error => {
-                console.log('Cache install failed:', error);
-            })
-    );
+// Install: Cache core files
+self.addEventListener('install', (event) => {
+    // skipWaiting forces this new SW to become active immediately
     self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(STATIC_ASSETS);
+        })
+    );
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', event => {
+// Activate: Clean up ALL old caches
+self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(cacheNames => {
+        caches.keys().then((keys) => {
             return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
+                keys.map((key) => {
+                    // Delete any cache that isn't the current V3 cache
+                    if (key !== CACHE_NAME && key !== DYNAMIC_CACHE) {
+                        console.log('[Service Worker] Removing old cache:', key);
+                        return caches.delete(key);
                     }
                 })
             );
         })
     );
-    self.clients.claim();
+    // Take control of all clients immediately
+    return self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', event => {
-    // Skip non-GET requests
-    if (event.request.method !== 'GET') {
+// Fetch: Network First, Fallback to Cache
+self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
+    // 1. Ignore API calls, Admin panel, and POST requests
+    if (
+        event.request.method === 'POST' ||
+        url.pathname.includes('/api/') ||
+        url.pathname.includes('/admin/')
+    ) {
         return;
     }
 
-    // Skip external requests
-    if (!event.request.url.startsWith(self.location.origin)) {
-        return;
-    }
-
+    // 2. Try Network first
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Return cached version if available
-                if (response) {
-                    return response;
+        fetch(event.request)
+            .then((fetchRes) => {
+                // Check if valid response
+                if (!fetchRes || fetchRes.status !== 200 || fetchRes.type !== 'basic') {
+                    return fetchRes;
                 }
 
-                // Clone the request for network fetch
-                const fetchRequest = event.request.clone();
+                // Clone and cache the fresh version
+                const responseToCache = fetchRes.clone();
+                caches.open(DYNAMIC_CACHE).then((cache) => {
+                    cache.put(event.request, responseToCache);
+                });
 
-                return fetch(fetchRequest).then(response => {
-                    // Check if valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
+                return fetchRes;
+            })
+            .catch(() => {
+                // 3. If offline/network fails, use Cache
+                return caches.match(event.request).then((response) => {
+                    if (response) {
                         return response;
                     }
-
-                    // Clone the response for caching
-                    const responseToCache = response.clone();
-
-                    // Cache the response for future use
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            // Only cache GET requests for same origin
-                            if (event.request.method === 'GET' && 
-                                event.request.url.startsWith(self.location.origin)) {
-                                cache.put(event.request, responseToCache);
-                            }
-                        });
-
-                    return response;
-                }).catch(error => {
-                    console.log('Fetch failed:', error);
-                    
-                    // Return offline page for navigation requests
+                    // Optional: Return a custom offline page for navigation
                     if (event.request.mode === 'navigate') {
                         return caches.match('/');
                     }
-                    
-                    throw error;
                 });
             })
     );
-});
-
-// Background sync for form submissions (if supported)
-self.addEventListener('sync', event => {
-    if (event.tag === 'contact-form-sync') {
-        event.waitUntil(syncContactForm());
-    }
-});
-
-async function syncContactForm() {
-    try {
-        // Get pending form submissions from IndexedDB
-        const pendingForms = await getPendingFormSubmissions();
-        
-        for (const form of pendingForms) {
-            try {
-                const response = await fetch('/api/contact.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(form.data)
-                });
-                
-                if (response.ok) {
-                    // Remove from pending submissions
-                    await removePendingFormSubmission(form.id);
-                }
-            } catch (error) {
-                console.log('Form sync failed:', error);
-            }
-        }
-    } catch (error) {
-        console.log('Background sync failed:', error);
-    }
-}
-
-// Helper functions for IndexedDB operations
-async function getPendingFormSubmissions() {
-    // Simplified implementation - in production, use IndexedDB
-    return [];
-}
-
-async function removePendingFormSubmission(id) {
-    // Simplified implementation - in production, use IndexedDB
-    return true;
-}
-
-// Push notification handling (for future use)
-self.addEventListener('push', event => {
-    if (event.data) {
-        const data = event.data.json();
-        const options = {
-            body: data.body,
-            icon: '/assets/logo.png',
-            badge: '/assets/favicon.ico',
-            vibrate: [100, 50, 100],
-            data: {
-                dateOfArrival: Date.now(),
-                primaryKey: data.primaryKey
-            },
-            actions: [
-                {
-                    action: 'explore',
-                    title: 'View Details',
-                    icon: '/assets/favicon.ico'
-                },
-                {
-                    action: 'close',
-                    title: 'Close',
-                    icon: '/assets/favicon.ico'
-                }
-            ]
-        };
-        
-        event.waitUntil(
-            self.registration.showNotification(data.title, options)
-        );
-    }
-});
-
-// Notification click handling
-self.addEventListener('notificationclick', event => {
-    event.notification.close();
-    
-    if (event.action === 'explore') {
-        event.waitUntil(
-            clients.openWindow('/')
-        );
-    }
 });

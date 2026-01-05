@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Submitting form data:', data);
                 
                 // Determine API path based on current location
-                // If we are in /contact/, go up one level. If at root, go into api.
                 const apiPath = window.location.pathname.includes('/contact') ? 
                     '../api/contact.php' : 'api/contact.php';
                 
@@ -101,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
                     } else {
-                        // Fallback if success message element doesn't exist
                         alert('Message sent successfully! We\'ll get back to you within 24 hours.');
                         contactForm.reset();
                         submitBtn.disabled = false;
@@ -150,8 +148,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Admin Panel Functionality - Redirect to admin page
-
-// Show admin login directly with key combination (Ctrl+Shift+A)
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault();
@@ -160,7 +156,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Alternative: Triple-click on logo to show admin login
 document.addEventListener('DOMContentLoaded', function() {
     const logos = document.querySelectorAll('.logo-admin-trigger');
     
@@ -186,9 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Admin login function - redirect to admin page
 function showAdminLogin() {
-    // Determine path based on current location
     const adminPath = window.location.pathname.includes('/contact') ? 
         '../admin/login.php' : 'admin/login.php';
     window.location.href = adminPath;
@@ -207,7 +200,6 @@ class ReviewSystem {
     }
     
     init() {
-        // Only initialize on pages with reviews section
         if (!document.getElementById('reviews-container')) {
             return;
         }
@@ -220,7 +212,6 @@ class ReviewSystem {
     async loadInitialReviews() {
         this.isLoading = true;
         try {
-            // Adjust path based on location
             const apiPath = window.location.pathname.includes('/contact') ? 
                 '../api/reviews/get_approved_reviews.php' : 'api/reviews/get_approved_reviews.php';
 
@@ -310,7 +301,6 @@ class ReviewSystem {
             
             container.appendChild(reviewElement.firstElementChild);
             
-            // Animate in
             setTimeout(() => {
                 reviewElement.firstElementChild.style.transition = 'all 0.5s ease';
                 reviewElement.firstElementChild.style.opacity = '1';
@@ -383,38 +373,8 @@ class ReviewSystem {
     }
     
     startLiveUpdates() {
-        // Temporarily disabled to fix Chrome security warnings
-        // EventSource connections can trigger Chrome's security flags
         console.log('Live updates temporarily disabled for Chrome compatibility');
         return;
-        
-        if (typeof EventSource === 'undefined') {
-            return;
-        }
-        
-        try {
-            const apiPath = window.location.pathname.includes('/contact') ? 
-                '../api/reviews/live_updates.php' : 'api/reviews/live_updates.php';
-
-            this.eventSource = new EventSource(apiPath);
-            
-            this.eventSource.addEventListener('review_update', (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'new_reviews' && data.reviews.length > 0) {
-                    this.handleNewReviews(data.reviews);
-                }
-            });
-            
-            this.eventSource.addEventListener('error', (event) => {
-                // Silently fail or retry
-                if (this.eventSource.readyState === EventSource.CLOSED) {
-                    // Optional: logic to reconnect
-                }
-            });
-            
-        } catch (error) {
-            console.error('Error starting live updates:', error);
-        }
     }
     
     handleNewReviews(newReviews) {
@@ -511,7 +471,6 @@ class ReviewSystem {
     }
 }
 
-// Initialize review system when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('reviews-container')) {
         window.reviewSystem = new ReviewSystem();
@@ -748,39 +707,11 @@ class MobileOptimizer {
     }
 }
 
-// Initialize optimizations when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     new ImageOptimizer();
     new PerformanceOptimizer();
     new MobileOptimizer();
 });
-
-// Service Worker registration for caching (if available) - Chrome compatibility update
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        // Force unregister old service workers first
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
-                registration.unregister();
-            }
-        }).then(function() {
-            // Register new service worker after clearing old ones
-            const swPath = window.location.pathname.includes('/contact') ? '../sw.js' : 'sw.js';
-            
-            navigator.serviceWorker.register(swPath + '?v=' + Date.now())
-                .then(function(registration) {
-                    console.log('ServiceWorker registration successful');
-                    // Force immediate activation
-                    if (registration.waiting) {
-                        registration.waiting.postMessage({command: 'skipWaiting'});
-                    }
-                })
-                .catch(function(err) {
-                    // Silently fail
-                });
-        });
-    });
-}
 
 // Project Portfolio Modal Functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -788,13 +719,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('project-modal');
     const closeModal = document.getElementById('close-modal');
     
-    // Verify elements exist
     if (!modal || !closeModal || projectCards.length === 0) {
-        console.warn('Project modal elements not found or no project cards available');
         return;
     }
     
-    // Handle image loading for project cards
     const projectImages = document.querySelectorAll('.project-card img');
     projectImages.forEach(img => {
         if (img.complete) {
@@ -804,21 +732,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.add('loaded');
             });
             img.addEventListener('error', function() {
-                console.warn('Failed to load project image:', this.src);
-                // Keep the gradient background as fallback
                 this.style.display = 'none';
             });
         }
     });
     
-    // Project data with logo configurations
     const projectData = {
         'mealmate': {
             title: 'MealMate',
-            logo: {
-                image: 'assets/projects/MealMate.png',
-                alt: 'MealMate Logo'
-            },
+            logo: { image: 'assets/projects/MealMate.png', alt: 'MealMate Logo' },
             description: 'A comprehensive meal planning and nutrition tracking application that helps users maintain healthy eating habits through intelligent recipe suggestions, automated grocery lists, and personalized dietary management.',
             tags: ['Health', 'Nutrition', 'Lifestyle'],
             features: [
@@ -833,10 +755,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'notifyme': {
             title: 'Notify Me - Remote Job Alerts',
-            logo: {
-                image: 'assets/projects/Notify Me.png',
-                alt: 'Notify Me - Remote Job Alerts Logo'
-            },
+            logo: { image: 'assets/projects/Notify Me.png', alt: 'Notify Me - Remote Job Alerts Logo' },
             description: 'Get instant alerts for new remote jobs from your favorite sources. A comprehensive job alert system that manages RSS feeds, filters by category, and ensures you never miss an opportunity in the remote work market.',
             tags: ['Job Alerts', 'Remote Work', 'PWA'],
             features: [
@@ -853,10 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'automated-restaurant': {
             title: 'Automated Restaurant',
-            logo: {
-                image: 'assets/projects/Automated Restaurant.png',
-                alt: 'Automated Restaurant Logo'
-            },
+            logo: { image: 'assets/projects/Automated Restaurant.png', alt: 'Automated Restaurant Logo' },
             description: 'A complete restaurant management ecosystem that streamlines operations through automated ordering, intelligent inventory tracking, and optimized kitchen workflow management for enhanced efficiency.',
             tags: ['Restaurant', 'Automation', 'POS'],
             features: [
@@ -871,10 +787,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'quickbudgetai': {
             title: 'QuickBudgetAI',
-            logo: {
-                image: 'assets/projects/QuickBudgetAI.png',
-                alt: 'QuickBudgetAI Logo'
-            },
+            logo: { image: 'assets/projects/QuickBudgetAI.png', alt: 'QuickBudgetAI Logo' },
             description: 'An AI-powered personal finance application that automatically categorizes expenses, provides intelligent budget recommendations, and helps users achieve their financial goals through smart insights.',
             tags: ['FinTech', 'AI', 'Personal Finance'],
             features: [
@@ -889,10 +802,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'clearpath': {
             title: 'ClearPath Client Services',
-            logo: {
-                image: 'assets/projects/ClearPath Client Services.png',
-                alt: 'ClearPath Client Services Logo'
-            },
+            logo: { image: 'assets/projects/ClearPath Client Services.png', alt: 'ClearPath Client Services Logo' },
             description: 'A comprehensive client relationship management platform designed to streamline service delivery through advanced project tracking, communication tools, and performance optimization features.',
             tags: ['CRM', 'Project Management', 'Client Services'],
             features: [
@@ -907,10 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'willpdf': {
             title: 'WillPDF',
-            logo: {
-                image: 'assets/projects/WillPDF.png',
-                alt: 'WillPDF Logo'
-            },
+            logo: { image: 'assets/projects/WillPDF.png', alt: 'WillPDF Logo' },
             description: 'A sophisticated legal document generation platform that creates customized wills and estate planning documents through guided workflows and intelligent form completion.',
             tags: ['LegalTech', 'Document Generation', 'Estate Planning'],
             features: [
@@ -925,10 +832,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'tsu-staff': {
             title: 'TSU Staff Profile',
-            logo: {
-                image: 'assets/projects/TSU Staff Profile.png',
-                alt: 'TSU Staff Profile Logo'
-            },
+            logo: { image: 'assets/projects/TSU Staff Profile.png', alt: 'TSU Staff Profile Logo' },
             description: 'A comprehensive university staff directory and profile management system featuring role-based access control, organizational hierarchy visualization, and advanced search capabilities.',
             tags: ['Education', 'Directory', 'University'],
             features: [
@@ -943,10 +847,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         'federal-leave': {
             title: 'Federal California Leave Assistant',
-            logo: {
-                image: 'assets/projects/Federal California Leave Assistant.png',
-                alt: 'Federal California Leave Assistant Logo'
-            },
+            logo: { image: 'assets/projects/Federal California Leave Assistant.png', alt: 'Federal California Leave Assistant Logo' },
             description: 'An advanced HR compliance tool that automates California state leave calculations and federal FMLA requirements, ensuring businesses maintain full compliance with complex employment regulations.',
             tags: ['HR Tech', 'Compliance', 'Legal'],
             features: [
@@ -961,28 +862,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Add click event to project cards
-    projectCards.forEach((card, index) => {
+    projectCards.forEach((card) => {
         card.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            // Always use currentTarget (the element the event listener is attached to)
-            // instead of this, which might be different due to event bubbling
             const projectCard = e.currentTarget;
             const projectKey = projectCard.getAttribute('data-project');
-            
             const project = projectData[projectKey];
             
             if (project) {
                 showProjectModal(project);
-            } else {
-                console.error('Project data not found for:', projectKey);
             }
         });
     });
     
-    // Close modal events
     if (closeModal) {
         closeModal.addEventListener('click', function(e) {
             e.preventDefault();
@@ -999,7 +893,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
             hideProjectModal();
@@ -1007,19 +900,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function showProjectModal(project) {
-        if (!modal) {
-            console.error('Modal element not found');
-            return;
-        }
+        if (!modal) return;
         
-        // Update small modal logo in header
         const logoContainer = document.getElementById('modal-logo-container');
         if (logoContainer) {
             logoContainer.className = 'w-16 h-16 rounded-lg flex items-center justify-center bg-gray-50 p-2';
             logoContainer.innerHTML = `<img src="${project.logo.image}" alt="${project.logo.alt}" class="w-full h-full object-contain rounded-lg">`;
         }
 
-        // Update large featured logo
         const largeLogo = document.getElementById('modal-large-logo');
         if (largeLogo) {
             largeLogo.innerHTML = `
@@ -1030,24 +918,15 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
 
-        // Update project title below large logo
         const modalProjectTitle = document.getElementById('modal-project-title');
-        if (modalProjectTitle) {
-            modalProjectTitle.textContent = project.title;
-        }
+        if (modalProjectTitle) modalProjectTitle.textContent = project.title;
         
-        // Update modal content
         const titleElement = document.getElementById('modal-title');
-        if (titleElement) {
-            titleElement.textContent = project.title;
-        }
+        if (titleElement) titleElement.textContent = project.title;
         
         const descriptionElement = document.getElementById('modal-description');
-        if (descriptionElement) {
-            descriptionElement.textContent = project.description;
-        }
+        if (descriptionElement) descriptionElement.textContent = project.description;
         
-        // Update tags
         const tagsContainer = document.getElementById('modal-tags');
         if (tagsContainer) {
             tagsContainer.innerHTML = project.tags.map(tag => 
@@ -1055,7 +934,6 @@ document.addEventListener('DOMContentLoaded', function() {
             ).join('');
         }
         
-        // Update features
         const featuresContainer = document.getElementById('modal-features');
         if (featuresContainer) {
             featuresContainer.innerHTML = `
@@ -1075,7 +953,6 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
         
-        // Update tech stack
         const techContainer = document.getElementById('modal-tech-list');
         if (techContainer) {
             techContainer.innerHTML = project.tech.map(tech => 
@@ -1083,14 +960,12 @@ document.addEventListener('DOMContentLoaded', function() {
             ).join('');
         }
         
-        // Show modal
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
     
     function hideProjectModal() {
         if (!modal) return;
-        
         modal.classList.add('hidden');
         document.body.style.overflow = '';
     }
@@ -1103,24 +978,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('next-btn');
     const indicators = document.querySelectorAll('.slider-indicator');
     
-    if (!slider || !prevBtn || !nextBtn) {
-        return; // Exit if slider elements don't exist
-    }
+    if (!slider || !prevBtn || !nextBtn) return;
     
     let currentSlide = 0;
-    const totalSlides = 2; // We have 8 projects, showing 4 at a time = 2 slides
-    const slideWidth = 100; // 100% width per slide
+    const totalSlides = 2;
+    const slideWidth = 100;
     
-    // Update slider position
     function updateSlider() {
         const translateX = -currentSlide * slideWidth;
         slider.style.transform = `translateX(${translateX}%)`;
         
-        // Update navigation buttons
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === totalSlides - 1;
         
-        // Update indicators
         indicators.forEach((indicator, index) => {
             if (index === currentSlide) {
                 indicator.classList.remove('bg-gray-300');
@@ -1132,7 +1002,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Previous slide
     prevBtn.addEventListener('click', function() {
         if (currentSlide > 0) {
             currentSlide--;
@@ -1140,7 +1009,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Next slide
     nextBtn.addEventListener('click', function() {
         if (currentSlide < totalSlides - 1) {
             currentSlide++;
@@ -1148,7 +1016,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Indicator clicks
     indicators.forEach((indicator, index) => {
         indicator.addEventListener('click', function() {
             currentSlide = index;
@@ -1156,7 +1023,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Auto-slide functionality (optional)
     let autoSlideInterval;
     
     function startAutoSlide() {
@@ -1167,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentSlide = 0;
             }
             updateSlider();
-        }, 5000); // Change slide every 5 seconds
+        }, 5000);
     }
     
     function stopAutoSlide() {
@@ -1176,33 +1042,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Start auto-slide
     startAutoSlide();
     
-    // Pause auto-slide on hover
     const sliderContainer = slider.parentElement.parentElement;
     sliderContainer.addEventListener('mouseenter', stopAutoSlide);
     sliderContainer.addEventListener('mouseleave', startAutoSlide);
     
-    // Pause auto-slide when user interacts
     prevBtn.addEventListener('click', () => {
         stopAutoSlide();
-        setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+        setTimeout(startAutoSlide, 10000);
     });
     
     nextBtn.addEventListener('click', () => {
         stopAutoSlide();
-        setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+        setTimeout(startAutoSlide, 10000);
     });
     
     indicators.forEach(indicator => {
         indicator.addEventListener('click', () => {
             stopAutoSlide();
-            setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+            setTimeout(startAutoSlide, 10000);
         });
     });
     
-    // Touch/swipe support for mobile
     let startX = 0;
     let endX = 0;
     
@@ -1216,31 +1078,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     sliderContainer.addEventListener('touchend', function() {
-        const threshold = 50; // Minimum swipe distance
+        const threshold = 50;
         const diff = startX - endX;
         
         if (Math.abs(diff) > threshold) {
             if (diff > 0 && currentSlide < totalSlides - 1) {
-                // Swipe left - next slide
                 currentSlide++;
                 updateSlider();
             } else if (diff < 0 && currentSlide > 0) {
-                // Swipe right - previous slide
                 currentSlide--;
                 updateSlider();
             }
         }
         
-        setTimeout(startAutoSlide, 10000); // Resume auto-slide after 10 seconds
+        setTimeout(startAutoSlide, 10000);
     });
     
-    // Keyboard navigation
     document.addEventListener('keydown', function(e) {
-        // Only handle keyboard navigation if the slider is visible
         const sliderSection = document.querySelector('.project-slider-section');
-        if (!sliderSection || !isElementInViewport(sliderSection)) {
-            return;
-        }
+        if (!sliderSection) return;
+        
+        // Simple visibility check
+        const rect = sliderSection.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+        
+        if (!isVisible) return;
         
         if (e.key === 'ArrowLeft' && currentSlide > 0) {
             currentSlide--;
@@ -1255,21 +1117,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Helper function to check if element is in viewport
-    function isElementInViewport(el) {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-    }
-    
-    // Initialize slider
     updateSlider();
     
-    // Responsive handling
     let resizeTimeout;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimeout);
@@ -1278,7 +1127,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 });
-// Captcha functionality for contact form
+
+// Captcha functionality
 let captchaAnswer = 0;
 
 function generateCaptcha() {
@@ -1295,14 +1145,12 @@ function generateCaptcha() {
             answer = num1 + num2;
             break;
         case '-':
-            // Ensure positive result
             const larger = Math.max(num1, num2);
             const smaller = Math.min(num1, num2);
             question = `${larger} - ${smaller}`;
             answer = larger - smaller;
             break;
         case '*':
-            // Use smaller numbers for multiplication
             const smallNum1 = Math.floor(Math.random() * 10) + 1;
             const smallNum2 = Math.floor(Math.random() * 10) + 1;
             question = `${smallNum1} Ã— ${smallNum2}`;
@@ -1310,23 +1158,25 @@ function generateCaptcha() {
             break;
     }
     
-    document.getElementById('captcha-question').textContent = question;
-    document.getElementById('captcha-correct').value = answer;
-    captchaAnswer = answer;
-    
-    // Clear previous answer
-    const answerInput = document.getElementById('captcha-answer');
-    if (answerInput) {
-        answerInput.value = '';
-        answerInput.classList.remove('border-green-500', 'border-red-500');
+    if (document.getElementById('captcha-question')) {
+        document.getElementById('captcha-question').textContent = question;
+        document.getElementById('captcha-correct').value = answer;
+        captchaAnswer = answer;
+        
+        const answerInput = document.getElementById('captcha-answer');
+        if (answerInput) {
+            answerInput.value = '';
+            answerInput.classList.remove('border-green-500', 'border-red-500');
+        }
     }
 }
 
-// Validate captcha answer
 function validateCaptcha() {
-    const userAnswer = parseInt(document.getElementById('captcha-answer').value);
-    const correctAnswer = parseInt(document.getElementById('captcha-correct').value);
     const answerInput = document.getElementById('captcha-answer');
+    if (!answerInput) return false;
+    
+    const userAnswer = parseInt(answerInput.value);
+    const correctAnswer = parseInt(document.getElementById('captcha-correct').value);
     
     if (userAnswer === correctAnswer) {
         answerInput.classList.remove('border-red-500');
@@ -1339,13 +1189,9 @@ function validateCaptcha() {
     }
 }
 
-// Initialize captcha when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Generate initial captcha
     if (document.getElementById('captcha-question')) {
         generateCaptcha();
-        
-        // Validate captcha on input change
         const captchaInput = document.getElementById('captcha-answer');
         if (captchaInput) {
             captchaInput.addEventListener('input', validateCaptcha);
@@ -1353,4 +1199,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// SERVICE WORKER REGISTRATION (Network-First Strategy)
+// This block replaces the old logic. It registers the new worker and forces a page reload
+// whenever a new version (with the fix) activates, ensuring the user doesn't see stale content.
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Handle SW path for subdirectories (e.g. /contact/)
+        const swPath = window.location.pathname.includes('/contact') ? '../sw.js' : '/sw.js';
+        
+        navigator.serviceWorker.register(swPath)
+            .then((registration) => {
+                console.log('Service Worker registered with scope:', registration.scope);
+                
+                registration.onupdatefound = () => {
+                    const installingWorker = registration.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                // New content available; force refresh to clear old cache
+                                console.log('New content available, refreshing...');
+                                window.location.reload(); 
+                            }
+                        }
+                    };
+                };
+            })
+            .catch((error) => {
+                console.error('Service Worker registration failed:', error);
+            });
+    });
 
+    // Detect when the controller changes (e.g. after skipWaiting()) and reload
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+    });
+}
