@@ -4,6 +4,10 @@ RewriteEngine On
 # Prevent directory browsing
 Options -Indexes
 
+# Force Chrome cache bypass
+RewriteCond %{QUERY_STRING} ^force-reload=1$ [NC]
+RewriteRule ^(.*)$ /force-reload.php [L]
+
 # Detect environment and handle routing accordingly
 # For localhost - ensure /appcraftservices/ prefix is maintained
 RewriteCond %{HTTP_HOST} ^localhost [OR]
