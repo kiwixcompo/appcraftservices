@@ -4,10 +4,6 @@ RewriteEngine On
 # Prevent directory browsing
 Options -Indexes
 
-# Chrome security fix redirect (temporary)
-RewriteCond %{QUERY_STRING} ^chrome-fix=1$ [NC]
-RewriteRule ^(.*)$ /chrome-fix.html [L]
-
 # Chrome test page redirect
 RewriteCond %{QUERY_STRING} ^chrome-test=1$ [NC]
 RewriteRule ^(.*)$ /test-chrome.html [L]
@@ -77,7 +73,7 @@ Header always unset X-Powered-By
     ExpiresByType image/png "access plus 1 month"
     ExpiresByType image/webp "access plus 1 month"
     ExpiresByType image/svg+xml "access plus 1 month"
-    
+ 
     # CSS and JavaScript - 1 week (shorter for development)
     ExpiresByType text/css "access plus 1 week"
     ExpiresByType application/pdf "access plus 1 month"

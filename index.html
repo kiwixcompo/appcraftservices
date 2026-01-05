@@ -6,30 +6,24 @@
     <title>App Craft Services - Turn Your Startup Ideas Into Reality</title>
     <meta name="description" content="Build custom web applications and MVPs for startups. From concept to launch, we help founders bring their ideas to life and reach their target market.">
     
-    <!-- Security Meta Tags -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
-    <!-- Verification for search engines -->
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
     
-    <!-- Resource hints for performance -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     
-    <!-- Icons -->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">
     <link rel="apple-touch-icon" href="assets/logo.png">
     
-    <!-- Preload critical resources -->
     <link rel="preload" href="assets/styles.css" as="style">
     <link rel="preload" href="assets/script.js" as="script">
     
-    <!-- Critical CSS and JavaScript -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
@@ -49,7 +43,6 @@
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body class="bg-white">
-    <!-- Navigation -->
     <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -59,7 +52,6 @@
                     </a>
                 </div>
                 
-                <!-- Desktop Menu -->
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="/" class="text-navy hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Home</a>
@@ -71,7 +63,6 @@
                     </div>
                 </div>
 
-                <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue focus:outline-none focus:text-electric-blue">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,8 +73,7 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
-<div id="mobile-menu" class="md:hidden hidden">
+        <div id="mobile-menu" class="md:hidden hidden">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
                 <a href="/" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Home</a>
                 <a href="/process" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Process</a>
@@ -95,7 +85,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
@@ -143,7 +132,6 @@
         </div>
     </section>
 
-    <!-- Certifications and Expertise -->
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -182,7 +170,6 @@
         </div>
     </section>
 
-    <!-- Value Proposition -->
     <section class="py-16 bg-light-gray">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
@@ -224,13 +211,11 @@
         </div>
     </section>
 
-    <!-- Trust Signals -->
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-navy mb-8">Trusted by Successful Startups</h2>
                 
-                <!-- Success Stats -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-12">
                     <div class="text-center p-3 sm:p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                         <div class="text-2xl sm:text-3xl font-bold text-electric-blue mb-1 sm:mb-2">20+</div>
@@ -254,13 +239,10 @@
                     </div>
                 </div>
 
-                <!-- Portfolio Showcase -->
                 <div class="mb-12" id="recent-projects">
                     <h3 class="text-xl font-semibold text-navy mb-6">Recent Projects We've Worked On</h3>
                     
-                    <!-- Projects Slider Container -->
                     <div class="relative">
-                        <!-- Slider Navigation Buttons -->
                         <button id="prev-btn" class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             <svg class="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -273,10 +255,8 @@
                             </svg>
                         </button>
 
-                        <!-- Projects Slider -->
                         <div class="overflow-hidden mx-8">
                             <div id="projects-slider" class="flex transition-transform duration-500 ease-in-out">
-                                <!-- MealMate -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="mealmate">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -287,7 +267,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Notify Me -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="notifyme">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -298,7 +277,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Automated Restaurant -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="automated-restaurant">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -309,7 +287,6 @@
                                     </div>
                                 </div>
 
-                                <!-- QuickBudgetAI -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="quickbudgetai">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -320,7 +297,6 @@
                                     </div>
                                 </div>
 
-                                <!-- ClearPath Client Services -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="clearpath">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -331,7 +307,6 @@
                                     </div>
                                 </div>
 
-                                <!-- WillPDF -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="willpdf">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -342,7 +317,6 @@
                                     </div>
                                 </div>
 
-                                <!-- TSU Staff Profile -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="tsu-staff">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -353,7 +327,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Federal California Leave Assistant -->
                                 <div class="project-slide flex-none w-1/4 px-2">
                                     <div class="project-card group cursor-pointer" data-project="federal-leave">
                                         <div class="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
@@ -366,23 +339,19 @@
                             </div>
                         </div>
 
-                        <!-- Slider Indicators -->
                         <div class="flex justify-center mt-6 space-x-2">
                             <div id="indicator-0" class="slider-indicator w-3 h-3 rounded-full bg-electric-blue cursor-pointer transition-all duration-300"></div>
                             <div id="indicator-1" class="slider-indicator w-3 h-3 rounded-full bg-gray-300 cursor-pointer transition-all duration-300"></div>
                         </div>
                     </div>
                     
-                    <!-- Project Details Modal -->
                     <div id="project-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
                         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                             <div class="p-6">
-                                <!-- Modal Header with Close Button -->
                                 <div class="flex justify-between items-start mb-6">
                                     <div class="flex items-center space-x-4">
                                         <div id="modal-logo-container" class="w-16 h-16 rounded-lg flex items-center justify-center bg-gray-50 p-2">
-                                            <!-- Small logo will be inserted here -->
-                                        </div>
+                                            </div>
                                         <div>
                                             <h3 id="modal-title" class="text-2xl font-bold text-navy"></h3>
                                             <div id="modal-tags" class="flex flex-wrap gap-2 mt-2"></div>
@@ -391,26 +360,21 @@
                                     <button id="close-modal" class="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center">&times;</button>
                                 </div>
 
-                                <!-- Large Project Logo Section -->
                                 <div class="mb-6 text-center">
                                     <div class="inline-block relative">
                                         <div id="modal-large-logo" class="inline-block bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 shadow-inner relative overflow-hidden">
-                                            <!-- Decorative background pattern -->
                                             <div class="absolute inset-0 opacity-5">
                                                 <div class="absolute top-4 left-4 w-8 h-8 border-2 border-gray-400 rounded-full"></div>
                                                 <div class="absolute bottom-4 right-4 w-6 h-6 border-2 border-gray-400 rounded-full"></div>
                                                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-gray-400 rounded-full"></div>
                                             </div>
-                                            <!-- Large logo will be inserted here -->
-                                        </div>
-                                        <!-- Project title below logo -->
+                                            </div>
                                         <div class="mt-4">
                                             <h2 id="modal-project-title" class="text-xl font-bold text-navy"></h2>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Project Content -->
                                 <div id="modal-content" class="space-y-6">
                                     <div>
                                         <h4 class="text-lg font-semibold text-navy mb-3">About This Project</h4>
@@ -428,15 +392,10 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </section>
 
-
-
-    <!-- CTA Section -->
     <section class="py-16 bg-navy">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Launch Your App Idea?</h2>
@@ -447,7 +406,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -496,18 +454,12 @@
 
     <script src="assets/script.js"></script>
     <script src="assets/config.js"></script>
-    <!-- Temporarily disabled for Chrome compatibility -->
-    <!-- <script src="assets/analytics.js"></script> -->
     
-    <!-- Editor Mode Detection -->
     <script>
         // Check if page is loaded in editor mode
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('editor') === '1') {
-            // Add editor mode styles and functionality
             document.body.classList.add('editor-mode');
-            
-            // Prevent normal navigation in editor mode
             document.addEventListener('click', function(e) {
                 const link = e.target.closest('a');
                 if (link && link.href && !link.href.includes('mailto:') && !link.href.includes('tel:')) {
