@@ -341,6 +341,64 @@
     <!-- Analytics removed - was causing Chrome security warnings -->
     
     <script>
+        // CAPTCHA functionality
+        let captchaAnswer = 0;
+        
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operators = ['+', '-', '*'];
+            const operator = operators[Math.floor(Math.random() * operators.length)];
+            
+            let question, answer;
+            
+            switch(operator) {
+                case '+':
+                    question = `${num1} + ${num2}`;
+                    answer = num1 + num2;
+                    break;
+                case '-':
+                    // Ensure positive result
+                    const larger = Math.max(num1, num2);
+                    const smaller = Math.min(num1, num2);
+                    question = `${larger} - ${smaller}`;
+                    answer = larger - smaller;
+                    break;
+                case '*':
+                    // Use smaller numbers for multiplication
+                    const small1 = Math.floor(Math.random() * 5) + 1;
+                    const small2 = Math.floor(Math.random() * 5) + 1;
+                    question = `${small1} × ${small2}`;
+                    answer = small1 * small2;
+                    break;
+            }
+            
+            document.getElementById('captcha-question').textContent = question;
+            document.getElementById('captcha-correct').value = answer;
+            captchaAnswer = answer;
+            
+            // Clear the input field
+            document.getElementById('captcha-answer').value = '';
+        }
+        
+        // Generate initial CAPTCHA when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCaptcha();
+        });
+        
+        // Validate CAPTCHA before form submission
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            const userAnswer = parseInt(document.getElementById('captcha-answer').value);
+            const correctAnswer = parseInt(document.getElementById('captcha-correct').value);
+            
+            if (userAnswer !== correctAnswer) {
+                e.preventDefault();
+                alert('Please solve the math problem correctly to verify you are human.');
+                generateCaptcha(); // Generate new CAPTCHA
+                return false;
+            }
+        });
+        
         // Check if page is loaded in editor mode
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('editor') === '1') {

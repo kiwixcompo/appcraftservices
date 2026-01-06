@@ -200,6 +200,149 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Project Slider Functionality
+class ProjectSlider {
+    constructor() {
+        this.currentSlide = 0;
+        this.totalSlides = 2; // 8 projects ÷ 4 projects per slide = 2 slides
+        this.projectsPerSlide = 4;
+        this.totalProjects = 8;
+        this.slider = document.getElementById('projects-slider');
+        this.prevBtn = document.getElementById('prev-btn');
+        this.nextBtn = document.getElementById('next-btn');
+        this.indicators = document.querySelectorAll('.slider-indicator');
+        
+        if (this.slider) {
+            this.init();
+        }
+    }
+    
+    init() {
+        console.log('ProjectSlider initialized with', this.totalSlides, 'slides');
+        
+        // Add event listeners for navigation buttons
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => this.prevSlide());
+            console.log('Previous button event listener added');
+        }
+        
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => this.nextSlide());
+            console.log('Next button event listener added');
+        }
+        
+        // Add event listeners for indicators
+        this.indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => this.goToSlide(index));
+        });
+        console.log('Indicator event listeners added for', this.indicators.length, 'indicators');
+        
+        // Auto-slide every 6 seconds
+        this.startAutoSlide();
+        
+        // Pause auto-slide on hover
+        this.slider.addEventListener('mouseenter', () => this.stopAutoSlide());
+        this.slider.addEventListener('mouseleave', () => this.startAutoSlide());
+        
+        // Update initial state
+        this.updateSlider();
+    }
+    
+    nextSlide() {
+        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+        this.updateSlider();
+        this.resetAutoSlide();
+    }
+    
+    prevSlide() {
+        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+        this.updateSlider();
+        this.resetAutoSlide();
+    }
+    
+    goToSlide(slideIndex) {
+        this.currentSlide = slideIndex;
+        this.updateSlider();
+        this.resetAutoSlide();
+    }
+    
+    updateSlider() {
+        if (!this.slider) return;
+        
+        // Calculate transform percentage
+        // Each slide shows 4 projects (25% each), so move by 100% per slide
+        const translateX = -this.currentSlide * 100;
+        this.slider.style.transform = `translateX(${translateX}%)`;
+        
+        // Update indicators
+        this.indicators.forEach((indicator, index) => {
+            if (index === this.currentSlide) {
+                indicator.classList.remove('bg-gray-300');
+                indicator.classList.add('bg-electric-blue');
+            } else {
+                indicator.classList.remove('bg-electric-blue');
+                indicator.classList.add('bg-gray-300');
+            }
+        });
+        
+        // Update button states (enable/disable based on current slide)
+        if (this.prevBtn) {
+            if (this.currentSlide === 0) {
+                this.prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                this.prevBtn.disabled = true;
+            } else {
+                this.prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                this.prevBtn.disabled = false;
+            }
+        }
+        
+        if (this.nextBtn) {
+            if (this.currentSlide === this.totalSlides - 1) {
+                this.nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                this.nextBtn.disabled = true;
+            } else {
+                this.nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                this.nextBtn.disabled = false;
+            }
+        }
+    }
+    
+    startAutoSlide() {
+        this.stopAutoSlide(); // Clear any existing interval
+        this.autoSlideInterval = setInterval(() => {
+            // Go to next slide, or back to first if at the end
+            if (this.currentSlide === this.totalSlides - 1) {
+                this.goToSlide(0);
+            } else {
+                this.nextSlide();
+            }
+        }, 6000); // Change slide every 6 seconds
+    }
+    
+    resetAutoSlide() {
+        this.stopAutoSlide();
+        this.startAutoSlide();
+    }
+    
+    stopAutoSlide() {
+        if (this.autoSlideInterval) {
+            clearInterval(this.autoSlideInterval);
+            this.autoSlideInterval = null;
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('reviews-container')) {
+        window.reviewSystem = new ReviewSystem();
+    }
+    
+    // Initialize project slider
+    if (document.getElementById('projects-slider')) {
+        window.projectSlider = new ProjectSlider();
+    }
+});
+
 // Image optimization utilities
 class ImageOptimizer {
     constructor() {
