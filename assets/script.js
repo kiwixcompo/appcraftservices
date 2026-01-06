@@ -898,31 +898,22 @@ window.adminAccess = function() {
     window.location.href = '/admin/login.php';
 };
 
-// Method 6: Secret URL hint in console
-console.log('%c🔧 Developer Tools Detected', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
-console.log('%cAdmin Access Methods:', 'color: #6b7280; font-size: 14px;');
-console.log('%c• Keyboard: Ctrl+Shift+D or Alt+Shift+A', 'color: #6b7280; font-size: 12px;');
-console.log('%c• Type: "kiwix" anywhere on the page', 'color: #6b7280; font-size: 12px;');
-console.log('%c• Console: adminAccess()', 'color: #6b7280; font-size: 12px;');
-console.log('%c• Secret URL: /secret-admin-access-2026', 'color: #6b7280; font-size: 12px;');
-console.log('%c• Konami Code: ↑↑↓↓←→←→BA', 'color: #6b7280; font-size: 12px;');
-
 // Method 7: Triple-click on logo/title for admin access
 document.addEventListener('DOMContentLoaded', function() {
-    // Add a small, nearly invisible element that indicates admin access is available
+    // Add a completely invisible element that indicates admin access is available (only visible in dev tools)
     const adminIndicator = document.createElement('div');
     adminIndicator.style.cssText = `
         position: fixed;
-        bottom: 5px;
-        right: 5px;
-        width: 3px;
-        height: 3px;
-        background: rgba(59, 130, 246, 0.3);
-        border-radius: 50%;
-        z-index: 1000;
+        bottom: 0px;
+        right: 0px;
+        width: 1px;
+        height: 1px;
+        background: transparent;
+        z-index: -1;
         pointer-events: none;
     `;
-    adminIndicator.title = 'Admin access available';
+    adminIndicator.id = 'admin-access-available';
+    adminIndicator.setAttribute('data-admin', 'true');
     document.body.appendChild(adminIndicator);
     
     // Triple-click on main heading/logo for admin access
@@ -951,58 +942,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    }
-});
-// Show admin shortcut notification (temporary - can be removed later)
-document.addEventListener('DOMContentLoaded', function() {
-    // Only show on homepage
-    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-        setTimeout(() => {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #3b82f6, #1e40af);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                font-size: 14px;
-                z-index: 10000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                max-width: 300px;
-                opacity: 0;
-                transform: translateX(100%);
-                transition: all 0.3s ease;
-            `;
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-weight: bold; margin-bottom: 4px;">🔧 Admin Access Updated</div>
-                        <div style="font-size: 12px; opacity: 0.9;">Type "kiwix" or use Ctrl+Shift+D</div>
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; margin-left: 10px;">&times;</button>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Animate in
-            setTimeout(() => {
-                notification.style.opacity = '1';
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            // Auto-hide after 8 seconds
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    if (notification.parentElement) {
-                        notification.remove();
-                    }
-                }, 300);
-            }, 8000);
-        }, 2000); // Show after 2 seconds
     }
 });

@@ -87,18 +87,42 @@ $content = array_merge($defaultContent, $content);
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .sidebar-item.active { background-color: #3b82f6; color: white; }
+        
+        /* Ensure sidebar scrolling works properly */
+        .sidebar-nav {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 2px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-gray-800 text-white">
-            <div class="p-4">
+        <div class="w-64 bg-gray-800 text-white flex flex-col h-full">
+            <div class="p-4 flex-shrink-0">
                 <h1 class="text-xl font-bold">Admin Dashboard</h1>
                 <p class="text-sm text-gray-300">App Craft Services</p>
             </div>
             
-            <nav class="mt-8">
+            <nav class="flex-1 overflow-y-auto py-4 sidebar-nav">
                 <a href="#dashboard" class="sidebar-item active flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('dashboard')">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
@@ -151,11 +175,14 @@ $content = array_merge($defaultContent, $content);
                     <i class="fas fa-cog mr-3"></i>
                     Settings
                 </a>
+            </nav>
+            
+            <div class="flex-shrink-0 border-t border-gray-700">
                 <a href="logout.php" class="flex items-center px-4 py-3 hover:bg-gray-700 text-gray-300">
                     <i class="fas fa-sign-out-alt mr-3"></i>
                     Logout
                 </a>
-            </nav>
+            </div>
         </div>
 
         <!-- Main Content -->
