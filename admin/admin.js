@@ -1342,3 +1342,310 @@ function testGAConnection() {
         alert('Google Analytics script not loaded yet. Please save settings first.');
     }
 }
+
+// Project Management Functions
+function showAddProjectModal() {
+    document.getElementById('project-modal').classList.remove('hidden');
+}
+
+function hideAddProjectModal() {
+    document.getElementById('project-modal').classList.add('hidden');
+    document.getElementById('project-form').reset();
+}
+
+function loadProjects() {
+    fetch('api/get_projects.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayProjects(data.projects);
+                updateProjectStats(data.projects);
+            } else {
+                console.error('Failed to load projects:', data.message);
+                document.getElementById('projects-list').innerHTML = '<p class="text-red-600">Failed to load projects</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading projects:', error);
+            document.getElementById('projects-list').innerHTML = '<p class="text-red-600">Error loading projects</p>';
+        });
+}
+
+function displayProjects(projects) {
+    const projectsList = document.getElementById('projects-list');
+    
+    if (projects.length === 0) {
+        projectsList.innerHTML = '<p class="text-gray-600">No projects found</p>';
+        return;
+    }
+    
+    const projectsHTML = projects.map(project => `
+        <div class="border border-gray-200 rounded-lg p-4 mb-4">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-4 mb-2">
+                        ${project.image ? `<img src="../${project.image}" alt="${project.name}" class="w-12 h-12 object-cover rounded">` : '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center"><i class="fas fa-project-diagram text-gray-400"></i></div>'}
+                        <div>
+                            <h4 class="font-semibold text-lg">${project.name}</h4>
+                            <p class="text-sm text-gray-600">${project.category}</p>
+                        </div>
+                        ${project.featured ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Featured</span>' : ''}
+                    </div>
+                    <p class="text-gray-700 mb-2">${project.description}</p>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        ${project.technologies.map(tech => `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${tech}</span>`).join('')}
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p><strong>Client:</strong> ${project.client}</p>
+                        <p><strong>Completed:</strong> ${new Date(project.completion_date).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editProject('${project.id}')" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteProject('${project.id}')" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    projectsList.innerHTML = projectsHTML;
+}
+
+function updateProjectStats(projects) {
+    document.getElementById('total-projects').textContent = projects.length;
+    document.getElementById('featured-projects').textContent = projects.filter(p => p.featured).length;
+    document.getElementById('completed-projects').textContent = projects.filter(p => p.status === 'completed').length;
+    
+    const categories = [...new Set(projects.map(p => p.category))];
+    document.getElementById('project-categories').textContent = categories.length;
+}
+
+function deleteProject(projectId) {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    
+    fetch('api/delete_project.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: projectId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadProjects(); // Reload projects list
+        } else {
+            alert('Failed to delete project: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting project:', error);
+        alert('Error deleting project');
+    });
+}
+
+// Blog Management Functions
+function showAddBlogModal() {
+    document.getElementById('blog-modal').classList.remove('hidden');
+    
+    // Auto-generate slug from title
+    const titleInput = document.getElementById('blog-title');
+    const slugInput = document.getElementById('blog-slug');
+    
+    titleInput.addEventListener('input', function() {
+        const slug = this.value.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim('-');
+        slugInput.value = slug;
+    });
+}
+
+function hideAddBlogModal() {
+    document.getElementById('blog-modal').classList.add('hidden');
+    document.getElementById('blog-form').reset();
+}
+
+function loadBlogPosts() {
+    fetch('../api/get_blog_posts.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayBlogPosts(data.posts);
+                updateBlogStats(data.posts);
+            } else {
+                console.error('Failed to load blog posts:', data.message);
+                document.getElementById('blog-posts-list').innerHTML = '<p class="text-red-600">Failed to load blog posts</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading blog posts:', error);
+            document.getElementById('blog-posts-list').innerHTML = '<p class="text-red-600">Error loading blog posts</p>';
+        });
+}
+
+function displayBlogPosts(posts) {
+    const blogPostsList = document.getElementById('blog-posts-list');
+    
+    if (posts.length === 0) {
+        blogPostsList.innerHTML = '<p class="text-gray-600">No blog posts found</p>';
+        return;
+    }
+    
+    const postsHTML = posts.map(post => `
+        <div class="border border-gray-200 rounded-lg p-4 mb-4">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-4 mb-2">
+                        ${post.featured_image ? `<img src="../${post.featured_image}" alt="${post.title}" class="w-12 h-12 object-cover rounded">` : '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center"><i class="fas fa-blog text-gray-400"></i></div>'}
+                        <div>
+                            <h4 class="font-semibold text-lg">${post.title}</h4>
+                            <p class="text-sm text-gray-600">${post.category}</p>
+                        </div>
+                        <span class="bg-${post.status === 'published' ? 'green' : 'yellow'}-100 text-${post.status === 'published' ? 'green' : 'yellow'}-800 text-xs px-2 py-1 rounded">${post.status}</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">${post.excerpt}</p>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        ${post.tags.map(tag => `<span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">${tag}</span>`).join('')}
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p><strong>Author:</strong> ${post.author}</p>
+                        <p><strong>Created:</strong> ${new Date(post.created_at).toLocaleDateString()}</p>
+                        <p><strong>Slug:</strong> /blog/${post.slug}</p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editBlogPost('${post.id}')" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteBlogPost('${post.id}')" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    blogPostsList.innerHTML = postsHTML;
+}
+
+function updateBlogStats(posts) {
+    document.getElementById('total-posts').textContent = posts.length;
+    document.getElementById('published-posts').textContent = posts.filter(p => p.status === 'published').length;
+    document.getElementById('draft-posts').textContent = posts.filter(p => p.status === 'draft').length;
+    
+    const categories = [...new Set(posts.map(p => p.category))];
+    document.getElementById('blog-categories').textContent = categories.length;
+}
+
+function deleteBlogPost(postId) {
+    if (!confirm('Are you sure you want to delete this blog post?')) return;
+    
+    fetch('api/delete_blog_post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: postId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadBlogPosts(); // Reload blog posts list
+        } else {
+            alert('Failed to delete blog post: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting blog post:', error);
+        alert('Error deleting blog post');
+    });
+}
+
+// Form submission handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Project form submission
+    const projectForm = document.getElementById('project-form');
+    if (projectForm) {
+        projectForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // Convert technologies string to array
+            const technologies = formData.get('technologies').split(',').map(tech => tech.trim());
+            formData.delete('technologies');
+            formData.append('technologies', JSON.stringify(technologies));
+            
+            fetch('api/save_project.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    hideAddProjectModal();
+                    loadProjects();
+                    alert('Project saved successfully!');
+                } else {
+                    alert('Failed to save project: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving project:', error);
+                alert('Error saving project');
+            });
+        });
+    }
+    
+    // Blog form submission
+    const blogForm = document.getElementById('blog-form');
+    if (blogForm) {
+        blogForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // Convert tags string to array
+            const tags = formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag);
+            formData.delete('tags');
+            formData.append('tags', JSON.stringify(tags));
+            
+            fetch('api/save_blog_post.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    hideAddBlogModal();
+                    loadBlogPosts();
+                    alert('Blog post saved successfully!');
+                } else {
+                    alert('Failed to save blog post: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving blog post:', error);
+                alert('Error saving blog post');
+            });
+        });
+    }
+});
+
+// Load data when tabs are shown
+function showTab(tabName) {
+    // ... existing showTab code ...
+    
+    // Load data for specific tabs
+    if (tabName === 'projects') {
+        loadProjects();
+    } else if (tabName === 'blog') {
+        loadBlogPosts();
+    }
+}

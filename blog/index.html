@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - App Craft Services</title>
+    <meta name="description" content="Insights, tips, and guides for startup founders and entrepreneurs. Learn about web development, MVP creation, and building successful digital products.">
+    
+    <!-- Security Meta Tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Verification for search engines -->
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    
+    <!-- Resource hints for performance -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="apple-touch-icon" href="../assets/logo.png">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../assets/styles.css" as="style">
+    <link rel="preload" href="../assets/script.js" as="script">
+    
+    <!-- Critical CSS and JavaScript -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1e3a8a',
+                        'electric-blue': '#3b82f6',
+                        'light-gray': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="bg-light-gray">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-navy">App Craft Services</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-electric-blue transition duration-300">Home</a>
+                    <a href="/process" class="text-gray-700 hover:text-electric-blue transition duration-300">Process</a>
+                    <a href="/services" class="text-gray-700 hover:text-electric-blue transition duration-300">Services</a>
+                    <a href="/pricing" class="text-gray-700 hover:text-electric-blue transition duration-300">Pricing</a>
+                    <a href="/blog" class="text-navy font-medium">Blog</a>
+                    <a href="/contact" class="bg-electric-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Get Started</a>
+                </div>
+                
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+                <a href="/" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/process" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Process</a>
+                <a href="/services" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="/pricing" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Pricing</a>
+                <a href="/blog" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Blog</a>
+                <a href="/contact" class="bg-electric-blue text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-navy to-electric-blue text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Startup Insights & Development Tips</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100">
+                Expert advice on building successful web applications, MVPs, and scaling your startup
+            </p>
+        </div>
+    </section>
+
+    <!-- Blog Posts -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="blog-posts-container">
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Loading blog posts...</p>
+                </div>
+            </div>
+            
+            <!-- Load More Button -->
+            <div class="text-center mt-12">
+                <button id="load-more-posts" class="bg-electric-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 hidden">
+                    Load More Posts
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="bg-navy text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
+            <p class="text-xl text-blue-100 mb-8">Get the latest startup insights and development tips delivered to your inbox</p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-electric-blue">
+                <button type="submit" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <h3 class="text-2xl font-bold mb-4">App Craft Services</h3>
+                    <p class="text-gray-300 mb-4">Professional web development services for growing businesses. We build custom solutions that scale with your success.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
+                        <li><a href="/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
+                        <li><a href="/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
+                        <li><a href="/blog" class="text-gray-300 hover:text-white transition duration-300">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
+                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-300">
+                    Copyright © <span id="current-year"></span> App Craft Services. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/script.js"></script>
+    <script src="../assets/config.js"></script>
+    
+    <script>
+        // Blog functionality
+        let currentPage = 1;
+        let hasMorePosts = true;
+        
+        async function loadBlogPosts(page = 1) {
+            try {
+                const response = await fetch(`../api/get_blog_posts.php?page=${page}&limit=6`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderBlogPosts(data.posts, page === 1);
+                    hasMorePosts = data.has_more;
+                    
+                    const loadMoreBtn = document.getElementById('load-more-posts');
+                    if (hasMorePosts) {
+                        loadMoreBtn.classList.remove('hidden');
+                    } else {
+                        loadMoreBtn.classList.add('hidden');
+                    }
+                } else {
+                    showError('Failed to load blog posts');
+                }
+            } catch (error) {
+                console.error('Error loading blog posts:', error);
+                showError('Error loading blog posts');
+            }
+        }
+        
+        function renderBlogPosts(posts, clearContainer = false) {
+            const container = document.getElementById('blog-posts-container');
+            
+            if (clearContainer) {
+                container.innerHTML = '';
+            }
+            
+            if (posts.length === 0 && clearContainer) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4">No Blog Posts Yet</h3>
+                        <p class="text-gray-600">Check back soon for startup insights and development tips!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const postsGrid = clearContainer ? document.createElement('div') : container.querySelector('.grid') || document.createElement('div');
+            if (clearContainer) {
+                postsGrid.className = 'grid md:grid-cols-2 lg:grid-cols-3 gap-8';
+                container.appendChild(postsGrid);
+            }
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('article');
+                postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300';
+                postElement.innerHTML = `
+                    <div class="aspect-video bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+                        <div class="text-4xl text-electric-blue">
+                            <i class="fas fa-blog"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <span class="bg-electric-blue text-white px-2 py-1 rounded text-xs font-medium mr-3">${escapeHtml(post.category)}</span>
+                            <time>${formatDate(post.published_at)}</time>
+                        </div>
+                        <h2 class="text-xl font-bold text-navy mb-3 hover:text-electric-blue transition duration-300">
+                            <a href="/blog/${post.slug}">${escapeHtml(post.title)}</a>
+                        </h2>
+                        <p class="text-gray-600 mb-4 line-clamp-3">${escapeHtml(post.excerpt)}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">By ${escapeHtml(post.author)}</span>
+                            <a href="/blog/${post.slug}" class="text-electric-blue hover:text-blue-700 font-medium text-sm">
+                                Read More →
+                            </a>
+                        </div>
+                    </div>
+                `;
+                postsGrid.appendChild(postElement);
+            });
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('blog-posts-container');
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Error Loading Posts</h3>
+                    <p class="text-gray-600">${message}</p>
+                </div>
+            `;
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Load more posts
+        document.getElementById('load-more-posts').addEventListener('click', () => {
+            currentPage++;
+            loadBlogPosts(currentPage);
+        });
+        
+        // Load initial posts
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBlogPosts();
+        });
+    </script>
+</body>
+</html>

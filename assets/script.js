@@ -200,13 +200,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Project Slider Functionality
+// Project Slider Functionality - Fixed Version
 class ProjectSlider {
     constructor() {
         this.currentSlide = 0;
-        this.totalSlides = 2; // 8 projects ÷ 4 projects per slide = 2 slides
-        this.projectsPerSlide = 4;
-        this.totalProjects = 8;
+        this.totalSlides = 2; // 2 slide groups
         this.slider = document.getElementById('projects-slider');
         this.prevBtn = document.getElementById('prev-btn');
         this.nextBtn = document.getElementById('next-btn');
@@ -218,44 +216,80 @@ class ProjectSlider {
     }
     
     init() {
-        console.log('ProjectSlider initialized with', this.totalSlides, 'slides');
+        console.log('ProjectSlider initialized');
+        
+        // Set initial slider width and positioning
+        this.setupSlider();
         
         // Add event listeners for navigation buttons
         if (this.prevBtn) {
-            this.prevBtn.addEventListener('click', () => this.prevSlide());
-            console.log('Previous button event listener added');
+            this.prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.prevSlide();
+                console.log('Previous button clicked');
+            });
         }
         
         if (this.nextBtn) {
-            this.nextBtn.addEventListener('click', () => this.nextSlide());
-            console.log('Next button event listener added');
+            this.nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.nextSlide();
+                console.log('Next button clicked');
+            });
         }
         
         // Add event listeners for indicators
         this.indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => this.goToSlide(index));
+            indicator.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.goToSlide(index);
+                console.log('Indicator clicked:', index);
+            });
         });
-        console.log('Indicator event listeners added for', this.indicators.length, 'indicators');
         
-        // Auto-slide every 6 seconds
+        // Auto-slide every 5 seconds
         this.startAutoSlide();
         
         // Pause auto-slide on hover
-        this.slider.addEventListener('mouseenter', () => this.stopAutoSlide());
-        this.slider.addEventListener('mouseleave', () => this.startAutoSlide());
+        if (this.slider.parentElement) {
+            this.slider.parentElement.addEventListener('mouseenter', () => this.stopAutoSlide());
+            this.slider.parentElement.addEventListener('mouseleave', () => this.startAutoSlide());
+        }
         
         // Update initial state
         this.updateSlider();
     }
     
+    setupSlider() {
+        // Ensure slider has proper width for 2 slide groups
+        this.slider.style.width = '200%'; // 2 slide groups × 100% each
+        this.slider.style.display = 'flex';
+        this.slider.style.transition = 'transform 0.5s ease-in-out';
+        
+        // Set each slide group to 50% width (100% ÷ 2 slides)
+        const slideGroups = this.slider.querySelectorAll('.slide-group');
+        slideGroups.forEach(slideGroup => {
+            slideGroup.style.width = '50%'; // Each slide group takes 50% of the 200% width
+            slideGroup.style.flexShrink = '0';
+        });
+    }
+    
     nextSlide() {
-        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+        if (this.currentSlide < this.totalSlides - 1) {
+            this.currentSlide++;
+        } else {
+            this.currentSlide = 0; // Loop back to first slide
+        }
         this.updateSlider();
         this.resetAutoSlide();
     }
     
     prevSlide() {
-        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+        if (this.currentSlide > 0) {
+            this.currentSlide--;
+        } else {
+            this.currentSlide = this.totalSlides - 1; // Loop to last slide
+        }
         this.updateSlider();
         this.resetAutoSlide();
     }
@@ -270,9 +304,10 @@ class ProjectSlider {
         if (!this.slider) return;
         
         // Calculate transform percentage
-        // Each slide shows 4 projects (25% each), so move by 100% per slide
-        const translateX = -this.currentSlide * 100;
+        const translateX = -this.currentSlide * 50; // Each slide is 50% of the container
         this.slider.style.transform = `translateX(${translateX}%)`;
+        
+        console.log(`Sliding to slide ${this.currentSlide}, translateX: ${translateX}%`);
         
         // Update indicators
         this.indicators.forEach((indicator, index) => {
@@ -285,38 +320,21 @@ class ProjectSlider {
             }
         });
         
-        // Update button states (enable/disable based on current slide)
+        // Update button states
         if (this.prevBtn) {
-            if (this.currentSlide === 0) {
-                this.prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                this.prevBtn.disabled = true;
-            } else {
-                this.prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                this.prevBtn.disabled = false;
-            }
+            this.prevBtn.style.opacity = this.currentSlide === 0 ? '0.5' : '1';
         }
         
         if (this.nextBtn) {
-            if (this.currentSlide === this.totalSlides - 1) {
-                this.nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                this.nextBtn.disabled = true;
-            } else {
-                this.nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                this.nextBtn.disabled = false;
-            }
+            this.nextBtn.style.opacity = this.currentSlide === this.totalSlides - 1 ? '0.5' : '1';
         }
     }
     
     startAutoSlide() {
         this.stopAutoSlide(); // Clear any existing interval
         this.autoSlideInterval = setInterval(() => {
-            // Go to next slide, or back to first if at the end
-            if (this.currentSlide === this.totalSlides - 1) {
-                this.goToSlide(0);
-            } else {
-                this.nextSlide();
-            }
-        }, 6000); // Change slide every 6 seconds
+            this.nextSlide();
+        }, 5000); // Change slide every 5 seconds
     }
     
     resetAutoSlide() {
@@ -521,4 +539,232 @@ if ('serviceWorker' in navigator) {
             }
         });
     });
+}
+// Project Modal Functionality
+const projectData = {
+    'mealmate': {
+        title: 'MealMate',
+        description: 'A comprehensive meal planning and nutrition tracking application that helps users maintain healthy eating habits. Features include meal scheduling, nutritional analysis, grocery list generation, and progress tracking.',
+        features: [
+            'Personalized meal planning based on dietary preferences',
+            'Comprehensive nutrition tracking and analysis',
+            'Automated grocery list generation',
+            'Recipe database with nutritional information',
+            'Progress tracking and health insights',
+            'Integration with fitness trackers'
+        ],
+        technologies: ['React', 'Node.js', 'MongoDB', 'Express', 'Chart.js'],
+        logo: 'assets/projects/MealMate.png',
+        category: 'Health & Fitness'
+    },
+    'notifyme': {
+        title: 'Notify Me',
+        description: 'A real-time notification system designed for business communications. Enables instant messaging, alerts, and notifications across multiple channels including email, SMS, and push notifications.',
+        features: [
+            'Real-time messaging and notifications',
+            'Multi-channel delivery (Email, SMS, Push)',
+            'Advanced scheduling and automation',
+            'Analytics and delivery tracking',
+            'Team collaboration tools',
+            'API integration capabilities'
+        ],
+        technologies: ['Vue.js', 'Express', 'Redis', 'Socket.io', 'PostgreSQL'],
+        logo: 'assets/projects/Notify Me.png',
+        category: 'Communication'
+    },
+    'automated-restaurant': {
+        title: 'Automated Restaurant',
+        description: 'Complete restaurant management and automation system that streamlines operations from order taking to kitchen management. Includes POS integration, inventory tracking, and customer management.',
+        features: [
+            'Automated order processing and kitchen display',
+            'Inventory management with low-stock alerts',
+            'Customer relationship management',
+            'Staff scheduling and payroll integration',
+            'Sales analytics and reporting',
+            'Multi-location support'
+        ],
+        technologies: ['Angular', 'Python', 'PostgreSQL', 'Django', 'Redis'],
+        logo: 'assets/projects/Automated Restaurant.png',
+        category: 'Restaurant & Food'
+    },
+    'quickbudgetai': {
+        title: 'QuickBudgetAI',
+        description: 'AI-powered personal finance and budgeting assistant that uses machine learning to provide personalized financial advice and automated budget optimization.',
+        features: [
+            'AI-driven budget recommendations',
+            'Expense categorization and tracking',
+            'Financial goal setting and monitoring',
+            'Investment portfolio analysis',
+            'Bill reminder and payment automation',
+            'Predictive spending insights'
+        ],
+        technologies: ['React', 'Python', 'TensorFlow', 'FastAPI', 'PostgreSQL'],
+        logo: 'assets/projects/QuickBudgetAI.png',
+        category: 'Finance & AI'
+    },
+    'clearpath': {
+        title: 'ClearPath Client Services',
+        description: 'Client relationship management and service tracking platform designed for service-based businesses. Manages client interactions, project timelines, and service delivery.',
+        features: [
+            'Comprehensive client profile management',
+            'Project timeline and milestone tracking',
+            'Service delivery automation',
+            'Client communication portal',
+            'Invoice and payment processing',
+            'Performance analytics and reporting'
+        ],
+        technologies: ['Laravel', 'MySQL', 'Vue.js', 'Bootstrap', 'Stripe API'],
+        logo: 'assets/projects/ClearPath Client Services.png',
+        category: 'Business Management'
+    },
+    'willpdf': {
+        title: 'WillPDF',
+        description: 'Legal document generation and PDF management system that automates the creation of wills, contracts, and other legal documents with built-in compliance checking.',
+        features: [
+            'Automated legal document generation',
+            'Template management and customization',
+            'Digital signature integration',
+            'Compliance checking and validation',
+            'Document version control',
+            'Secure client portal access'
+        ],
+        technologies: ['PHP', 'JavaScript', 'PDF.js', 'MySQL', 'Bootstrap'],
+        logo: 'assets/projects/WillPDF.png',
+        category: 'Legal Tech'
+    },
+    'tsu-staff': {
+        title: 'TSU Staff Profile',
+        description: 'University staff management and profile system that centralizes employee information, manages academic credentials, and facilitates internal communication.',
+        features: [
+            'Comprehensive staff profile management',
+            'Academic credential tracking',
+            'Department and role management',
+            'Internal directory and search',
+            'Performance evaluation system',
+            'Document management and storage'
+        ],
+        technologies: ['Django', 'PostgreSQL', 'Bootstrap', 'Python', 'Redis'],
+        logo: 'assets/projects/TSU Staff Profile.png',
+        category: 'Education'
+    },
+    'federal-leave': {
+        title: 'Federal California Leave Assistant',
+        description: 'Government leave management and compliance tracking system that ensures adherence to federal and state leave policies while streamlining the application process.',
+        features: [
+            'Automated leave policy compliance checking',
+            'Employee leave balance tracking',
+            'Manager approval workflow',
+            'Integration with payroll systems',
+            'Reporting and analytics dashboard',
+            'Mobile-friendly employee portal'
+        ],
+        technologies: ['ASP.NET', 'SQL Server', 'Angular', 'C#', 'Azure'],
+        logo: 'assets/projects/Federal California Leave Assistant.png',
+        category: 'Government & HR'
+    }
+};
+
+// Project modal event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click listeners to project cards
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const projectId = this.getAttribute('data-project');
+            if (projectId && projectData[projectId]) {
+                showProjectModal(projectId);
+            }
+        });
+    });
+    
+    // Close modal listeners
+    const closeModalBtn = document.getElementById('close-modal');
+    const projectModal = document.getElementById('project-modal');
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', hideProjectModal);
+    }
+    
+    if (projectModal) {
+        projectModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideProjectModal();
+            }
+        });
+    }
+    
+    // ESC key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideProjectModal();
+        }
+    });
+});
+
+function showProjectModal(projectId) {
+    const project = projectData[projectId];
+    if (!project) return;
+    
+    const modal = document.getElementById('project-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalProjectTitle = document.getElementById('modal-project-title');
+    const modalDescription = document.getElementById('modal-description');
+    const modalFeatures = document.getElementById('modal-features');
+    const modalTechList = document.getElementById('modal-tech-list');
+    const modalLogoContainer = document.getElementById('modal-logo-container');
+    const modalLargeLogo = document.getElementById('modal-large-logo');
+    const modalTags = document.getElementById('modal-tags');
+    
+    if (modalTitle) modalTitle.textContent = project.title;
+    if (modalProjectTitle) modalProjectTitle.textContent = project.title;
+    if (modalDescription) modalDescription.textContent = project.description;
+    
+    // Set logo
+    if (modalLogoContainer && project.logo) {
+        modalLogoContainer.innerHTML = `<img src="${project.logo}" alt="${project.title} Logo" class="w-full h-full object-contain">`;
+    }
+    
+    if (modalLargeLogo && project.logo) {
+        modalLargeLogo.innerHTML = `<img src="${project.logo}" alt="${project.title} Logo" class="w-32 h-32 object-contain relative z-10">`;
+    }
+    
+    // Set category tag
+    if (modalTags) {
+        modalTags.innerHTML = `<span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">${project.category}</span>`;
+    }
+    
+    // Set features
+    if (modalFeatures && project.features) {
+        const featuresHTML = `
+            <div>
+                <h4 class="text-lg font-semibold text-navy mb-3">Key Features:</h4>
+                <ul class="space-y-2">
+                    ${project.features.map(feature => `<li class="flex items-start"><span class="text-green-600 mr-2">✓</span><span class="text-gray-600">${feature}</span></li>`).join('')}
+                </ul>
+            </div>
+        `;
+        modalFeatures.innerHTML = featuresHTML;
+    }
+    
+    // Set technologies
+    if (modalTechList && project.technologies) {
+        const techHTML = project.technologies.map(tech => 
+            `<span class="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">${tech}</span>`
+        ).join('');
+        modalTechList.innerHTML = techHTML;
+    }
+    
+    // Show modal
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+}
+
+function hideProjectModal() {
+    const modal = document.getElementById('project-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
 }

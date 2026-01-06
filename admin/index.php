@@ -123,6 +123,14 @@ $content = array_merge($defaultContent, $content);
                     <i class="fas fa-star mr-3"></i>
                     Reviews
                 </a>
+                <a href="#projects" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('projects')">
+                    <i class="fas fa-project-diagram mr-3"></i>
+                    Projects
+                </a>
+                <a href="#blog" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('blog')">
+                    <i class="fas fa-blog mr-3"></i>
+                    Blog Posts
+                </a>
                 <a href="#messages" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('messages')">
                     <i class="fas fa-envelope mr-3"></i>
                     Messages
@@ -623,6 +631,74 @@ $content = array_merge($defaultContent, $content);
                     </div>
                     <div id="reviews-list">
                         <p class="text-gray-600">Loading reviews...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Tab -->
+            <div id="projects" class="tab-content p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-blue-600" id="total-projects">0</div>
+                        <div class="text-sm text-gray-600">Total Projects</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-green-600" id="featured-projects">0</div>
+                        <div class="text-sm text-gray-600">Featured Projects</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-purple-600" id="completed-projects">0</div>
+                        <div class="text-sm text-gray-600">Completed Projects</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-orange-600" id="project-categories">0</div>
+                        <div class="text-sm text-gray-600">Categories</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold">Project Management</h3>
+                        <button onclick="showAddProjectModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>Add New Project
+                        </button>
+                    </div>
+                    <div id="projects-list">
+                        <p class="text-gray-600">Loading projects...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Tab -->
+            <div id="blog" class="tab-content p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-blue-600" id="total-posts">0</div>
+                        <div class="text-sm text-gray-600">Total Posts</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-green-600" id="published-posts">0</div>
+                        <div class="text-sm text-gray-600">Published Posts</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-yellow-600" id="draft-posts">0</div>
+                        <div class="text-sm text-gray-600">Draft Posts</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <div class="text-3xl font-bold text-purple-600" id="blog-categories">0</div>
+                        <div class="text-sm text-gray-600">Categories</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold">Blog Post Management</h3>
+                        <button onclick="showAddBlogModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>Add New Post
+                        </button>
+                    </div>
+                    <div id="blog-posts-list">
+                        <p class="text-gray-600">Loading blog posts...</p>
                     </div>
                 </div>
             </div>
@@ -2300,5 +2376,171 @@ $content = array_merge($defaultContent, $content);
             console.log('Invoice functionality initialized successfully');
         });
     </script>
+</body>
+</html>
+            if (projectNameField) {
+                projectNameField.addEventListener('input', updateInvoicePreview);
+                projectNameField.addEventListener('blur', updateInvoicePreview);
+            }
+            
+            if (projectTypeField) {
+                projectTypeField.addEventListener('input', updateInvoicePreview);
+                projectTypeField.addEventListener('blur', updateInvoicePreview);
+            }
+        });
+    </script>
+
+    <!-- Project Management Modal -->
+    <div id="project-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Add New Project</h3>
+                    <button onclick="hideAddProjectModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                
+                <form id="project-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+                            <input type="text" id="project-name-input" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="project-category" name="category" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Category</option>
+                                <option value="Health & Fitness">Health & Fitness</option>
+                                <option value="Communication">Communication</option>
+                                <option value="Restaurant & Food">Restaurant & Food</option>
+                                <option value="Finance & AI">Finance & AI</option>
+                                <option value="Business Management">Business Management</option>
+                                <option value="Legal Tech">Legal Tech</option>
+                                <option value="Education">Education</option>
+                                <option value="Government & HR">Government & HR</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="project-description" name="description" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
+                            <input type="text" id="project-client" name="client" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Completion Date</label>
+                            <input type="date" id="project-completion-date" name="completion_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Technologies (comma-separated)</label>
+                        <input type="text" id="project-technologies" name="technologies" placeholder="React, Node.js, MongoDB" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Project Image</label>
+                        <input type="file" id="project-image" name="image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <p class="text-sm text-gray-500 mt-1">Upload project logo or screenshot</p>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="project-featured" name="featured" class="mr-2">
+                        <label for="project-featured" class="text-sm font-medium text-gray-700">Featured Project</label>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 pt-4">
+                        <button type="button" onclick="hideAddProjectModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Post Management Modal -->
+    <div id="blog-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Add New Blog Post</h3>
+                    <button onclick="hideAddBlogModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                
+                <form id="blog-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Post Title</label>
+                            <input type="text" id="blog-title" name="title" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Slug (URL)</label>
+                            <input type="text" id="blog-slug" name="slug" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Excerpt</label>
+                        <textarea id="blog-excerpt" name="excerpt" rows="2" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Brief description of the post"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                        <textarea id="blog-content" name="content" rows="10" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write your blog post content here..."></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="blog-category" name="category" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Category</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Mobile Apps">Mobile Apps</option>
+                                <option value="Business Tips">Business Tips</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Case Studies">Case Studies</option>
+                                <option value="Tutorials">Tutorials</option>
+                                <option value="Industry News">Industry News</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                            <input type="text" id="blog-author" name="author" value="App Craft Services" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="blog-status" name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tags (comma-separated)</label>
+                        <input type="text" id="blog-tags" name="tags" placeholder="web development, react, javascript" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+                        <input type="file" id="blog-image" name="featured_image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <p class="text-sm text-gray-500 mt-1">Upload featured image for the blog post</p>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 pt-4">
+                        <button type="button" onclick="hideAddBlogModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

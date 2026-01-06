@@ -49,19 +49,21 @@
     background: var(--navy-color);
 }
 
-/* Project Slider Styles */
+/* Project Slider Styles - Fixed Version */
 #projects-slider {
-    width: 200%; /* 2 slides × 100% each */
-    transition: transform 0.5s ease-in-out;
+    width: 200% !important; /* 2 slides × 100% each */
+    transition: transform 0.5s ease-in-out !important;
+    display: flex !important;
 }
 
 .project-slide {
-    width: 25%; /* Each project takes 25% of the slider width (4 projects per slide) */
-    flex-shrink: 0;
+    width: 25% !important; /* Each project takes 25% (4 projects per slide) */
+    flex-shrink: 0 !important;
 }
 
 .slider-indicator {
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .slider-indicator:hover {
@@ -72,17 +74,12 @@
 #prev-btn, #next-btn {
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
 }
 
 #prev-btn:hover, #next-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-#prev-btn:disabled, #next-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
 }
 
 /* Project card hover effects */
