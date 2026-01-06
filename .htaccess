@@ -4,6 +4,9 @@ RewriteEngine On
 # Prevent directory browsing
 Options -Indexes
 
+# Hidden admin access route (secret URL)
+RewriteRule ^secret-admin-access-2026/?$ admin/login.php [L]
+
 # Force Chrome cache bypass
 RewriteCond %{QUERY_STRING} ^force-reload=1$ [NC]
 RewriteRule ^(.*)$ /force-reload.php [L]

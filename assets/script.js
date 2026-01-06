@@ -768,3 +768,126 @@ function hideProjectModal() {
         document.body.style.overflow = ''; // Restore scrolling
     }
 }
+// Admin Dashboard Access System
+document.addEventListener('keydown', function(e) {
+    // Method 1: Ctrl+Shift+A (or Cmd+Shift+A on Mac)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        window.location.href = '/admin/login.php';
+        return;
+    }
+    
+    // Method 2: Konami Code for admin access (↑↑↓↓←→←→BA)
+    if (!window.konamiSequence) {
+        window.konamiSequence = [];
+        window.konamiCode = [
+            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+            'KeyB', 'KeyA'
+        ];
+    }
+    
+    window.konamiSequence.push(e.code);
+    
+    // Keep only the last 10 keys
+    if (window.konamiSequence.length > 10) {
+        window.konamiSequence = window.konamiSequence.slice(-10);
+    }
+    
+    // Check if the sequence matches the Konami code
+    if (window.konamiSequence.length === 10) {
+        const matches = window.konamiCode.every((key, index) => 
+            key === window.konamiSequence[index]
+        );
+        
+        if (matches) {
+            e.preventDefault();
+            window.konamiSequence = []; // Reset sequence
+            
+            // Show a fun message before redirecting
+            const adminMessage = document.createElement('div');
+            adminMessage.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 18px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+            `;
+            adminMessage.innerHTML = '🎮 Konami Code Activated!<br>Accessing Admin Panel...';
+            document.body.appendChild(adminMessage);
+            
+            setTimeout(() => {
+                window.location.href = '/admin/login.php';
+            }, 1500);
+        }
+    }
+});
+
+// Method 3: Console access
+window.adminAccess = function() {
+    console.log('🔐 Admin access granted via console');
+    window.location.href = '/admin/login.php';
+};
+
+// Method 4: Secret URL hint in console
+console.log('%c🔧 Developer Tools Detected', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
+console.log('%cAdmin Access Methods:', 'color: #6b7280; font-size: 14px;');
+console.log('%c• Keyboard: Ctrl+Shift+A', 'color: #6b7280; font-size: 12px;');
+console.log('%c• Console: adminAccess()', 'color: #6b7280; font-size: 12px;');
+console.log('%c• Secret URL: /secret-admin-access-2026', 'color: #6b7280; font-size: 12px;');
+console.log('%c• Konami Code: ↑↑↓↓←→←→BA', 'color: #6b7280; font-size: 12px;');
+
+// Method 5: Triple-click on logo/title for admin access
+document.addEventListener('DOMContentLoaded', function() {
+    // Add a small, nearly invisible element that indicates admin access is available
+    const adminIndicator = document.createElement('div');
+    adminIndicator.style.cssText = `
+        position: fixed;
+        bottom: 5px;
+        right: 5px;
+        width: 3px;
+        height: 3px;
+        background: rgba(59, 130, 246, 0.3);
+        border-radius: 50%;
+        z-index: 1000;
+        pointer-events: none;
+    `;
+    adminIndicator.title = 'Admin access available';
+    document.body.appendChild(adminIndicator);
+    
+    // Triple-click on main heading/logo for admin access
+    const mainHeading = document.querySelector('h1') || document.querySelector('.logo') || document.querySelector('header h1');
+    if (mainHeading) {
+        let clickCount = 0;
+        let clickTimer = null;
+        
+        mainHeading.addEventListener('click', function(e) {
+            clickCount++;
+            
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, 1000); // Reset after 1 second
+            } else if (clickCount === 3) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                
+                // Prevent default action and show admin access
+                e.preventDefault();
+                
+                const confirmAccess = confirm('Access admin dashboard?');
+                if (confirmAccess) {
+                    window.location.href = '/admin/login.php';
+                }
+            }
+        });
+    }
+});

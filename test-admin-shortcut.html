@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Shortcut</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold text-center mb-8">Admin Shortcut Test</h1>
+            
+            <div class="space-y-4 text-center">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Multiple Admin Access Methods:</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-blue-800 mb-2">🎹 Keyboard Shortcuts</h3>
+                        <p class="text-sm text-blue-700">Press <kbd class="bg-white px-2 py-1 rounded shadow">Ctrl + Shift + A</kbd></p>
+                        <p class="text-xs text-blue-600 mt-1">(Mac: <kbd class="bg-white px-2 py-1 rounded shadow">Cmd + Shift + A</kbd>)</p>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-green-800 mb-2">🎮 Konami Code</h3>
+                        <p class="text-sm text-green-700">↑↑↓↓←→←→BA</p>
+                        <p class="text-xs text-green-600 mt-1">Use arrow keys + B + A</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-purple-800 mb-2">💻 Console Command</h3>
+                        <p class="text-sm text-purple-700"><code>adminAccess()</code></p>
+                        <p class="text-xs text-purple-600 mt-1">Type in browser console</p>
+                    </div>
+                    
+                    <div class="bg-orange-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-orange-800 mb-2">🔗 Secret URL</h3>
+                        <p class="text-sm text-orange-700">/secret-admin-access-2026</p>
+                        <p class="text-xs text-orange-600 mt-1">Direct URL access</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold text-gray-800 mb-2">🖱️ Triple-Click Method</h3>
+                    <p class="text-sm text-gray-700">Triple-click on any main heading (H1) on the website</p>
+                </div>
+                
+                <div class="mt-8 space-x-4">
+                    <button onclick="testShortcut()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        Test Ctrl+Shift+A
+                    </button>
+                    <button onclick="testKonamiCode()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        Test Konami Code
+                    </button>
+                    <button onclick="testConsoleAccess()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                        Test Console Access
+                    </button>
+                </div>
+                
+                <div id="test-result" class="mt-4 p-4 rounded-lg hidden">
+                    <p class="font-semibold">Test Result:</p>
+                    <p id="result-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/script.js"></script>
+    <script>
+        function testShortcut() {
+            showTestResult('Testing Ctrl+Shift+A shortcut...', 'blue');
+            
+            // Simulate the keyboard event
+            const event = new KeyboardEvent('keydown', {
+                key: 'a',
+                ctrlKey: true,
+                shiftKey: true,
+                bubbles: true
+            });
+            
+            testRedirect(event, 'Ctrl+Shift+A shortcut');
+        }
+        
+        function testKonamiCode() {
+            showTestResult('Testing Konami Code (↑↑↓↓←→←→BA)...', 'green');
+            
+            const konamiKeys = [
+                'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+                'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+                'KeyB', 'KeyA'
+            ];
+            
+            // Reset the sequence
+            window.konamiSequence = [];
+            
+            // Simulate each key press with a delay
+            konamiKeys.forEach((key, index) => {
+                setTimeout(() => {
+                    const event = new KeyboardEvent('keydown', {
+                        code: key,
+                        bubbles: true
+                    });
+                    
+                    if (index === konamiKeys.length - 1) {
+                        // Test redirect on the last key
+                        testRedirect(event, 'Konami Code');
+                    } else {
+                        document.dispatchEvent(event);
+                    }
+                }, index * 100);
+            });
+        }
+        
+        function testConsoleAccess() {
+            showTestResult('Testing console access...', 'purple');
+            
+            if (typeof window.adminAccess === 'function') {
+                // Override the function temporarily to test
+                const originalAdminAccess = window.adminAccess;
+                window.adminAccess = function() {
+                    showTestResult('✅ Console access working! adminAccess() function found and callable.', 'green');
+                };
+                
+                // Call the function
+                window.adminAccess();
+                
+                // Restore original function
+                setTimeout(() => {
+                    window.adminAccess = originalAdminAccess;
+                }, 1000);
+            } else {
+                showTestResult('❌ Console access not working. adminAccess() function not found.', 'red');
+            }
+        }
+        
+        function testRedirect(event, method) {
+            let triggered = false;
+            const originalLocation = window.location.href;
+            
+            // Override window.location.href temporarily to test
+            const originalHref = Object.getOwnPropertyDescriptor(window.location, 'href') || 
+                                Object.getOwnPropertyDescriptor(window.location.constructor.prototype, 'href');
+            
+            Object.defineProperty(window.location, 'href', {
+                set: function(url) {
+                    if (url.includes('/admin/login.php')) {
+                        triggered = true;
+                        showTestResult(`✅ ${method} working! Would redirect to: ${url}`, 'green');
+                    }
+                },
+                configurable: true
+            });
+            
+            // Dispatch the event
+            document.dispatchEvent(event);
+            
+            // Restore original href property
+            setTimeout(() => {
+                if (originalHref) {
+                    Object.defineProperty(window.location, 'href', originalHref);
+                }
+                
+                if (!triggered) {
+                    showTestResult(`❌ ${method} not working. Check console for errors.`, 'red');
+                }
+            }, 100);
+        }
+        
+        function showTestResult(message, color) {
+            const resultDiv = document.getElementById('test-result');
+            const resultText = document.getElementById('result-text');
+            
+            resultText.textContent = message;
+            
+            const colorClasses = {
+                'green': 'bg-green-100 text-green-800',
+                'red': 'bg-red-100 text-red-800',
+                'blue': 'bg-blue-100 text-blue-800',
+                'purple': 'bg-purple-100 text-purple-800'
+            };
+            
+            resultDiv.className = `mt-4 p-4 rounded-lg ${colorClasses[color] || 'bg-gray-100 text-gray-800'}`;
+            resultDiv.classList.remove('hidden');
+        }
+        
+        // Add visual feedback when shortcut is pressed
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+                // Show a brief flash to indicate the shortcut was detected
+                const flash = document.createElement('div');
+                flash.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(59, 130, 246, 0.1);
+                    z-index: 9999;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(flash);
+                
+                setTimeout(() => {
+                    document.body.removeChild(flash);
+                }, 200);
+            }
+        });
+    </script>
+</body>
+</html>
