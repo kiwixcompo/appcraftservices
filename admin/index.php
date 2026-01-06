@@ -143,7 +143,6 @@ $content = array_merge($defaultContent, $content);
                     <i class="fas fa-credit-card mr-3"></i>
                     Payments
                 </a>
-                </a>
                 <a href="#analytics" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('analytics')">
                     <i class="fas fa-chart-bar mr-3"></i>
                     Analytics
@@ -2374,19 +2373,6 @@ $content = array_merge($defaultContent, $content);
             }
             
             console.log('Invoice functionality initialized successfully');
-        });
-    </script>
-</body>
-</html>
-            if (projectNameField) {
-                projectNameField.addEventListener('input', updateInvoicePreview);
-                projectNameField.addEventListener('blur', updateInvoicePreview);
-            }
-            
-            if (projectTypeField) {
-                projectTypeField.addEventListener('input', updateInvoicePreview);
-                projectTypeField.addEventListener('blur', updateInvoicePreview);
-            }
         });
     </script>
 

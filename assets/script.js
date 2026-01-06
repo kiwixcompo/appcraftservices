@@ -786,7 +786,59 @@ document.addEventListener('keydown', function(e) {
         return;
     }
     
-    // Method 3: Konami Code for admin access (↑↑↓↓←→←→BA)
+    // Method 3: Type "kiwix" anywhere on the page
+    if (!window.typedSequence) {
+        window.typedSequence = '';
+        window.typedTimer = null;
+    }
+    
+    // Only capture regular letter keys (not special keys)
+    if (e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
+        window.typedSequence += e.key.toLowerCase();
+        
+        // Clear the sequence after 3 seconds of inactivity
+        clearTimeout(window.typedTimer);
+        window.typedTimer = setTimeout(() => {
+            window.typedSequence = '';
+        }, 3000);
+        
+        // Keep only the last 10 characters
+        if (window.typedSequence.length > 10) {
+            window.typedSequence = window.typedSequence.slice(-10);
+        }
+        
+        // Check if "kiwix" was typed
+        if (window.typedSequence.includes('kiwix')) {
+            e.preventDefault();
+            window.typedSequence = ''; // Reset sequence
+            
+            // Show confirmation message
+            const adminMessage = document.createElement('div');
+            adminMessage.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 18px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+            `;
+            adminMessage.innerHTML = '🔑 "kiwix" detected!<br>Accessing Admin Panel...';
+            document.body.appendChild(adminMessage);
+            
+            setTimeout(() => {
+                window.location.href = '/admin/login.php';
+            }, 1500);
+        }
+    }
+    
+    // Method 4: Konami Code for admin access (↑↑↓↓←→←→BA)
     if (!window.konamiSequence) {
         window.konamiSequence = [];
         window.konamiCode = [
@@ -840,21 +892,22 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Method 4: Console access
+// Method 5: Console access
 window.adminAccess = function() {
     console.log('🔐 Admin access granted via console');
     window.location.href = '/admin/login.php';
 };
 
-// Method 5: Secret URL hint in console
+// Method 6: Secret URL hint in console
 console.log('%c🔧 Developer Tools Detected', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
 console.log('%cAdmin Access Methods:', 'color: #6b7280; font-size: 14px;');
 console.log('%c• Keyboard: Ctrl+Shift+D or Alt+Shift+A', 'color: #6b7280; font-size: 12px;');
+console.log('%c• Type: "kiwix" anywhere on the page', 'color: #6b7280; font-size: 12px;');
 console.log('%c• Console: adminAccess()', 'color: #6b7280; font-size: 12px;');
 console.log('%c• Secret URL: /secret-admin-access-2026', 'color: #6b7280; font-size: 12px;');
 console.log('%c• Konami Code: ↑↑↓↓←→←→BA', 'color: #6b7280; font-size: 12px;');
 
-// Method 6: Triple-click on logo/title for admin access
+// Method 7: Triple-click on logo/title for admin access
 document.addEventListener('DOMContentLoaded', function() {
     // Add a small, nearly invisible element that indicates admin access is available
     const adminIndicator = document.createElement('div');
@@ -926,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <div style="font-weight: bold; margin-bottom: 4px;">🔧 Admin Access Updated</div>
-                        <div style="font-size: 12px; opacity: 0.9;">Use Ctrl+Shift+D or Alt+Shift+A</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Type "kiwix" or use Ctrl+Shift+D</div>
                     </div>
                     <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; margin-left: 10px;">&times;</button>
                 </div>

@@ -23,40 +23,52 @@
                     </div>
                     
                     <div class="bg-green-50 p-4 rounded-lg">
-                        <h3 class="font-semibold text-green-800 mb-2">🎮 Konami Code</h3>
-                        <p class="text-sm text-green-700">↑↑↓↓←→←→BA</p>
-                        <p class="text-xs text-green-600 mt-1">Use arrow keys + B + A</p>
+                        <h3 class="font-semibold text-green-800 mb-2">⌨️ Type to Access</h3>
+                        <p class="text-sm text-green-700">Type <kbd class="bg-white px-2 py-1 rounded shadow">kiwix</kbd></p>
+                        <p class="text-xs text-green-600 mt-1">Anywhere on the page</p>
                     </div>
                     
                     <div class="bg-purple-50 p-4 rounded-lg">
-                        <h3 class="font-semibold text-purple-800 mb-2">💻 Console Command</h3>
-                        <p class="text-sm text-purple-700"><code>adminAccess()</code></p>
-                        <p class="text-xs text-purple-600 mt-1">Type in browser console</p>
+                        <h3 class="font-semibold text-purple-800 mb-2">🎮 Konami Code</h3>
+                        <p class="text-sm text-purple-700">↑↑↓↓←→←→BA</p>
+                        <p class="text-xs text-purple-600 mt-1">Use arrow keys + B + A</p>
                     </div>
                     
                     <div class="bg-orange-50 p-4 rounded-lg">
-                        <h3 class="font-semibold text-orange-800 mb-2">🔗 Secret URL</h3>
-                        <p class="text-sm text-orange-700">/secret-admin-access-2026</p>
-                        <p class="text-xs text-orange-600 mt-1">Direct URL access</p>
+                        <h3 class="font-semibold text-orange-800 mb-2">💻 Console Command</h3>
+                        <p class="text-sm text-orange-700"><code>adminAccess()</code></p>
+                        <p class="text-xs text-orange-600 mt-1">Type in browser console</p>
                     </div>
                 </div>
                 
-                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                    <h3 class="font-semibold text-gray-800 mb-2">🖱️ Triple-Click Method</h3>
-                    <p class="text-sm text-gray-700">Triple-click on any main heading (H1) on the website</p>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-indigo-800 mb-2">🔗 Secret URL</h3>
+                        <p class="text-sm text-indigo-700">/secret-admin-access-2026</p>
+                        <p class="text-xs text-indigo-600 mt-1">Direct URL access</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-gray-800 mb-2">🖱️ Triple-Click Method</h3>
+                        <p class="text-sm text-gray-700">Triple-click on any main heading (H1)</p>
+                        <p class="text-xs text-gray-600 mt-1">On the website</p>
+                    </div>
                 </div>
                 
-                <div class="mt-8 space-x-4">
+                <div class="mt-8 space-x-4 flex flex-wrap gap-2">
                     <button onclick="testShortcut()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
                         Test Ctrl+Shift+D
                     </button>
                     <button onclick="testAltShortcut()" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">
                         Test Alt+Shift+A
                     </button>
-                    <button onclick="testKonamiCode()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                    <button onclick="testKiwixTyping()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        Test "kiwix" Typing
+                    </button>
+                    <button onclick="testKonamiCode()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
                         Test Konami Code
                     </button>
-                    <button onclick="testConsoleAccess()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                    <button onclick="testConsoleAccess()" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
                         Test Console Access
                     </button>
                 </div>
@@ -83,6 +95,32 @@
             });
             
             testRedirect(event, 'Ctrl+Shift+D shortcut');
+        }
+        
+        function testKiwixTyping() {
+            showTestResult('Testing "kiwix" typing method...', 'green');
+            
+            // Reset the typed sequence
+            window.typedSequence = '';
+            
+            // Simulate typing "kiwix"
+            const letters = ['k', 'i', 'w', 'i', 'x'];
+            
+            letters.forEach((letter, index) => {
+                setTimeout(() => {
+                    const event = new KeyboardEvent('keydown', {
+                        key: letter,
+                        bubbles: true
+                    });
+                    
+                    if (index === letters.length - 1) {
+                        // Test redirect on the last letter
+                        testRedirect(event, '"kiwix" typing method');
+                    } else {
+                        document.dispatchEvent(event);
+                    }
+                }, index * 100);
+            });
         }
         
         function testAltShortcut() {

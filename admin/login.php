@@ -11,7 +11,7 @@ if ($_POST) {
     if ($username === 'kiwix' && $password === 'Admin123!') {
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_username'] = $username;
-        header('Location: index.php');
+        header('Location: /admin/index.php');
         exit;
     } else {
         $error = 'Invalid username or password';

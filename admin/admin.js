@@ -62,6 +62,8 @@ function showTab(tabName) {
             'pages': 'Page Editor',
             'design': 'Design & Styling',
             'reviews': 'Reviews',
+            'projects': 'Projects',
+            'blog': 'Blog Posts',
             'messages': 'Messages',
             'invoices': 'Invoices',
             'payments': 'Payments',
@@ -72,7 +74,11 @@ function showTab(tabName) {
     }
 
     // Load tab-specific data
-    if (tabName === 'analytics') {
+    if (tabName === 'projects') {
+        loadProjects();
+    } else if (tabName === 'blog') {
+        loadBlogPosts();
+    } else if (tabName === 'analytics') {
         // Add event listeners for analytics filters
         const periodSelect = document.getElementById('analytics-period');
         const pageSelect = document.getElementById('analytics-page');
@@ -1638,14 +1644,63 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Load data when tabs are shown
-function showTab(tabName) {
-    // ... existing showTab code ...
-    
-    // Load data for specific tabs
-    if (tabName === 'projects') {
-        loadProjects();
-    } else if (tabName === 'blog') {
-        loadBlogPosts();
-    }
+// Missing functions for admin dashboard
+
+function openRealtimeEditor() {
+    window.open('realtime-editor.php', '_blank');
 }
+
+function previewSite() {
+    window.open('../', '_blank');
+}
+
+// Additional utility functions
+function refreshAnalytics() {
+    // Placeholder for analytics refresh functionality
+    console.log('Refreshing analytics...');
+}
+
+function loadMessages() {
+    // Load messages functionality
+    fetch('api/get_messages.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Messages loaded:', data.messages);
+                // Update message count in dashboard
+                const messageCount = document.getElementById('message-count');
+                if (messageCount) {
+                    messageCount.textContent = data.messages.length;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading messages:', error);
+        });
+}
+
+function loadReviews() {
+    // Load reviews functionality
+    fetch('api/get_reviews.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Reviews loaded:', data.reviews);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+        });
+}
+
+// Initialize dashboard data on load
+document.addEventListener('DOMContentLoaded', function() {
+    // Load initial data
+    loadMessages();
+    
+    // Set current year in footer if exists
+    const currentYearElement = document.getElementById('current-year');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+});
