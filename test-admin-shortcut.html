@@ -17,8 +17,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-blue-50 p-4 rounded-lg">
                         <h3 class="font-semibold text-blue-800 mb-2">🎹 Keyboard Shortcuts</h3>
-                        <p class="text-sm text-blue-700">Press <kbd class="bg-white px-2 py-1 rounded shadow">Ctrl + Shift + A</kbd></p>
-                        <p class="text-xs text-blue-600 mt-1">(Mac: <kbd class="bg-white px-2 py-1 rounded shadow">Cmd + Shift + A</kbd>)</p>
+                        <p class="text-sm text-blue-700">Press <kbd class="bg-white px-2 py-1 rounded shadow">Ctrl + Shift + D</kbd></p>
+                        <p class="text-xs text-blue-600 mt-1">Or <kbd class="bg-white px-2 py-1 rounded shadow">Alt + Shift + A</kbd></p>
+                        <p class="text-xs text-blue-500 mt-1">(Mac: Cmd instead of Ctrl)</p>
                     </div>
                     
                     <div class="bg-green-50 p-4 rounded-lg">
@@ -47,7 +48,10 @@
                 
                 <div class="mt-8 space-x-4">
                     <button onclick="testShortcut()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                        Test Ctrl+Shift+A
+                        Test Ctrl+Shift+D
+                    </button>
+                    <button onclick="testAltShortcut()" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        Test Alt+Shift+A
                     </button>
                     <button onclick="testKonamiCode()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
                         Test Konami Code
@@ -68,17 +72,31 @@
     <script src="assets/script.js"></script>
     <script>
         function testShortcut() {
-            showTestResult('Testing Ctrl+Shift+A shortcut...', 'blue');
+            showTestResult('Testing Ctrl+Shift+D shortcut...', 'blue');
             
             // Simulate the keyboard event
             const event = new KeyboardEvent('keydown', {
-                key: 'a',
+                key: 'd',
                 ctrlKey: true,
                 shiftKey: true,
                 bubbles: true
             });
             
-            testRedirect(event, 'Ctrl+Shift+A shortcut');
+            testRedirect(event, 'Ctrl+Shift+D shortcut');
+        }
+        
+        function testAltShortcut() {
+            showTestResult('Testing Alt+Shift+A shortcut...', 'indigo');
+            
+            // Simulate the keyboard event
+            const event = new KeyboardEvent('keydown', {
+                key: 'a',
+                altKey: true,
+                shiftKey: true,
+                bubbles: true
+            });
+            
+            testRedirect(event, 'Alt+Shift+A shortcut');
         }
         
         function testKonamiCode() {
@@ -176,6 +194,7 @@
                 'green': 'bg-green-100 text-green-800',
                 'red': 'bg-red-100 text-red-800',
                 'blue': 'bg-blue-100 text-blue-800',
+                'indigo': 'bg-indigo-100 text-indigo-800',
                 'purple': 'bg-purple-100 text-purple-800'
             };
             

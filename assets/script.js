@@ -770,14 +770,23 @@ function hideProjectModal() {
 }
 // Admin Dashboard Access System
 document.addEventListener('keydown', function(e) {
-    // Method 1: Ctrl+Shift+A (or Cmd+Shift+A on Mac)
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+    // Method 1: Ctrl+Shift+D (or Cmd+Shift+D on Mac) - Changed from A to avoid Chrome conflict
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'd') {
         e.preventDefault();
+        e.stopPropagation();
         window.location.href = '/admin/login.php';
         return;
     }
     
-    // Method 2: Konami Code for admin access (↑↑↓↓←→←→BA)
+    // Method 2: Alt+Shift+A (Alternative shortcut that doesn't conflict)
+    if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/admin/login.php';
+        return;
+    }
+    
+    // Method 3: Konami Code for admin access (↑↑↓↓←→←→BA)
     if (!window.konamiSequence) {
         window.konamiSequence = [];
         window.konamiCode = [
@@ -831,21 +840,21 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Method 3: Console access
+// Method 4: Console access
 window.adminAccess = function() {
     console.log('🔐 Admin access granted via console');
     window.location.href = '/admin/login.php';
 };
 
-// Method 4: Secret URL hint in console
+// Method 5: Secret URL hint in console
 console.log('%c🔧 Developer Tools Detected', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
 console.log('%cAdmin Access Methods:', 'color: #6b7280; font-size: 14px;');
-console.log('%c• Keyboard: Ctrl+Shift+A', 'color: #6b7280; font-size: 12px;');
+console.log('%c• Keyboard: Ctrl+Shift+D or Alt+Shift+A', 'color: #6b7280; font-size: 12px;');
 console.log('%c• Console: adminAccess()', 'color: #6b7280; font-size: 12px;');
 console.log('%c• Secret URL: /secret-admin-access-2026', 'color: #6b7280; font-size: 12px;');
 console.log('%c• Konami Code: ↑↑↓↓←→←→BA', 'color: #6b7280; font-size: 12px;');
 
-// Method 5: Triple-click on logo/title for admin access
+// Method 6: Triple-click on logo/title for admin access
 document.addEventListener('DOMContentLoaded', function() {
     // Add a small, nearly invisible element that indicates admin access is available
     const adminIndicator = document.createElement('div');
@@ -889,5 +898,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    }
+});
+// Show admin shortcut notification (temporary - can be removed later)
+document.addEventListener('DOMContentLoaded', function() {
+    // Only show on homepage
+    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #3b82f6, #1e40af);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                max-width: 300px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-weight: bold; margin-bottom: 4px;">🔧 Admin Access Updated</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Use Ctrl+Shift+D or Alt+Shift+A</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; margin-left: 10px;">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 8000);
+        }, 2000); // Show after 2 seconds
     }
 });
