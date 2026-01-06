@@ -21,6 +21,52 @@
         "section_spacing": "py-16",
         "border_radius": "rounded-lg"
     },
+    "payment": {
+        "stripe": {
+            "stripe_environment": "sandbox",
+            "stripe_publishable_key": "",
+            "stripe_secret_key": "",
+            "stripe_webhook_endpoint": ""
+        },
+        "paypal": {
+            "paypal_environment": "sandbox",
+            "paypal_client_id": "",
+            "paypal_client_secret": "",
+            "paypal_webhook_id": ""
+        },
+        "general": {
+            "currency": "USD",
+            "tax_rate": "0",
+            "require_billing_address": false,
+            "send_email_receipts": true
+        }
+    },
+    "service_packages": [
+        {
+            "id": "essential-app",
+            "name": "Essential App",
+            "price": "$1,500",
+            "description": "Perfect for small businesses starting their digital journey",
+            "features": [
+                "Custom web application",
+                "Responsive design",
+                "Basic admin panel",
+                "30 days support"
+            ]
+        },
+        {
+            "id": "custom-enterprise",
+            "name": "Custom Enterprise",
+            "price": "Custom Quote",
+            "description": "Tailored solutions for enterprise-level requirements",
+            "features": [
+                "Custom architecture",
+                "Advanced integrations",
+                "Scalable infrastructure",
+                "Ongoing maintenance"
+            ]
+        }
+    ],
     "email": {
         "smtp_host": "",
         "smtp_port": 587,

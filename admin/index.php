@@ -1531,6 +1531,188 @@ $content = array_merge($defaultContent, $content);
                     </div>
                 </div>
                 
+                <!-- Payment Configuration Sections -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Stripe Configuration -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-4">Stripe Configuration</h3>
+                        <form id="stripe-settings-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Environment</label>
+                                <select id="stripe-environment" class="w-full p-3 border border-gray-300 rounded-md">
+                                    <option value="sandbox">Sandbox</option>
+                                    <option value="live">Live</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Publishable Key</label>
+                                <input type="text" id="stripe-publishable-key" placeholder="pk_test_..." class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Secret Key</label>
+                                <input type="password" id="stripe-secret-key" placeholder="sk_test_..." class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Webhook Endpoint</label>
+                                <input type="url" id="stripe-webhook-endpoint" placeholder="https://yoursite.com/api/stripe/webhook" class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                                Save Stripe Settings
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- PayPal Configuration -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-4">PayPal Configuration</h3>
+                        <form id="paypal-settings-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Environment</label>
+                                <select id="paypal-environment" class="w-full p-3 border border-gray-300 rounded-md">
+                                    <option value="sandbox">Sandbox</option>
+                                    <option value="live">Live</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Client ID</label>
+                                <input type="text" id="paypal-client-id" placeholder="AYjcyDKflPBAhxHlw..." class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Client Secret</label>
+                                <input type="password" id="paypal-client-secret" placeholder="EHxHlwAYjcyDKflPBA..." class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Webhook ID</label>
+                                <input type="text" id="paypal-webhook-id" placeholder="8PT597110X687430LKGECATA" class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <button type="submit" class="w-full bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-700">
+                                Save PayPal Settings
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Payment Settings -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-4">Payment Settings</h3>
+                        <form id="payment-general-settings-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                                <select id="payment-currency" class="w-full p-3 border border-gray-300 rounded-md">
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="CAD">CAD - Canadian Dollar</option>
+                                    <option value="AUD">AUD - Australian Dollar</option>
+                                    <option value="NGN">NGN - Nigerian Naira</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tax Rate (%)</label>
+                                <input type="number" id="payment-tax-rate" value="0" min="0" max="100" step="0.01" class="w-full p-3 border border-gray-300 rounded-md">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="require-billing-address" class="mr-2">
+                                    <span class="text-sm">Require billing address</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="send-email-receipts" class="mr-2" checked>
+                                    <span class="text-sm">Send email receipts</span>
+                                </label>
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                                Update Payment Settings
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="generateInvoice()" class="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 flex items-center justify-center">
+                                <i class="fas fa-file-invoice mr-2"></i>
+                                Generate Invoice
+                            </button>
+                            <button onclick="sendPaymentLink()" class="w-full bg-purple-600 text-white py-3 px-4 rounded hover:bg-purple-700 flex items-center justify-center">
+                                <i class="fas fa-link mr-2"></i>
+                                Send Payment Link
+                            </button>
+                            <button onclick="processRefund()" class="w-full bg-yellow-600 text-white py-3 px-4 rounded hover:bg-yellow-700 flex items-center justify-center">
+                                <i class="fas fa-undo mr-2"></i>
+                                Process Refund
+                            </button>
+                            <button onclick="exportPaymentData()" class="w-full bg-gray-600 text-white py-3 px-4 rounded hover:bg-gray-700 flex items-center justify-center">
+                                <i class="fas fa-download mr-2"></i>
+                                Export Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Packages -->
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Service Packages</h3>
+                        <button onclick="showAddPackageModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Add Package
+                        </button>
+                    </div>
+                    <div id="service-packages-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Essential App Package -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="font-semibold text-lg">Essential App</h4>
+                                    <p class="text-2xl font-bold text-green-600">$1,500</p>
+                                </div>
+                                <div class="flex space-x-1">
+                                    <button onclick="editPackage('essential-app')" class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deletePackage('essential-app')" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Perfect for small businesses starting their digital journey</p>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Custom web application</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Responsive design</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Basic admin panel</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>30 days support</li>
+                            </ul>
+                        </div>
+
+                        <!-- Custom Enterprise Package -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="font-semibold text-lg">Custom Enterprise</h4>
+                                    <p class="text-2xl font-bold text-blue-600">Custom Quote</p>
+                                </div>
+                                <div class="flex space-x-1">
+                                    <button onclick="editPackage('custom-enterprise')" class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deletePackage('custom-enterprise')" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Tailored solutions for enterprise-level requirements</p>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Custom architecture</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced integrations</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Scalable infrastructure</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Ongoing maintenance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">Maintenance Mode</h3>
@@ -1584,6 +1766,52 @@ $content = array_merge($defaultContent, $content);
                             <button onclick="clearCache()" class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
                                 <i class="fas fa-trash mr-2"></i>Clear Cache
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Package Modal -->
+                <div id="package-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Add Service Package</h3>
+                                <button onclick="hideAddPackageModal()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <form id="package-form" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
+                                        <input type="text" name="name" required class="w-full p-3 border border-gray-300 rounded-md">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                                        <input type="text" name="price" placeholder="$1,500 or Custom Quote" required class="w-full p-3 border border-gray-300 rounded-md">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea name="description" rows="3" required class="w-full p-3 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Features (one per line)</label>
+                                    <textarea name="features" rows="5" placeholder="Custom web application&#10;Responsive design&#10;Basic admin panel&#10;30 days support" required class="w-full p-3 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                                
+                                <div class="flex justify-end space-x-4">
+                                    <button type="button" onclick="hideAddPackageModal()" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        Add Package
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

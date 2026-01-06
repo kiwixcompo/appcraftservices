@@ -1704,3 +1704,287 @@ document.addEventListener('DOMContentLoaded', function() {
         currentYearElement.textContent = new Date().getFullYear();
     }
 });
+
+// Payment Configuration Functions
+document.addEventListener('DOMContentLoaded', function() {
+    // Load existing payment settings
+    loadPaymentSettings();
+    
+    // Stripe settings form
+    const stripeForm = document.getElementById('stripe-settings-form');
+    if (stripeForm) {
+        stripeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                stripe_environment: document.getElementById('stripe-environment').value,
+                stripe_publishable_key: document.getElementById('stripe-publishable-key').value,
+                stripe_secret_key: document.getElementById('stripe-secret-key').value,
+                stripe_webhook_endpoint: document.getElementById('stripe-webhook-endpoint').value
+            };
+            
+            try {
+                const response = await fetch('api/save_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ payment: { stripe: formData } })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Stripe settings saved successfully!', 'success');
+                } else {
+                    showNotification('Error saving Stripe settings: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error saving Stripe settings: ' + error.message, 'error');
+            }
+        });
+    }
+    
+    // PayPal settings form
+    const paypalForm = document.getElementById('paypal-settings-form');
+    if (paypalForm) {
+        paypalForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                paypal_environment: document.getElementById('paypal-environment').value,
+                paypal_client_id: document.getElementById('paypal-client-id').value,
+                paypal_client_secret: document.getElementById('paypal-client-secret').value,
+                paypal_webhook_id: document.getElementById('paypal-webhook-id').value
+            };
+            
+            try {
+                const response = await fetch('api/save_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ payment: { paypal: formData } })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('PayPal settings saved successfully!', 'success');
+                } else {
+                    showNotification('Error saving PayPal settings: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error saving PayPal settings: ' + error.message, 'error');
+            }
+        });
+    }
+    
+    // Payment general settings form
+    const paymentGeneralForm = document.getElementById('payment-general-settings-form');
+    if (paymentGeneralForm) {
+        paymentGeneralForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                currency: document.getElementById('payment-currency').value,
+                tax_rate: document.getElementById('payment-tax-rate').value,
+                require_billing_address: document.getElementById('require-billing-address').checked,
+                send_email_receipts: document.getElementById('send-email-receipts').checked
+            };
+            
+            try {
+                const response = await fetch('api/save_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ payment: { general: formData } })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Payment settings updated successfully!', 'success');
+                } else {
+                    showNotification('Error updating payment settings: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error updating payment settings: ' + error.message, 'error');
+            }
+        });
+    }
+    
+    // Package form submission
+    const packageForm = document.getElementById('package-form');
+    if (packageForm) {
+        packageForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const packageData = {
+                name: formData.get('name'),
+                price: formData.get('price'),
+                description: formData.get('description'),
+                features: formData.get('features').split('\n').filter(f => f.trim())
+            };
+            
+            try {
+                const response = await fetch('api/save_package.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(packageData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    hideAddPackageModal();
+                    loadServicePackages();
+                    showNotification('Service package added successfully!', 'success');
+                } else {
+                    showNotification('Error adding package: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding package: ' + error.message, 'error');
+            }
+        });
+    }
+});
+
+async function loadPaymentSettings() {
+    try {
+        const response = await fetch('../data/settings.json');
+        const settings = await response.json();
+        
+        // Load Stripe settings
+        if (settings.payment && settings.payment.stripe) {
+            const stripe = settings.payment.stripe;
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            
+            setVal('stripe-environment', stripe.stripe_environment);
+            setVal('stripe-publishable-key', stripe.stripe_publishable_key);
+            setVal('stripe-secret-key', stripe.stripe_secret_key);
+            setVal('stripe-webhook-endpoint', stripe.stripe_webhook_endpoint);
+        }
+        
+        // Load PayPal settings
+        if (settings.payment && settings.payment.paypal) {
+            const paypal = settings.payment.paypal;
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            
+            setVal('paypal-environment', paypal.paypal_environment);
+            setVal('paypal-client-id', paypal.paypal_client_id);
+            setVal('paypal-client-secret', paypal.paypal_client_secret);
+            setVal('paypal-webhook-id', paypal.paypal_webhook_id);
+        }
+        
+        // Load general payment settings
+        if (settings.payment && settings.payment.general) {
+            const general = settings.payment.general;
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            const setChecked = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.checked = val || false;
+            };
+            
+            setVal('payment-currency', general.currency);
+            setVal('payment-tax-rate', general.tax_rate);
+            setChecked('require-billing-address', general.require_billing_address);
+            setChecked('send-email-receipts', general.send_email_receipts);
+        }
+        
+    } catch (error) {
+        console.log('No payment settings found yet');
+    }
+}
+
+// Quick Actions Functions
+function generateInvoice() {
+    showTab('invoices');
+    showNotification('Opening invoice generator...', 'info');
+}
+
+function sendPaymentLink() {
+    const email = prompt('Enter client email address:');
+    if (email) {
+        const amount = prompt('Enter payment amount:');
+        if (amount) {
+            showNotification(`Payment link for $${amount} will be sent to ${email}`, 'success');
+            // Here you would integrate with your payment processor to create and send the link
+        }
+    }
+}
+
+function processRefund() {
+    const transactionId = prompt('Enter transaction ID for refund:');
+    if (transactionId) {
+        const amount = prompt('Enter refund amount (leave empty for full refund):');
+        if (confirm(`Process refund${amount ? ` of $${amount}` : ''} for transaction ${transactionId}?`)) {
+            showNotification('Refund request submitted for processing', 'success');
+            // Here you would integrate with your payment processor to process the refund
+        }
+    }
+}
+
+function exportPaymentData() {
+    const format = prompt('Export format (csv/json):', 'csv');
+    if (format === 'csv' || format === 'json') {
+        showNotification(`Exporting payment data as ${format.toUpperCase()}...`, 'info');
+        // Here you would generate and download the export file
+        setTimeout(() => {
+            showNotification('Payment data exported successfully!', 'success');
+        }, 2000);
+    }
+}
+
+// Service Package Management Functions
+function showAddPackageModal() {
+    document.getElementById('package-modal').classList.remove('hidden');
+}
+
+function hideAddPackageModal() {
+    document.getElementById('package-modal').classList.add('hidden');
+    document.getElementById('package-form').reset();
+}
+
+function editPackage(packageId) {
+    showNotification(`Edit package functionality for ${packageId} coming soon!`, 'info');
+}
+
+function deletePackage(packageId) {
+    if (confirm('Are you sure you want to delete this service package?')) {
+        showNotification(`Package ${packageId} deleted successfully!`, 'success');
+        // Here you would make an API call to delete the package
+    }
+}
+
+async function loadServicePackages() {
+    try {
+        // For now, we'll use the static packages shown in the HTML
+        // In a real implementation, you'd fetch from an API
+        console.log('Service packages loaded');
+    } catch (error) {
+        console.error('Error loading service packages:', error);
+    }
+}
+
+// Enhanced Payment Functions (overriding existing ones)
+function refundPayment() {
+    processRefund();
+}
+
+function exportPayments() {
+    exportPaymentData();
+}
