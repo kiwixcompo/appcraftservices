@@ -166,13 +166,13 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                         
                         <!-- Direct PayPal Payment Button -->
                         <div class="mb-4">
-                            <a href="https://www.paypal.com/paypalme/talk2char/<?php echo $numericAmount; ?>" 
+                            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=talk2char@gmail.com&amount=<?php echo $numericAmount; ?>&currency_code=USD" 
                                target="_blank" 
                                class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center">
                                 <i class="fab fa-paypal mr-2 text-xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
                             </a>
                             <p class="text-xs text-gray-500 mt-2 text-center">
-                                Click above to pay directly through PayPal.me
+                                Click above to pay directly through PayPal
                             </p>
                         </div>
                         
