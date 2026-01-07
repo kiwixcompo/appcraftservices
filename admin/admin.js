@@ -2118,24 +2118,33 @@ function editPackagePricing(packageId) {
     const modal = document.getElementById('pricing-editor-modal');
     const form = document.getElementById('pricing-editor-form');
     
-    // Set package data based on ID
+    if (!modal || !form) {
+        console.error('Pricing editor modal or form not found');
+        return;
+    }
+    
+    // Get current data from the page elements
+    const priceElement = document.getElementById(packageId + '-price');
+    const rangeElement = document.getElementById(packageId + '-range');
+    
+    // Set package data based on ID and current page data
     const packageData = {
         'essential': {
             name: 'Essential App',
-            price: '$1,500',
-            range: '$1,000 - $2,000',
+            price: priceElement ? priceElement.textContent : '$1,500',
+            range: rangeElement ? rangeElement.textContent : '$1,000 - $2,000',
             description: 'Basic web application for small businesses'
         },
         'enterprise': {
             name: 'Custom Enterprise',
-            price: 'Custom Quote',
-            range: 'Custom Quote',
+            price: priceElement ? priceElement.textContent : 'Custom Quote',
+            range: rangeElement ? rangeElement.textContent : 'Custom Quote',
             description: 'Complex platforms for enterprise clients'
         },
         'maintenance': {
             name: 'Maintenance & Support',
-            price: 'Monthly Plans',
-            range: 'Monthly Plans',
+            price: priceElement ? priceElement.textContent : 'Monthly Plans',
+            range: rangeElement ? rangeElement.textContent : 'Monthly Plans',
             description: 'Ongoing support and maintenance services'
         }
     };
@@ -2149,6 +2158,14 @@ function editPackagePricing(packageId) {
         document.getElementById('edit-package-description').value = data.description;
         
         modal.classList.remove('hidden');
+        
+        // Focus on the first input
+        setTimeout(() => {
+            document.getElementById('edit-package-price').focus();
+        }, 100);
+    } else {
+        console.error('Package data not found for:', packageId);
+        showNotification('Error: Package data not found', 'error');
     }
 }
 
@@ -2208,10 +2225,40 @@ document.addEventListener('DOMContentLoaded', function() {
 function refreshPackagePricing() {
     showNotification('Syncing package pricing with pricing page...', 'info');
     
-    // In a real implementation, this would fetch current pricing from the pricing page
-    setTimeout(() => {
-        showNotification('Package pricing synced successfully!', 'success');
-    }, 1500);
+    fetch('api/sync_pricing.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the display with synced pricing
+            if (data.packages) {
+                Object.keys(data.packages).forEach(packageId => {
+                    const packageData = data.packages[packageId];
+                    const priceElement = document.getElementById(packageId + '-price');
+                    const rangeElement = document.getElementById(packageId + '-range');
+                    
+                    if (priceElement) {
+                        priceElement.textContent = packageData.price;
+                    }
+                    if (rangeElement) {
+                        rangeElement.textContent = packageData.range;
+                    }
+                });
+            }
+            
+            showNotification('Package pricing synced successfully with pricing page!', 'success');
+        } else {
+            throw new Error(data.message || 'Failed to sync pricing');
+        }
+    })
+    .catch(error => {
+        console.error('Error syncing pricing:', error);
+        showNotification('Error syncing pricing: ' + error.message, 'error');
+    });
 }
 
 // Enhanced Send Payment Link Function
@@ -2236,8 +2283,23 @@ function sendPaymentLink() {
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                        <input type="text" id="payment-amount" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="$1,500">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Stage</label>
+                        <select id="payment-stage" class="w-full p-3 border border-gray-300 rounded-md" required>
+                            <option value="">Select payment stage</option>
+                            <option value="initial">Initial Payment (50%)</option>
+                            <option value="final">Final Payment (50%)</option>
+                            <option value="full">Full Payment (100%)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Total Project Amount</label>
+                        <input type="text" id="total-amount" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="$3,000">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Amount</label>
+                        <input type="text" id="payment-amount" readonly class="w-full p-3 border border-gray-300 rounded-md bg-gray-50">
                     </div>
                     
                     <div>
@@ -2269,6 +2331,38 @@ function sendPaymentLink() {
     
     document.body.appendChild(modal);
     
+    // Handle payment stage and amount calculation
+    const stageSelect = document.getElementById('payment-stage');
+    const totalAmountInput = document.getElementById('total-amount');
+    const paymentAmountInput = document.getElementById('payment-amount');
+    
+    function updatePaymentAmount() {
+        const stage = stageSelect.value;
+        const totalAmount = totalAmountInput.value;
+        
+        if (stage && totalAmount) {
+            const numericAmount = parseFloat(totalAmount.replace(/[^0-9.]/g, ''));
+            let paymentAmount = 0;
+            
+            switch (stage) {
+                case 'initial':
+                    paymentAmount = numericAmount * 0.5;
+                    break;
+                case 'final':
+                    paymentAmount = numericAmount * 0.5;
+                    break;
+                case 'full':
+                    paymentAmount = numericAmount;
+                    break;
+            }
+            
+            paymentAmountInput.value = '$' + paymentAmount.toFixed(2);
+        }
+    }
+    
+    stageSelect.addEventListener('change', updatePaymentAmount);
+    totalAmountInput.addEventListener('input', updatePaymentAmount);
+    
     // Handle service description change
     const serviceSelect = document.getElementById('service-description');
     const customInput = document.getElementById('custom-service-input');
@@ -2286,34 +2380,63 @@ function sendPaymentLink() {
         e.preventDefault();
         
         const email = document.getElementById('client-email-input').value;
-        const amount = document.getElementById('payment-amount').value;
+        const stage = document.getElementById('payment-stage').value;
+        const totalAmount = document.getElementById('total-amount').value;
+        const paymentAmount = document.getElementById('payment-amount').value;
         let description = document.getElementById('service-description').value;
         
         if (description === 'Custom Service') {
             description = document.getElementById('custom-service-text').value;
         }
         
-        if (!email || !amount || !description) {
+        if (!email || !stage || !totalAmount || !paymentAmount || !description) {
             alert('Please fill in all fields');
             return;
         }
         
-        generatePaymentLink(email, amount, description);
-        modal.remove();
+        // Show confirmation message
+        const stageText = {
+            'initial': 'Initial Payment (50%)',
+            'final': 'Final Payment (50%)',
+            'full': 'Full Payment (100%)'
+        };
+        
+        const confirmationMessage = `
+Payment Link Details:
+• Client: ${email}
+• Service: ${description}
+• Stage: ${stageText[stage]}
+• Total Project: ${totalAmount}
+• Payment Amount: ${paymentAmount}
+
+This link will allow the client to pay using Stripe, PayPal, or Bank Transfer.
+        `;
+        
+        if (confirm(confirmationMessage + '\n\nProceed to generate payment link?')) {
+            generatePaymentLink(email, paymentAmount, description, stage, totalAmount);
+            modal.remove();
+        }
     });
 }
 
-function generatePaymentLink(email, amount, description) {
+function generatePaymentLink(email, amount, description, stage, totalAmount) {
     // Generate a unique token for the payment link
     const token = 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
-    // Create the payment link
+    // Create the payment link with additional parameters
     const baseUrl = window.location.origin;
-    const paymentLink = `${baseUrl}/payment/pay.php?token=${token}&amount=${encodeURIComponent(amount)}&description=${encodeURIComponent(description)}&email=${encodeURIComponent(email)}`;
+    const paymentLink = `${baseUrl}/payment/pay.php?token=${token}&amount=${encodeURIComponent(amount)}&description=${encodeURIComponent(description)}&email=${encodeURIComponent(email)}&stage=${encodeURIComponent(stage)}&total=${encodeURIComponent(totalAmount)}`;
     
     // Show the generated link
     const linkModal = document.createElement('div');
     linkModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    
+    const stageText = {
+        'initial': 'Initial Payment (50%)',
+        'final': 'Final Payment (50%)',
+        'full': 'Full Payment (100%)'
+    };
+    
     linkModal.innerHTML = `
         <div class="bg-white rounded-lg max-w-2xl w-full">
             <div class="p-6">
@@ -2339,13 +2462,15 @@ function generatePaymentLink(email, amount, description) {
                         <h4 class="font-medium text-gray-900 mb-2">Payment Details</h4>
                         <div class="text-sm text-gray-600 space-y-1">
                             <div><strong>Client:</strong> ${email}</div>
-                            <div><strong>Amount:</strong> ${amount}</div>
                             <div><strong>Service:</strong> ${description}</div>
+                            <div><strong>Payment Stage:</strong> ${stageText[stage] || stage}</div>
+                            <div><strong>Payment Amount:</strong> ${amount}</div>
+                            <div><strong>Total Project:</strong> ${totalAmount}</div>
                         </div>
                     </div>
                     
                     <div class="flex space-x-3">
-                        <button onclick="emailPaymentLink('${email}', '${paymentLink}', '${amount}', '${description}')" class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700">
+                        <button onclick="emailPaymentLink('${email}', '${paymentLink}', '${amount}', '${description}', '${stage}', '${totalAmount}')" class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700">
                             <i class="fas fa-envelope mr-2"></i>Email to Client
                         </button>
                         <button onclick="copyPaymentLink()" class="flex-1 bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700">
@@ -2376,33 +2501,81 @@ function copyPaymentLink() {
     }
 }
 
-function emailPaymentLink(email, paymentLink, amount, description) {
-    const subject = `Payment Request - App Craft Services (${amount})`;
-    const body = `Hi there,
+function emailPaymentLink(email, paymentLink, amount, description, stage, totalAmount) {
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+    button.disabled = true;
+    
+    // Send email via API
+    fetch('api/send_payment_email.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: email,
+            paymentLink: paymentLink,
+            amount: amount,
+            description: description,
+            stage: stage,
+            totalAmount: totalAmount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Payment email sent successfully to ' + email, 'success');
+            
+            // Close the modal after successful send
+            setTimeout(() => {
+                const modal = button.closest('.fixed');
+                if (modal) modal.remove();
+            }, 2000);
+        } else {
+            throw new Error(data.message || 'Failed to send email');
+        }
+    })
+    .catch(error => {
+        console.error('Error sending email:', error);
+        showNotification('Error sending email: ' + error.message, 'error');
+        
+        // Fallback to mailto link
+        const stageText = {
+            'initial': 'Initial Payment (50%)',
+            'final': 'Final Payment (50%)',
+            'full': 'Full Payment (100%)'
+        };
+        
+        const subject = `Payment Request - App Craft Services (${amount})`;
+        const body = `Dear Valued Client,
 
-Thank you for choosing App Craft Services! 
+Thank you for choosing App Craft Services!
 
-We've prepared a secure payment link for your ${description} service.
+Payment Details:
+• Service: ${description}
+• Payment Stage: ${stageText[stage] || stage}
+• Payment Amount: ${amount}
+• Total Project: ${totalAmount}
 
-Amount: ${amount}
-Service: ${description}
-
-Please click the link below to complete your payment:
+Secure Payment Link:
 ${paymentLink}
 
-You can pay using:
-• Credit/Debit Card (Stripe)
-• PayPal
-• Direct Bank Transfer
-
-If you have any questions, please don't hesitate to contact us at talk2char@gmail.com.
+You can pay using Credit Card (Stripe), PayPal, or Bank Transfer.
 
 Best regards,
 App Craft Services Team
-https://appcraftservices.com`;
-    
-    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
-    
-    showNotification('Email client opened with payment link!', 'success');
+hello@appcraftservices.com`;
+        
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailtoLink);
+        
+        showNotification('Email client opened as fallback', 'info');
+    })
+    .finally(() => {
+        // Restore button state
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
 }

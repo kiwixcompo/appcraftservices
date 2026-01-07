@@ -4,6 +4,8 @@ $token = $_GET['token'] ?? '';
 $amount = $_GET['amount'] ?? '';
 $description = $_GET['description'] ?? '';
 $email = $_GET['email'] ?? '';
+$stage = $_GET['stage'] ?? '';
+$totalAmount = $_GET['total'] ?? '';
 
 // Validate token (in a real app, you'd validate this against a database)
 if (!$token || !$amount || !$description) {
@@ -11,10 +13,21 @@ if (!$token || !$amount || !$description) {
     exit;
 }
 
-// Decode amount and description
+// Decode parameters
 $amount = urldecode($amount);
 $description = urldecode($description);
 $email = urldecode($email);
+$stage = urldecode($stage);
+$totalAmount = urldecode($totalAmount);
+
+// Map stage to readable text
+$stageText = [
+    'initial' => 'Initial Payment (50%)',
+    'final' => 'Final Payment (50%)',
+    'full' => 'Full Payment (100%)'
+];
+
+$stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
 ?>
 
 <!DOCTYPE html>
@@ -45,10 +58,22 @@ $email = urldecode($email);
                         <span class="text-gray-600">Service:</span>
                         <span class="font-medium"><?php echo htmlspecialchars($description); ?></span>
                     </div>
+                    <?php if ($stage && $stageDisplay): ?>
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-600">Amount:</span>
+                        <span class="text-gray-600">Payment Stage:</span>
+                        <span class="font-medium text-blue-600"><?php echo htmlspecialchars($stageDisplay); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Payment Amount:</span>
                         <span class="text-2xl font-bold text-green-600"><?php echo htmlspecialchars($amount); ?></span>
                     </div>
+                    <?php if ($totalAmount && $totalAmount !== $amount): ?>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Total Project Value:</span>
+                        <span class="font-medium text-gray-700"><?php echo htmlspecialchars($totalAmount); ?></span>
+                    </div>
+                    <?php endif; ?>
                     <?php if ($email): ?>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Email:</span>
