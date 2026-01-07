@@ -1603,6 +1603,11 @@ $content = array_merge($defaultContent, $content);
                         <h3 class="text-lg font-semibold mb-4">Stripe Configuration</h3>
                         <form id="stripe-settings-form" class="space-y-4">
                             <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Stripe Account Email</label>
+                                <input type="email" id="stripe-email" placeholder="your-stripe-account@example.com" class="w-full p-3 border border-gray-300 rounded-md">
+                                <p class="text-xs text-gray-500 mt-1">Email address associated with your Stripe account</p>
+                            </div>
+                            <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Environment</label>
                                 <select id="stripe-environment" class="w-full p-3 border border-gray-300 rounded-md">
                                     <option value="sandbox">Sandbox</option>
@@ -1631,6 +1636,11 @@ $content = array_merge($defaultContent, $content);
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">PayPal Configuration</h3>
                         <form id="paypal-settings-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">PayPal Account Email</label>
+                                <input type="email" id="paypal-email" placeholder="your-paypal-account@example.com" class="w-full p-3 border border-gray-300 rounded-md">
+                                <p class="text-xs text-gray-500 mt-1">Email address associated with your PayPal business account</p>
+                            </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Environment</label>
                                 <select id="paypal-environment" class="w-full p-3 border border-gray-300 rounded-md">

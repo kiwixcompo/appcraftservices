@@ -12,8 +12,13 @@ try {
     $amount = $input['amount'];
     $description = $input['description'] ?? 'Service Payment';
     
+    // Ensure amount has $ sign
+    if ($amount && !str_starts_with($amount, '$')) {
+        $amount = '$' . $amount;
+    }
+    
     // Email to admin about bank transfer
-    $to = 'talk2char@gmail.com';
+    $to = 'hello@appcraftservices.com';
     $subject = 'Bank Transfer Notification - App Craft Services';
     $message = "
     A client has indicated they completed a bank transfer:
@@ -29,9 +34,11 @@ try {
     Account Name: Williams Alfred Onen
     Account Number: 214720533676
     ACH Routing: 101019644
+    
+    Please follow up with the client once the transfer is confirmed.
     ";
     
-    $headers = "From: noreply@appcraftservices.com\r\n";
+    $headers = "From: App Craft Services <hello@appcraftservices.com>\r\n";
     $headers .= "Reply-To: {$email}\r\n";
     $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
     

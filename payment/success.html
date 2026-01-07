@@ -70,7 +70,7 @@
                     If you have any questions about your payment or service, please contact us:
                 </p>
                 <div class="space-y-1 text-sm text-blue-700">
-                    <div><i class="fas fa-envelope mr-2"></i>talk2char@gmail.com</div>
+                    <div><i class="fas fa-envelope mr-2"></i>hello@appcraftservices.com</div>
                     <div><i class="fas fa-globe mr-2"></i>https://appcraftservices.com</div>
                 </div>
             </div>
@@ -93,7 +93,13 @@
 
         // Update payment details
         document.getElementById('payment-method').textContent = getPaymentMethodName(method);
-        document.getElementById('payment-amount').textContent = amount || 'N/A';
+        
+        // Ensure amount has $ sign
+        let displayAmount = amount || 'N/A';
+        if (displayAmount !== 'N/A' && !displayAmount.startsWith('$')) {
+            displayAmount = '$' + displayAmount;
+        }
+        document.getElementById('payment-amount').textContent = displayAmount;
         document.getElementById('payment-date').textContent = new Date().toLocaleDateString();
 
         if (transaction) {

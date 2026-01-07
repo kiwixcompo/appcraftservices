@@ -20,6 +20,28 @@ $email = urldecode($email);
 $stage = urldecode($stage);
 $totalAmount = urldecode($totalAmount);
 
+// Ensure amounts have $ sign
+if ($amount && !str_starts_with($amount, '$')) {
+    $amount = '$' . $amount;
+}
+if ($totalAmount && !str_starts_with($totalAmount, '$')) {
+    $totalAmount = '$' . $totalAmount;
+}
+
+// Load payment settings
+$paymentSettings = [];
+$settingsFile = '../data/settings.json';
+if (file_exists($settingsFile)) {
+    $settings = json_decode(file_get_contents($settingsFile), true);
+    if (isset($settings['payment'])) {
+        $paymentSettings = $settings['payment'];
+    }
+}
+
+// Get email addresses from settings
+$stripeEmail = $paymentSettings['stripe']['stripe_email'] ?? 'hello@appcraftservices.com';
+$paypalEmail = $paymentSettings['paypal']['paypal_email'] ?? 'hello@appcraftservices.com';
+
 // Map stage to readable text
 $stageText = [
     'initial' => 'Initial Payment (50%)',
@@ -28,6 +50,9 @@ $stageText = [
 ];
 
 $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
+
+// Extract numeric value for PayPal (remove $ and other characters)
+$numericAmount = preg_replace('/[^0-9.]/', '', $amount);
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +64,7 @@ $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AYiPC9BjkCyDFQXbSdqzXDtezVDxy2Z1OHq6EpHC9AQqF3UMPHWhfjwpRn8HVBp5dJwWh8l6TXb7M6LE&currency=USD"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
@@ -103,7 +128,17 @@ $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
                 <!-- Stripe Payment Form -->
                 <div id="stripe-payment" class="payment-method">
                     <div class="mb-4">
-                        <p class="text-gray-600 mb-4">Pay securely with your credit or debit card</p>
+                        <p class="text-gray-600 mb-4">Pay securely with your credit or debit card using Stripe</p>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-center">
+                                <i class="fab fa-stripe text-blue-600 text-2xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-blue-900">Stripe Payment</h4>
+                                    <p class="text-blue-700 text-sm">Amount: <?php echo htmlspecialchars($amount); ?></p>
+                                    <p class="text-blue-700 text-sm">Processed via Stripe secure payment system</p>
+                                </div>
+                            </div>
+                        </div>
                         <div id="stripe-card-element" class="p-3 border border-gray-300 rounded-md">
                             <!-- Stripe Elements will create form elements here -->
                         </div>
@@ -118,7 +153,23 @@ $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
                 <div id="paypal-payment" class="payment-method hidden">
                     <div class="mb-4">
                         <p class="text-gray-600 mb-4">Pay with your PayPal account</p>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-center">
+                                <i class="fab fa-paypal text-blue-600 text-2xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-blue-900">PayPal Payment</h4>
+                                    <p class="text-blue-700 text-sm">Amount: <?php echo htmlspecialchars($amount); ?></p>
+                                    <p class="text-blue-700 text-sm">Recipient: <?php echo htmlspecialchars($paypalEmail); ?></p>
+                                </div>
+                            </div>
+                        </div>
                         <div id="paypal-button-container"></div>
+                        <div class="mt-4 text-center">
+                            <p class="text-sm text-gray-600">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                You'll be redirected to PayPal to complete your payment
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -162,7 +213,7 @@ $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
                                     <h4 class="font-medium text-yellow-800">Important Instructions</h4>
                                     <p class="text-yellow-700 text-sm mt-1">
                                         Please include your email address (<?php echo htmlspecialchars($email); ?>) in the transfer reference/memo field. 
-                                        Once the transfer is complete, please email us at talk2char@gmail.com with the transaction details.
+                                        Once the transfer is complete, please email us at <strong>hello@appcraftservices.com</strong> with the transaction details.
                                     </p>
                                 </div>
                             </div>
@@ -201,10 +252,15 @@ $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
             const activeTab = document.getElementById(method + '-tab');
             activeTab.classList.remove('border-transparent', 'text-gray-500');
             activeTab.classList.add('border-blue-600', 'text-blue-600');
+            
+            // Initialize PayPal when PayPal tab is selected
+            if (method === 'paypal') {
+                initializePayPal();
+            }
         }
 
         // Stripe Integration
-        const stripe = Stripe('pk_test_YOUR_STRIPE_PUBLISHABLE_KEY'); // Replace with your actual key
+        const stripe = Stripe('pk_test_51234567890abcdef'); // Replace with your actual key
         const elements = stripe.elements();
         const cardElement = elements.create('card');
         cardElement.mount('#stripe-card-element');
@@ -238,29 +294,48 @@ $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
         }
 
         // PayPal Integration
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: '<?php echo preg_replace('/[^0-9.]/', '', $amount); ?>' // Extract numeric value
-                        },
-                        payee: {
-                            email_address: 'talk2char@gmail.com'
-                        }
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    window.location.href = 'success.html?method=paypal&amount=<?php echo urlencode($amount); ?>&transaction=' + details.id;
-                });
-            },
-            onError: function(err) {
-                console.error('PayPal error:', err);
-                alert('PayPal payment failed. Please try again.');
-            }
-        }).render('#paypal-button-container');
+        let paypalInitialized = false;
+        
+        function initializePayPal() {
+            if (paypalInitialized) return;
+            
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '<?php echo $numericAmount; ?>'
+                            },
+                            payee: {
+                                email_address: '<?php echo htmlspecialchars($paypalEmail); ?>'
+                            },
+                            description: '<?php echo htmlspecialchars($description); ?>'
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        alert('Payment completed successfully!');
+                        window.location.href = 'success.html?method=paypal&amount=<?php echo urlencode($amount); ?>&transaction=' + details.id;
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    alert('PayPal payment failed. Please try again or contact support.');
+                },
+                onCancel: function(data) {
+                    alert('Payment was cancelled. You can try again or choose a different payment method.');
+                },
+                style: {
+                    layout: 'vertical',
+                    color: 'blue',
+                    shape: 'rect',
+                    label: 'paypal'
+                }
+            }).render('#paypal-button-container');
+            
+            paypalInitialized = true;
+        }
 
         // Bank Transfer Confirmation
         function confirmBankTransfer() {

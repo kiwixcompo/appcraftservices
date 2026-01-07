@@ -448,6 +448,14 @@ function sendPaymentLink() {
     });
 }
 function generatePaymentLink(email, amount, description, stage, totalAmount) {
+    // Ensure amounts have $ sign
+    if (amount && !amount.startsWith('$')) {
+        amount = '$' + amount;
+    }
+    if (totalAmount && !totalAmount.startsWith('$')) {
+        totalAmount = '$' + totalAmount;
+    }
+    
     const token = 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     const baseUrl = window.location.origin;
     const paymentLink = `${baseUrl}/payment/pay.php?token=${token}&amount=${encodeURIComponent(amount)}&description=${encodeURIComponent(description)}&email=${encodeURIComponent(email)}&stage=${encodeURIComponent(stage)}&total=${encodeURIComponent(totalAmount)}`;
@@ -943,4 +951,120 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Handle Stripe settings form submission
+    const stripeForm = document.getElementById('stripe-settings-form');
+    if (stripeForm) {
+        stripeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                stripe_email: document.getElementById('stripe-email').value,
+                stripe_environment: document.getElementById('stripe-environment').value,
+                stripe_publishable_key: document.getElementById('stripe-publishable-key').value,
+                stripe_secret_key: document.getElementById('stripe-secret-key').value,
+                stripe_webhook_endpoint: document.getElementById('stripe-webhook-endpoint').value
+            };
+            
+            try {
+                const response = await fetch('api/save_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ payment: { stripe: formData } })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Stripe settings saved successfully!', 'success');
+                } else {
+                    showNotification('Error saving Stripe settings: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error saving Stripe settings: ' + error.message, 'error');
+            }
+        });
+    }
+    
+    // Handle PayPal settings form submission
+    const paypalForm = document.getElementById('paypal-settings-form');
+    if (paypalForm) {
+        paypalForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                paypal_email: document.getElementById('paypal-email').value,
+                paypal_environment: document.getElementById('paypal-environment').value,
+                paypal_client_id: document.getElementById('paypal-client-id').value,
+                paypal_client_secret: document.getElementById('paypal-client-secret').value,
+                paypal_webhook_id: document.getElementById('paypal-webhook-id').value
+            };
+            
+            try {
+                const response = await fetch('api/save_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ payment: { paypal: formData } })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('PayPal settings saved successfully!', 'success');
+                } else {
+                    showNotification('Error saving PayPal settings: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error saving PayPal settings: ' + error.message, 'error');
+            }
+        });
+    }
+    
+    // Load existing payment settings
+    loadPaymentSettings();
 });
+
+// Load payment settings from server
+async function loadPaymentSettings() {
+    try {
+        const response = await fetch('../data/settings.json');
+        const settings = await response.json();
+        
+        // Load Stripe settings
+        if (settings.payment && settings.payment.stripe) {
+            const stripe = settings.payment.stripe;
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            
+            setVal('stripe-email', stripe.stripe_email);
+            setVal('stripe-environment', stripe.stripe_environment);
+            setVal('stripe-publishable-key', stripe.stripe_publishable_key);
+            setVal('stripe-secret-key', stripe.stripe_secret_key);
+            setVal('stripe-webhook-endpoint', stripe.stripe_webhook_endpoint);
+        }
+        
+        // Load PayPal settings
+        if (settings.payment && settings.payment.paypal) {
+            const paypal = settings.payment.paypal;
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            
+            setVal('paypal-email', paypal.paypal_email);
+            setVal('paypal-environment', paypal.paypal_environment);
+            setVal('paypal-client-id', paypal.paypal_client_id);
+            setVal('paypal-client-secret', paypal.paypal_client_secret);
+            setVal('paypal-webhook-id', paypal.paypal_webhook_id);
+        }
+        
+    } catch (error) {
+        console.log('No payment settings found yet');
+    }
+}
