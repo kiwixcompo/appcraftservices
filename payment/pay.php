@@ -159,11 +159,29 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                                 <div>
                                     <h4 class="font-medium text-blue-900">PayPal Payment</h4>
                                     <p class="text-blue-700 text-sm">Amount: <?php echo htmlspecialchars($amount); ?></p>
-                                    <p class="text-blue-700 text-sm">Recipient: <?php echo htmlspecialchars($paypalEmail); ?></p>
+                                    <p class="text-blue-700 text-sm">Recipient: talk2char@gmail.com</p>
                                 </div>
                             </div>
                         </div>
-                        <div id="paypal-button-container"></div>
+                        
+                        <!-- Direct PayPal Payment Button -->
+                        <div class="mb-4">
+                            <a href="https://www.paypal.com/paypalme/talk2char/<?php echo $numericAmount; ?>" 
+                               target="_blank" 
+                               class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center">
+                                <i class="fab fa-paypal mr-2 text-xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
+                            </a>
+                            <p class="text-xs text-gray-500 mt-2 text-center">
+                                Click above to pay directly through PayPal.me
+                            </p>
+                        </div>
+                        
+                        <!-- Alternative: PayPal SDK Button -->
+                        <div class="border-t pt-4">
+                            <p class="text-sm text-gray-600 mb-3">Or use PayPal checkout:</p>
+                            <div id="paypal-button-container"></div>
+                        </div>
+                        
                         <div class="mt-4 text-center">
                             <p class="text-sm text-gray-600">
                                 <i class="fas fa-info-circle mr-1"></i>
@@ -307,7 +325,7 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                                 value: '<?php echo $numericAmount; ?>'
                             },
                             payee: {
-                                email_address: '<?php echo htmlspecialchars($paypalEmail); ?>'
+                                email_address: 'talk2char@gmail.com'
                             },
                             description: '<?php echo htmlspecialchars($description); ?>'
                         }]

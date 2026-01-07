@@ -30,7 +30,7 @@
             "stripe_webhook_endpoint": ""
         },
         "paypal": {
-            "paypal_email": "hello@appcraftservices.com",
+            "paypal_email": "talk2char@gmail.com",
             "paypal_environment": "sandbox",
             "paypal_client_id": "",
             "paypal_client_secret": "",

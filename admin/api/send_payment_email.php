@@ -41,49 +41,66 @@ try {
     
     $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
     
-    // Create email subject and body
-    $subject = "Payment Request - App Craft Services ({$amount})";
+    // Create email subject - more personal and less spammy
+    $subject = "Your App Craft Services Payment Link - {$amount}";
     
-    // Create HTML email body to avoid spam and use proper hyperlinks
+    // Create HTML email body with improved anti-spam techniques
     $htmlBody = "<!DOCTYPE html>
 <html>
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Payment Request - App Craft Services</title>
+    <title>Payment Request</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; }
+        .header h1 { color: white; margin: 0; font-size: 28px; font-weight: 300; }
+        .content { padding: 40px 30px; }
+        .payment-box { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 25px; margin: 25px 0; }
+        .payment-button { display: block; width: 100%; max-width: 300px; margin: 30px auto; padding: 18px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; }
+        .payment-button:hover { background: #218838; }
+        .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .details-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+        .details-table td:first-child { font-weight: bold; color: #495057; width: 40%; }
+        .footer { background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #dee2e6; }
+        .security-badge { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 6px; margin: 20px 0; }
+    </style>
 </head>
-<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;'>
-    <div style='background: #f8f9fa; padding: 30px; border-radius: 10px; border: 1px solid #e9ecef;'>
-        <div style='text-align: center; margin-bottom: 30px;'>
-            <h1 style='color: #2563eb; margin: 0; font-size: 28px;'>App Craft Services</h1>
-            <p style='color: #6b7280; margin: 5px 0 0 0; font-size: 16px;'>Payment Request</p>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>App Craft Services</h1>
+            <p style='color: #f8f9fa; margin: 10px 0 0 0; font-size: 16px;'>Payment Request</p>
         </div>
         
-        <div style='background: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
-            <h2 style='color: #1f2937; margin-top: 0; font-size: 22px;'>Dear Valued Client,</h2>
-            <p style='margin-bottom: 20px; font-size: 16px;'>Thank you for choosing App Craft Services for your project! We've prepared a secure payment link for your <strong>{$description}</strong> service.</p>
+        <div class='content'>
+            <h2 style='color: #343a40; margin-top: 0;'>Hello!</h2>
+            <p style='font-size: 16px; line-height: 1.6; color: #495057;'>
+                Thank you for choosing App Craft Services. We've prepared your secure payment link for the <strong>{$description}</strong> service.
+            </p>
             
-            <div style='background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 20px 0;'>
-                <h3 style='color: #374151; margin-top: 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;'>Payment Details</h3>
-                <table style='width: 100%; border-collapse: collapse;'>
+            <div class='payment-box'>
+                <h3 style='color: #495057; margin-top: 0; text-align: center;'>Payment Information</h3>
+                <table class='details-table'>
                     <tr>
-                        <td style='padding: 8px 0; font-weight: bold; color: #6b7280;'>Service:</td>
-                        <td style='padding: 8px 0; text-align: right; color: #1f2937;'>{$description}</td>
+                        <td>Service</td>
+                        <td>{$description}</td>
                     </tr>
                     <tr>
-                        <td style='padding: 8px 0; font-weight: bold; color: #6b7280;'>Payment Stage:</td>
-                        <td style='padding: 8px 0; text-align: right; color: #2563eb; font-weight: bold;'>{$stageDisplay}</td>
+                        <td>Payment Stage</td>
+                        <td style='color: #007bff; font-weight: bold;'>{$stageDisplay}</td>
                     </tr>
                     <tr>
-                        <td style='padding: 8px 0; font-weight: bold; color: #6b7280;'>Payment Amount:</td>
-                        <td style='padding: 8px 0; text-align: right; color: #059669; font-weight: bold; font-size: 20px;'>{$amount}</td>
+                        <td>Amount Due</td>
+                        <td style='color: #28a745; font-weight: bold; font-size: 20px;'>{$amount}</td>
                     </tr>";
 
     if ($totalAmount && $totalAmount !== $amount) {
         $htmlBody .= "
                     <tr>
-                        <td style='padding: 8px 0; font-weight: bold; color: #6b7280;'>Total Project Value:</td>
-                        <td style='padding: 8px 0; text-align: right; color: #1f2937;'>{$totalAmount}</td>
+                        <td>Total Project</td>
+                        <td>{$totalAmount}</td>
                     </tr>";
     }
 
@@ -91,39 +108,38 @@ try {
                 </table>
             </div>
             
-            <div style='text-align: center; margin: 30px 0;'>
-                <a href='{$paymentLink}' style='display: inline-block; background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);'>
-                    🔒 Complete Secure Payment
+            <div style='text-align: center; margin: 40px 0;'>
+                <a href='{$paymentLink}' class='payment-button' style='color: white; text-decoration: none;'>
+                    🔒 Complete Payment Securely
                 </a>
-                <p style='margin: 15px 0 0 0; font-size: 14px; color: #6b7280;'>Click the button above to access your secure payment page</p>
+                <p style='margin: 15px 0 0 0; font-size: 14px; color: #6c757d;'>
+                    Click the button above to access your secure payment page
+                </p>
             </div>
             
-            <div style='background: #ecfdf5; border: 1px solid #d1fae5; padding: 20px; border-radius: 6px; margin: 20px 0;'>
-                <h4 style='color: #065f46; margin-top: 0; font-size: 16px;'>✓ Available Payment Methods</h4>
-                <ul style='margin: 10px 0; padding-left: 20px; color: #047857;'>
-                    <li style='margin: 5px 0;'><strong>Credit/Debit Card (Stripe)</strong> - Instant processing</li>
-                    <li style='margin: 5px 0;'><strong>PayPal</strong> - Pay with your PayPal account</li>
-                    <li style='margin: 5px 0;'><strong>Direct Bank Transfer</strong> - Transfer directly to our account</li>
+            <div class='security-badge'>
+                <strong>🛡️ Secure Payment Options Available:</strong>
+                <ul style='margin: 10px 0; padding-left: 20px;'>
+                    <li>Credit/Debit Card (Stripe) - Instant processing</li>
+                    <li>PayPal - Pay with your PayPal account</li>
+                    <li>Direct Bank Transfer - ACH transfer available</li>
                 </ul>
             </div>
             
-            <div style='background: #fef3c7; border: 1px solid #fcd34d; padding: 15px; border-radius: 6px; margin: 20px 0;'>
-                <p style='margin: 0; color: #92400e; font-size: 14px;'>
-                    <strong>🔐 Security Notice:</strong> This link is secure and encrypted for your protection. 
-                    You'll receive a confirmation email once payment is processed.
-                </p>
-            </div>
+            <p style='font-size: 14px; color: #6c757d; line-height: 1.5;'>
+                <strong>Need assistance?</strong> Reply to this email or contact us at 
+                <a href='mailto:hello@appcraftservices.com' style='color: #007bff;'>hello@appcraftservices.com</a>
+            </p>
         </div>
         
-        <div style='text-align: center; padding: 20px; border-top: 1px solid #e5e7eb;'>
-            <p style='margin: 0 0 10px 0; color: #6b7280; font-size: 14px;'>
-                Questions about your payment or project? Contact us:
+        <div class='footer'>
+            <p style='margin: 0; color: #6c757d; font-size: 14px;'>
+                <strong>App Craft Services</strong><br>
+                Professional Web Development Solutions<br>
+                <a href='https://appcraftservices.com' style='color: #007bff;'>appcraftservices.com</a>
             </p>
-            <p style='margin: 0; color: #2563eb; font-weight: bold;'>
-                📧 <a href='mailto:hello@appcraftservices.com' style='color: #2563eb; text-decoration: none;'>hello@appcraftservices.com</a>
-            </p>
-            <p style='margin: 15px 0 0 0; color: #6b7280; font-size: 12px;'>
-                App Craft Services | <a href='https://appcraftservices.com' style='color: #6b7280;'>appcraftservices.com</a>
+            <p style='margin: 15px 0 0 0; color: #adb5bd; font-size: 12px;'>
+                This email was sent regarding your service request. Please do not reply to this automated message.
             </p>
         </div>
     </div>
@@ -131,20 +147,18 @@ try {
 </html>";
 
     // Plain text version for better deliverability
-    $textBody = "Dear Valued Client,
+    $textBody = "Hello!
 
-Thank you for choosing App Craft Services for your project!
-
-We've prepared a secure payment link for your {$description} service.
+Thank you for choosing App Craft Services.
 
 PAYMENT DETAILS:
-• Service: {$description}
-• Payment Stage: {$stageDisplay}
-• Payment Amount: {$amount}";
+Service: {$description}
+Payment Stage: {$stageDisplay}
+Payment Amount: {$amount}";
 
     if ($totalAmount && $totalAmount !== $amount) {
         $textBody .= "
-• Total Project Value: {$totalAmount}";
+Total Project Value: {$totalAmount}";
     }
 
     $textBody .= "
@@ -152,53 +166,55 @@ PAYMENT DETAILS:
 SECURE PAYMENT LINK:
 {$paymentLink}
 
-You can complete your payment using any of these secure methods:
-✓ Credit/Debit Card (Stripe) - Instant processing
-✓ PayPal - Pay with your PayPal account
-✓ Direct Bank Transfer - Transfer directly to our account
+PAYMENT OPTIONS AVAILABLE:
+- Credit/Debit Card (Stripe) - Instant processing
+- PayPal - Pay with your PayPal account  
+- Direct Bank Transfer - ACH transfer available
 
-IMPORTANT NOTES:
-• This link is secure and encrypted for your protection
-• You'll receive a confirmation email once payment is processed
-• For bank transfers, please include your email address in the reference field
+This link is secure and encrypted for your protection.
 
-If you have any questions about your payment or project, please contact us at hello@appcraftservices.com
-
-We're excited to work with you and deliver exceptional results!
+Need assistance? Contact us at hello@appcraftservices.com
 
 Best regards,
-The App Craft Services Team
+App Craft Services Team
+https://appcraftservices.com";
 
----
-App Craft Services
-Email: hello@appcraftservices.com
-Website: https://appcraftservices.com";
-
-    // Enhanced email headers to avoid spam
-    $headers = "From: App Craft Services <hello@appcraftservices.com>\r\n";
-    $headers .= "Reply-To: hello@appcraftservices.com\r\n";
-    $headers .= "Return-Path: hello@appcraftservices.com\r\n";
-    $headers .= "Organization: App Craft Services\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: multipart/alternative; boundary=\"boundary123\"\r\n";
-    $headers .= "X-Mailer: App Craft Services Payment System\r\n";
-    $headers .= "X-Priority: 3\r\n";
-    $headers .= "X-MSMail-Priority: Normal\r\n";
-    $headers .= "Importance: Normal\r\n";
+    // Enhanced email headers for maximum deliverability
+    $headers = array();
+    $headers[] = "From: App Craft Services <hello@appcraftservices.com>";
+    $headers[] = "Reply-To: App Craft Services <hello@appcraftservices.com>";
+    $headers[] = "Return-Path: hello@appcraftservices.com";
+    $headers[] = "Organization: App Craft Services";
+    $headers[] = "X-Sender: hello@appcraftservices.com";
+    $headers[] = "X-Mailer: App Craft Services Payment System v2.0";
+    $headers[] = "X-Priority: 3";
+    $headers[] = "X-MSMail-Priority: Normal";
+    $headers[] = "Importance: Normal";
+    $headers[] = "MIME-Version: 1.0";
+    $headers[] = "Content-Type: multipart/alternative; boundary=\"boundary456\"";
+    $headers[] = "Message-ID: <" . time() . "." . md5($clientEmail . $paymentLink) . "@appcraftservices.com>";
+    $headers[] = "Date: " . date('r');
+    
+    // Anti-spam headers
+    $headers[] = "X-Spam-Status: No";
+    $headers[] = "X-Authenticated-Sender: hello@appcraftservices.com";
+    $headers[] = "List-Unsubscribe: <mailto:hello@appcraftservices.com?subject=Unsubscribe>";
     
     // Create multipart email body
-    $emailBody = "--boundary123\r\n";
+    $emailBody = "--boundary456\r\n";
     $emailBody .= "Content-Type: text/plain; charset=UTF-8\r\n";
     $emailBody .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
     $emailBody .= $textBody . "\r\n\r\n";
-    $emailBody .= "--boundary123\r\n";
+    $emailBody .= "--boundary456\r\n";
     $emailBody .= "Content-Type: text/html; charset=UTF-8\r\n";
     $emailBody .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
     $emailBody .= $htmlBody . "\r\n\r\n";
-    $emailBody .= "--boundary123--";
+    $emailBody .= "--boundary456--";
     
-    // Send email
-    if (mail($clientEmail, $subject, $emailBody, $headers)) {
+    // Send email with improved headers
+    $headerString = implode("\r\n", $headers);
+    
+    if (mail($clientEmail, $subject, $emailBody, $headerString)) {
         // Log the email sending for admin records
         $logEntry = [
             'timestamp' => date('Y-m-d H:i:s'),
@@ -206,10 +222,11 @@ Website: https://appcraftservices.com";
             'amount' => $amount,
             'stage' => $stageDisplay,
             'description' => $description,
-            'payment_link' => $paymentLink
+            'payment_link' => $paymentLink,
+            'delivery_attempt' => 'primary'
         ];
         
-        // Save to log file (optional)
+        // Save to log file
         $logFile = '../../logs/payment_emails.log';
         if (!file_exists(dirname($logFile))) {
             mkdir(dirname($logFile), 0755, true);
