@@ -166,7 +166,7 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                         
                         <!-- Direct PayPal Payment Button -->
                         <div class="mb-4">
-                            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=talk2char@gmail.com&amount=<?php echo $numericAmount; ?>&currency_code=USD" 
+                            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=talk2char@gmail.com&amount=<?php echo $numericAmount; ?>&currency_code=USD&item_name=<?php echo urlencode($description); ?>" 
                                target="_blank" 
                                class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center">
                                 <i class="fab fa-paypal mr-2 text-xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
@@ -327,7 +327,8 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                             payee: {
                                 email_address: 'talk2char@gmail.com'
                             },
-                            description: '<?php echo htmlspecialchars($description); ?>'
+                            description: '<?php echo htmlspecialchars($description); ?>',
+                            custom_id: 'payment_<?php echo time(); ?>_<?php echo substr(md5($email), 0, 8); ?>'
                         }]
                     });
                 },
