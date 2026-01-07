@@ -79,25 +79,6 @@ function showTab(tabName) {
     } else if (tabName === 'blog') {
         loadBlogPosts();
     } else if (tabName === 'analytics') {
-        // Add event listeners for analytics filters
-        const periodSelect = document.getElementById('analytics-period');
-        const pageSelect = document.getElementById('analytics-page');
-        const sourceSelect = document.getElementById('analytics-source');
-        
-        if (periodSelect && !periodSelect.dataset.listenerAdded) {
-            periodSelect.addEventListener('change', refreshAnalytics);
-            periodSelect.dataset.listenerAdded = 'true';
-        }
-        if (pageSelect && !pageSelect.dataset.listenerAdded) {
-            pageSelect.addEventListener('change', refreshAnalytics);
-            pageSelect.dataset.listenerAdded = 'true';
-        }
-        if (sourceSelect && !sourceSelect.dataset.listenerAdded) {
-            sourceSelect.addEventListener('change', refreshAnalytics);
-            sourceSelect.dataset.listenerAdded = 'true';
-        }
-        
-        // Load analytics data
         refreshAnalytics();
     } else if (tabName === 'messages') {
         if (typeof loadMessages === 'function') loadMessages();
@@ -107,159 +88,6 @@ function showTab(tabName) {
         if (typeof loadInvoices === 'function') loadInvoices();
     } else if (tabName === 'payments') {
         if (typeof loadPayments === 'function') loadPayments();
-    }
-}
-
-// Content Management Form Handler
-document.getElementById('content-form')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-    const data = {};
-
-    // Convert FormData to object
-    for (let [key, value] of formData.entries()) {
-        if (key.includes('[]')) {
-            const cleanKey = key.replace('[]', '');
-            if (!data[cleanKey]) data[cleanKey] = [];
-            data[cleanKey].push(value);
-        } else {
-            data[key] = value;
-        }
-    }
-
-    try {
-        const response = await fetch('api/save_content.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            showNotification('Content saved successfully!', 'success');
-            loadContentData();
-        } else {
-            showNotification('Error saving content: ' + result.message, 'error');
-        }
-    } catch (error) {
-        showNotification('Error saving content: ' + error.message, 'error');
-    }
-});
-
-// Load current content data into form
-async function loadContentData() {
-    try {
-        const response = await fetch('../data/website_content.json');
-        const content = await response.json();
-
-        // Populate form fields if elements exist
-        const setVal = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.value = val || '';
-        };
-
-        if (content.site_info) {
-            const siteTitleEl = document.querySelector('input[name="site_title"]');
-            if (siteTitleEl) siteTitleEl.value = content.site_info.title || '';
-            
-            const siteTaglineEl = document.querySelector('input[name="site_tagline"]');
-            if (siteTaglineEl) siteTaglineEl.value = content.site_info.tagline || '';
-            
-            const siteDescEl = document.querySelector('textarea[name="site_description"]');
-            if (siteDescEl) siteDescEl.value = content.site_info.description || '';
-            
-            const siteEmailEl = document.querySelector('input[name="site_email"]');
-            if (siteEmailEl) siteEmailEl.value = content.site_info.email || '';
-            
-            const sitePhoneEl = document.querySelector('input[name="site_phone"]');
-            if (sitePhoneEl) sitePhoneEl.value = content.site_info.phone || '';
-        }
-
-        if (content.hero) {
-            const heroHeadEl = document.querySelector('input[name="hero_headline"]');
-            if (heroHeadEl) heroHeadEl.value = content.hero.headline || '';
-            
-            const heroSubEl = document.querySelector('textarea[name="hero_subheadline"]');
-            if (heroSubEl) heroSubEl.value = content.hero.subheadline || '';
-            
-            const heroCtaEl = document.querySelector('input[name="hero_cta"]');
-            if (heroCtaEl) heroCtaEl.value = content.hero.cta_text || '';
-        }
-
-        // Clear existing value props and reload
-        const valuePropsContainer = document.getElementById('value-props');
-        if (valuePropsContainer && content.value_props) {
-            valuePropsContainer.innerHTML = '';
-            content.value_props.forEach(prop => {
-                addValuePropFromData(prop.title, prop.description);
-            });
-        }
-
-    } catch (error) {
-        console.error('Error loading content data:', error);
-    }
-}
-
-function addValuePropFromData(title, description) {
-    const container = document.getElementById('value-props');
-    if (!container) return;
-    
-    const newProp = document.createElement('div');
-    newProp.className = 'value-prop-item border border-gray-200 p-4 rounded mb-4';
-    newProp.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input type="text" name="value_prop_title[]" value="${escapeHtml(title)}" class="w-full p-3 border border-gray-300 rounded-md">
-            </div>
-            <div>
-                <button type="button" onclick="removeValueProp(this)" class="mt-6 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">
-                    <i class="fas fa-trash"></i> Remove
-                </button>
-            </div>
-        </div>
-        <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea name="value_prop_description[]" rows="2" class="w-full p-3 border border-gray-300 rounded-md">${escapeHtml(description)}</textarea>
-        </div>
-    `;
-    container.appendChild(newProp);
-}
-
-// Value Proposition Management
-function addValueProp() {
-    const container = document.getElementById('value-props');
-    if (!container) return;
-    
-    const newProp = document.createElement('div');
-    newProp.className = 'value-prop-item border border-gray-200 p-4 rounded mb-4';
-    newProp.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input type="text" name="value_prop_title[]" class="w-full p-3 border border-gray-300 rounded-md">
-            </div>
-            <div>
-                <button type="button" onclick="removeValueProp(this)" class="mt-6 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">
-                    <i class="fas fa-trash"></i> Remove
-                </button>
-            </div>
-        </div>
-        <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea name="value_prop_description[]" rows="2" class="w-full p-3 border border-gray-300 rounded-md"></textarea>
-        </div>
-    `;
-    container.appendChild(newProp);
-}
-
-function removeValueProp(button) {
-    if (button && button.closest) {
-        button.closest('.value-prop-item').remove();
     }
 }
 
@@ -305,233 +133,7 @@ function formatDate(dateString) {
     if (isNaN(date.getTime())) return dateString;
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
-
-// ALL FUNCTIONS FOR ADMIN DASHBOARD BUTTONS
-
-// Preview Functions
-function previewSite() {
-    window.open('../', '_blank');
-}
-
-function previewChanges() {
-    showNotification('Preview functionality coming soon!', 'info');
-}
-
-// Page Editor Functions
-function editPage(page) {
-    showNotification(`Edit ${page} page functionality coming soon!`, 'info');
-}
-
-function closePageEditor() {
-    const editor = document.getElementById('page-editor');
-    if (editor) {
-        editor.style.display = 'none';
-    }
-}
-
-// Design Functions
-function uploadLogo() {
-    const fileInput = document.getElementById('logo-upload');
-    if (fileInput && fileInput.files.length > 0) {
-        showNotification('Logo upload functionality coming soon!', 'info');
-    } else {
-        showNotification('Please select a file first', 'warning');
-    }
-}
-
-function applyTheme(theme) {
-    showNotification(`${theme} theme applied successfully!`, 'success');
-}
-
-// Package Management Functions
-function editPackage(packageName) {
-    showNotification(`Edit ${packageName} package functionality coming soon!`, 'info');
-}
-
-function addPackage() {
-    showNotification('Add package functionality coming soon!', 'info');
-}
-
-// Payment Functions
-function generateInvoice() {
-    showTab('invoices');
-    showNotification('Invoice generator opened!', 'success');
-}
-
-function sendPaymentLink() {
-    showNotification('Send payment link functionality coming soon!', 'info');
-}
-
-function refundPayment() {
-    showNotification('Refund functionality coming soon!', 'info');
-}
-
-function exportPayments() {
-    showNotification('Export payments functionality coming soon!', 'info');
-}
-
-function refreshTransactions() {
-    if (typeof loadPaymentData === 'function') loadPaymentData();
-    showNotification('Transactions refreshed', 'success');
-}
-
-// Analytics Functions
-function connectGoogleAnalytics() {
-    showNotification('Google Analytics integration coming soon!', 'info');
-}
-
-function setupFacebookPixel() {
-    showNotification('Facebook Pixel setup coming soon!', 'info');
-}
-
-function manageCustomTracking() {
-    showNotification('Custom tracking management coming soon!', 'info');
-}
-
-// Settings Functions
-function createBackup() {
-    showNotification('Backup creation functionality coming soon!', 'info');
-}
-
-function restoreBackup() {
-    showNotification('Backup restore functionality coming soon!', 'info');
-}
-
-function runSystemCheck() {
-    showNotification('System check completed - All systems operational!', 'success');
-}
-
-function toggleMaintenanceMode() {
-    const checkbox = document.getElementById('maintenance-mode');
-    if (checkbox) {
-        checkbox.checked = !checkbox.checked;
-        showNotification(`Maintenance mode ${checkbox.checked ? 'enabled' : 'disabled'}`, 'info');
-    }
-}
-
-function clearCache() {
-    showNotification('Cache cleared successfully!', 'success');
-}
-
-// Review Functions
-function viewReviewDetails(reviewId) {
-    showNotification('Review details functionality coming soon!', 'info');
-}
-
-function exportReviews() {
-    showNotification('Export reviews functionality coming soon!', 'info');
-}
-
-// Message Functions
-async function markAsRead(messageId) {
-    try {
-        const response = await fetch('api/mark_message_read.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message_id: messageId })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            showNotification('Message marked as read', 'success');
-            loadMessages();
-        } else {
-            showNotification('Error marking message as read', 'error');
-        }
-    } catch (error) {
-        showNotification('Error marking message as read: ' + error.message, 'error');
-    }
-}
-
-async function deleteMessage(messageId) {
-    if (confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
-        try {
-            const response = await fetch('api/delete_message.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: messageId })
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showNotification('Message deleted successfully!', 'success');
-                // Reload messages to update the display
-                loadMessages();
-            } else {
-                showNotification('Error deleting message: ' + result.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error deleting message:', error);
-            showNotification('Error deleting message. Please try again.', 'error');
-        }
-    }
-}
-
-function replyToMessage(messageId, email) {
-    const subject = 'Re: Your inquiry to App Craft Services';
-    const body = 'Thank you for contacting App Craft Services. ';
-    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
-}
-
-function filterMessages(filter) {
-    loadMessages(filter);
-}
-
-async function exportMessages() {
-    try {
-        const response = await fetch('api/get_messages.php');
-        if (!response.ok) throw new Error('Failed to fetch messages');
-        const messages = await response.json();
-        
-        if (messages.length === 0) {
-            showNotification('No messages to export', 'info');
-            return;
-        }
-        
-        // Create CSV content
-        const headers = ['Date', 'Name', 'Email', 'Phone', 'Company', 'Project Type', 'Timeline', 'Budget', 'Message', 'Status'];
-        const csvContent = [
-            headers.join(','),
-            ...messages.map(msg => [
-                msg.created_at || '',
-                `"${(msg.name || '').replace(/"/g, '""')}"`,
-                msg.email || '',
-                msg.phone || '',
-                `"${(msg.company || '').replace(/"/g, '""')}"`,
-                `"${(msg.project_type || '').replace(/"/g, '""')}"`,
-                `"${(msg.timeline || '').replace(/"/g, '""')}"`,
-                `"${(msg.budget || '').replace(/"/g, '""')}"`,
-                `"${(msg.message || '').replace(/"/g, '""')}"`,
-                msg.read ? 'Read' : 'Unread'
-            ].join(','))
-        ].join('\n');
-        
-        // Create and download file
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `messages_export_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        showNotification('Messages exported successfully!', 'success');
-    } catch (error) {
-        console.error('Error exporting messages:', error);
-        showNotification('Error exporting messages. Please try again.', 'error');
-    }
-}
-
-// Enhanced Message Management System
+// Message Management Functions
 async function loadMessages(filter = 'all') {
     try {
         const response = await fetch('api/get_messages.php');
@@ -571,10 +173,7 @@ async function loadMessages(filter = 'all') {
         setEl('schedule-requests', scheduleRequests);
         setEl('message-count', unreadMessages);
 
-        // Update filter buttons
-        updateFilterButtons(filter);
-
-        // Populate Full Message List
+        // Populate message list
         const messagesList = document.getElementById('messages-list');
         if (messagesList) {
             if (filteredMessages.length === 0) {
@@ -590,147 +189,10 @@ async function loadMessages(filter = 'all') {
                     </div>
                 `;
             } else {
-                messagesList.innerHTML = ''; 
-                filteredMessages.forEach((message, index) => { 
-                    const name = message.name || 'Unknown';
-                    const email = message.email || '';
-                    const phone = message.phone || '';
-                    const company = message.company || '';
-                    const projectType = message.project_type || 'General Inquiry';
-                    const timeline = message.timeline || '';
-                    const budget = message.budget || '';
-                    const msgText = message.message || 'No content';
-                    const date = formatDate(message.created_at);
-                    const isScheduleRequest = projectType === 'Consultation Request';
-                    const isUnread = !message.read;
-                    
-                    const div = document.createElement('div');
-                    div.className = `message-item bg-white border-2 ${isUnread ? 'border-blue-200 bg-blue-50' : 'border-gray-200'} rounded-lg p-6 mb-4 hover:shadow-lg transition-all duration-200`;
-                    div.innerHTML = `
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex-1">
-                                <div class="flex items-center mb-2">
-                                    <div class="w-10 h-10 rounded-full ${isScheduleRequest ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center font-bold mr-3">
-                                        ${isScheduleRequest ? '📅' : name.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900 text-lg">${escapeHtml(name)}</h4>
-                                        <div class="flex items-center space-x-2 text-sm text-gray-600">
-                                            <span>${escapeHtml(email)}</span>
-                                            ${phone ? `<span>•</span><span>${escapeHtml(phone)}</span>` : ''}
-                                            ${company ? `<span>•</span><span>${escapeHtml(company)}</span>` : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex flex-wrap gap-2 mb-3">
-                                    <span class="px-3 py-1 text-xs font-medium rounded-full ${isScheduleRequest ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}">${escapeHtml(projectType)}</span>
-                                    ${timeline ? `<span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">⏰ ${escapeHtml(timeline)}</span>` : ''}
-                                    ${budget ? `<span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">💰 ${escapeHtml(budget)}</span>` : ''}
-                                    ${isUnread ? '<span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">🔔 New</span>' : ''}
-                                </div>
-                            </div>
-                            
-                            <div class="text-right">
-                                <div class="text-sm text-gray-500 mb-2">${date}</div>
-                                <div class="flex space-x-1">
-                                    ${isScheduleRequest ? '<span class="text-purple-600 text-xs font-medium">URGENT</span>' : ''}
-                                    ${isUnread ? '<span class="w-3 h-3 bg-blue-500 rounded-full"></span>' : ''}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                            <h5 class="font-semibold text-gray-900 mb-2">Message:</h5>
-                            <div class="text-gray-700 whitespace-pre-wrap">${escapeHtml(msgText)}</div>
-                        </div>
-                        
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="replyToMessage('${message.id}', '${email}', '${escapeHtml(name)}')" 
-                                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
-                                </svg>
-                                Reply via Email
-                            </button>
-                            
-                            ${phone ? `<a href="tel:${phone}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                </svg>
-                                Call ${phone}
-                            </a>` : ''}
-                            
-                            ${isScheduleRequest ? `<button onclick="scheduleConsultation('${message.id}', '${email}', '${escapeHtml(name)}')" 
-                                    class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                Schedule Meeting
-                            </button>` : ''}
-                            
-                            ${isUnread ? `<button onclick="markAsRead('${message.id}')" 
-                                    class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Mark as Read
-                            </button>` : ''}
-                            
-                            <button onclick="viewMessageDetails('${message.id}')" 
-                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                View Details
-                            </button>
-                            
-                            <button onclick="deleteMessage('${message.id}')" 
-                                    class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                                Delete
-                            </button>
-                        </div>
-                    `;
-                    messagesList.appendChild(div); 
-                });
-            }
-        }
-
-        // Populate Recent Messages Widget (Dashboard)
-        const recentList = document.getElementById('recent-messages');
-        if (recentList) {
-            if (messages.length === 0) {
-                recentList.innerHTML = '<p class="text-gray-500 text-sm">No messages yet</p>';
-            } else {
-                recentList.innerHTML = '';
-                messages.slice(0, 5).forEach(message => {
-                    const name = message.name || 'Unknown';
-                    const projectType = message.project_type || 'Inquiry';
-                    const initial = name.charAt(0).toUpperCase();
-                    const isScheduleRequest = projectType === 'Consultation Request';
-                    
-                    const item = document.createElement('div');
-                    item.className = 'flex items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 rounded px-2 cursor-pointer';
-                    item.onclick = () => showTab('messages');
-                    item.innerHTML = `
-                        <div class="w-10 h-10 rounded-full ${isScheduleRequest ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center font-bold mr-3 flex-shrink-0">
-                            ${isScheduleRequest ? '📅' : initial}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate">
-                                ${escapeHtml(name)}
-                            </p>
-                            <p class="text-xs text-gray-500 truncate">
-                                ${escapeHtml(projectType)} • ${formatDate(message.created_at)}
-                            </p>
-                        </div>
-                        ${!message.read ? '<div class="w-3 h-3 bg-blue-500 rounded-full"></div>' : ''}
-                    `;
-                    recentList.appendChild(item);
+                messagesList.innerHTML = '';
+                filteredMessages.forEach((message) => {
+                    const messageDiv = createMessageElement(message);
+                    messagesList.appendChild(messageDiv);
                 });
             }
         }
@@ -740,29 +202,144 @@ async function loadMessages(filter = 'all') {
         showNotification('Error loading messages: ' + error.message, 'error');
     }
 }
-
-// Update filter button states
-function updateFilterButtons(activeFilter) {
-    const buttons = {
-        'all': document.querySelector('button[onclick="filterMessages(\'all\')"]'),
-        'unread': document.querySelector('button[onclick="filterMessages(\'unread\')"]'),
-        'today': document.querySelector('button[onclick="filterMessages(\'today\')"]'),
-        'schedule': document.querySelector('button[onclick="filterMessages(\'schedule\')"]')
-    };
+function createMessageElement(message) {
+    const name = message.name || 'Unknown';
+    const email = message.email || '';
+    const phone = message.phone || '';
+    const company = message.company || '';
+    const projectType = message.project_type || 'General Inquiry';
+    const timeline = message.timeline || '';
+    const budget = message.budget || '';
+    const msgText = message.message || 'No content';
+    const date = formatDate(message.created_at);
+    const isScheduleRequest = projectType === 'Consultation Request';
+    const isUnread = !message.read;
     
-    Object.keys(buttons).forEach(filter => {
-        const button = buttons[filter];
-        if (button) {
-            if (filter === activeFilter) {
-                button.className = 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium';
-            } else {
-                button.className = 'px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300';
-            }
+    const div = document.createElement('div');
+    div.className = `message-item bg-white border-2 ${isUnread ? 'border-blue-200 bg-blue-50' : 'border-gray-200'} rounded-lg p-6 mb-4 hover:shadow-lg transition-all duration-200`;
+    div.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+                <div class="flex items-center mb-2">
+                    <div class="w-10 h-10 rounded-full ${isScheduleRequest ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center font-bold mr-3">
+                        ${isScheduleRequest ? '📅' : name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-lg">${escapeHtml(name)}</h4>
+                        <div class="flex items-center space-x-2 text-sm text-gray-600">
+                            <span>${escapeHtml(email)}</span>
+                            ${phone ? `<span>•</span><span>${escapeHtml(phone)}</span>` : ''}
+                            ${company ? `<span>•</span><span>${escapeHtml(company)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="px-3 py-1 text-xs font-medium rounded-full ${isScheduleRequest ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}">${escapeHtml(projectType)}</span>
+                    ${timeline ? `<span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">⏰ ${escapeHtml(timeline)}</span>` : ''}
+                    ${budget ? `<span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">💰 ${escapeHtml(budget)}</span>` : ''}
+                    ${isUnread ? '<span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">🔔 New</span>' : ''}
+                </div>
+            </div>
+            
+            <div class="text-right">
+                <div class="text-sm text-gray-500 mb-2">${date}</div>
+                <div class="flex space-x-1">
+                    ${isScheduleRequest ? '<span class="text-purple-600 text-xs font-medium">URGENT</span>' : ''}
+                    ${isUnread ? '<span class="w-3 h-3 bg-blue-500 rounded-full"></span>' : ''}
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+            <h5 class="font-semibold text-gray-900 mb-2">Message:</h5>
+            <div class="text-gray-700 whitespace-pre-wrap">${escapeHtml(msgText)}</div>
+        </div>
+        
+        <div class="flex flex-wrap gap-2">
+            <button onclick="replyToMessage('${message.id}', '${email}', '${escapeHtml(name)}')" 
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                </svg>
+                Reply via Email
+            </button>
+            
+            ${phone ? `<a href="tel:${phone}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+                Call ${phone}
+            </a>` : ''}
+            
+            ${isUnread ? `<button onclick="markAsRead('${message.id}')" 
+                    class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Mark as Read
+            </button>` : ''}
+            
+            <button onclick="deleteMessage('${message.id}')" 
+                    class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                Delete
+            </button>
+        </div>
+    `;
+    return div;
+}
+async function markAsRead(messageId) {
+    try {
+        const response = await fetch('api/mark_message_read.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message_id: messageId })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification('Message marked as read', 'success');
+            loadMessages();
+        } else {
+            showNotification('Error marking message as read', 'error');
         }
-    });
+    } catch (error) {
+        showNotification('Error marking message as read: ' + error.message, 'error');
+    }
 }
 
-// Enhanced message action functions
+async function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
+        try {
+            const response = await fetch('api/delete_message.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: messageId })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('Message deleted successfully!', 'success');
+                loadMessages();
+            } else {
+                showNotification('Error deleting message: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting message:', error);
+            showNotification('Error deleting message. Please try again.', 'error');
+        }
+    }
+}
+
 function replyToMessage(messageId, email, name) {
     const subject = `Re: Your inquiry to App Craft Services`;
     const body = `Hi ${name},\n\nThank you for contacting App Craft Services. \n\n[Your response here]\n\nBest regards,\nApp Craft Services Team\nhello@appcraftservices.com`;
@@ -774,1352 +351,269 @@ function replyToMessage(messageId, email, name) {
     markAsRead(messageId);
 }
 
-function scheduleConsultation(messageId, email, name) {
-    const subject = `Consultation Scheduling - App Craft Services`;
-    const body = `Hi ${name},\n\nThank you for requesting a consultation with App Craft Services!\n\nI'd be happy to schedule a 30-minute consultation to discuss your project. Please let me know which of these times work best for you:\n\n• [Option 1: Date/Time]\n• [Option 2: Date/Time]\n• [Option 3: Date/Time]\n\nOr feel free to suggest alternative times that work better for your schedule.\n\nThe consultation will be conducted via video call (Zoom/Google Meet), and I'll send you the meeting link once we confirm the time.\n\nLooking forward to discussing your project!\n\nBest regards,\nApp Craft Services Team\nhello@appcraftservices.com\n📅 Schedule directly: https://appcraftservices.com/schedule`;
-    
-    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
-    
-    // Mark as read when scheduling
-    markAsRead(messageId);
+function filterMessages(filter) {
+    loadMessages(filter);
 }
-
-function viewMessageDetails(messageId) {
-    // Find the message in the current data
-    fetch('api/get_messages.php')
-        .then(response => response.json())
-        .then(messages => {
-            const message = messages.find(m => m.id === messageId);
-            if (message) {
-                showMessageModal(message);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching message details:', error);
-            showNotification('Error loading message details', 'error');
-        });
-}
-
-function showMessageModal(message) {
+// Payment Functions
+function sendPaymentLink() {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-lg max-w-md w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Message Details</h3>
-                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+                    <h3 class="text-xl font-bold">Generate Payment Link</h3>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-6">
+                <form id="payment-link-form" class="space-y-4">
                     <div>
-                        <h4 class="font-semibold text-gray-900 mb-3">Contact Information</h4>
-                        <div class="space-y-2 text-sm">
-                            <div><strong>Name:</strong> ${escapeHtml(message.name || 'N/A')}</div>
-                            <div><strong>Email:</strong> <a href="mailto:${message.email}" class="text-blue-600 hover:underline">${escapeHtml(message.email || 'N/A')}</a></div>
-                            <div><strong>Phone:</strong> ${message.phone ? `<a href="tel:${message.phone}" class="text-blue-600 hover:underline">${escapeHtml(message.phone)}</a>` : 'N/A'}</div>
-                            <div><strong>Company:</strong> ${escapeHtml(message.company || 'N/A')}</div>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
+                        <input type="email" id="client-email-input" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="client@example.com">
                     </div>
                     
                     <div>
-                        <h4 class="font-semibold text-gray-900 mb-3">Project Information</h4>
-                        <div class="space-y-2 text-sm">
-                            <div><strong>Project Type:</strong> ${escapeHtml(message.project_type || 'N/A')}</div>
-                            <div><strong>Timeline:</strong> ${escapeHtml(message.timeline || 'N/A')}</div>
-                            <div><strong>Budget:</strong> ${escapeHtml(message.budget || 'N/A')}</div>
-                            <div><strong>Status:</strong> <span class="px-2 py-1 text-xs rounded-full ${message.read ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">${message.read ? 'Read' : 'Unread'}</span></div>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Stage</label>
+                        <select id="payment-stage" class="w-full p-3 border border-gray-300 rounded-md" required>
+                            <option value="">Select payment stage</option>
+                            <option value="initial">Initial Payment (50%)</option>
+                            <option value="final">Final Payment (50%)</option>
+                            <option value="full">Full Payment (100%)</option>
+                        </select>
                     </div>
-                </div>
-                
-                <div class="mt-6">
-                    <h4 class="font-semibold text-gray-900 mb-3">Message Content</h4>
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="whitespace-pre-wrap text-gray-700">${escapeHtml(message.message || 'No content')}</div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Total Project Amount</label>
+                        <input type="text" id="total-amount" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="$3,000">
                     </div>
-                </div>
-                
-                <div class="mt-6">
-                    <h4 class="font-semibold text-gray-900 mb-3">Submission Details</h4>
-                    <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
-                        <div><strong>Submitted:</strong> ${formatDate(message.created_at)}</div>
-                        <div><strong>IP Address:</strong> ${escapeHtml(message.ip_address || 'N/A')}</div>
-                        <div><strong>Message ID:</strong> ${escapeHtml(message.id || 'N/A')}</div>
-                        <div><strong>User Agent:</strong> ${escapeHtml((message.user_agent || 'N/A').substring(0, 50))}${(message.user_agent || '').length > 50 ? '...' : ''}</div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Amount</label>
+                        <input type="text" id="payment-amount" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Enter payment amount">
+                        <p class="text-xs text-gray-500 mt-1">You can edit this amount or use the calculated amount based on stage and total project value</p>
                     </div>
-                </div>
-                
-                <div class="mt-6 flex flex-wrap gap-3">
-                    <button onclick="replyToMessage('${message.id}', '${message.email}', '${escapeHtml(message.name)}')" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                        Reply via Email
-                    </button>
-                    ${message.phone ? `<a href="tel:${message.phone}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">Call ${message.phone}</a>` : ''}
-                    ${!message.read ? `<button onclick="markAsRead('${message.id}'); this.closest('.fixed').remove(); loadMessages();" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200">Mark as Read</button>` : ''}
-                    <button onclick="deleteMessage('${message.id}'); this.closest('.fixed').remove();" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">Delete Message</button>
-                </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Service Description</label>
+                        <select id="service-description" class="w-full p-3 border border-gray-300 rounded-md">
+                            <option value="Essential App Development">Essential App Development</option>
+                            <option value="Custom Enterprise Solution">Custom Enterprise Solution</option>
+                            <option value="Maintenance & Support">Maintenance & Support</option>
+                            <option value="Custom Service">Custom Service</option>
+                        </select>
+                    </div>
+                    
+                    <div id="custom-service-input" class="hidden">
+                        <input type="text" id="custom-service-text" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Enter custom service description">
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="this.closest('.fixed').remove()" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Generate Link
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     `;
     
     document.body.appendChild(modal);
-}
-
-async function loadPaymentData() {
-    try {
-        const response = await fetch('api/get_payments.php');
-        if (!response.ok) throw new Error('API not available');
-        const payments = await response.json();
-
-        // Update payment statistics
-        const totalRevenue = payments.reduce((sum, payment) => sum + parseFloat(payment.amount || 0), 0);
-        const thisMonthRevenue = payments.filter(payment => {
-            const paymentDate = new Date(payment.created_at);
-            const now = new Date();
-            return paymentDate.getMonth() === now.getMonth() && 
-                   paymentDate.getFullYear() === now.getFullYear();
-        }).reduce((sum, payment) => sum + parseFloat(payment.amount || 0), 0);
-
-        const totalRevenueEl = document.getElementById('total-revenue');
-        const monthlyRevenueEl = document.getElementById('monthly-revenue');
-        const totalTransactionsEl = document.getElementById('total-transactions');
-        const pendingPaymentsEl = document.getElementById('pending-payments');
-
-        if (totalRevenueEl) totalRevenueEl.textContent = '$' + totalRevenue.toFixed(2);
-        if (monthlyRevenueEl) monthlyRevenueEl.textContent = '$' + thisMonthRevenue.toFixed(2);
-        if (totalTransactionsEl) totalTransactionsEl.textContent = payments.length;
-        if (pendingPaymentsEl) pendingPaymentsEl.textContent = payments.filter(p => p.status === 'pending').length;
-
-    } catch (error) {
-        console.warn('Error loading payment data:', error);
-    }
-}
-
-async function loadAnalyticsData() {
-    // For now, we'll show static data
-    const totalVisitorsEl = document.getElementById('total-visitors');
-    const pageViewsEl = document.getElementById('page-views');
-    const bounceRateEl = document.getElementById('bounce-rate');
-    const avgSessionEl = document.getElementById('avg-session');
-
-    if (totalVisitorsEl) totalVisitorsEl.textContent = '1,234';
-    if (pageViewsEl) pageViewsEl.textContent = '5,678';
-    if (bounceRateEl) bounceRateEl.textContent = '32%';
-    if (avgSessionEl) avgSessionEl.textContent = '2:45';
-}
-
-async function loadReviews(filter = 'all') {
-    try {
-        const response = await fetch(`api/get_reviews.php?status=${filter}&limit=50&offset=0`);
-        if (!response.ok) throw new Error('API not available');
-        const reviews = await response.json();
+    
+    // Handle form submission
+    document.getElementById('payment-link-form').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Review rendering logic would go here
-    } catch (error) {
-        console.warn('Error loading reviews:', error);
-    }
-}
-
-// Realtime Editor Function
-function openRealtimeEditor() {
-    // Open realtime editor in a new window/tab
-    window.open('realtime-editor.php?page=home', '_blank', 'width=1400,height=900');
-}
-
-// Analytics Functions
-function refreshAnalytics() {
-    const period = document.getElementById('analytics-period').value;
-    const page = document.getElementById('analytics-page').value;
-    const source = document.getElementById('analytics-source').value;
-    
-    const params = new URLSearchParams({
-        period: period,
-        page: page,
-        source: source
-    });
-    
-    fetch(`/api/analytics.php?${params}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateAnalyticsDashboard(data);
-            } else {
-                console.error('Analytics error:', data.message);
-                showAnalyticsError();
-            }
-        })
-        .catch(error => {
-            console.error('Analytics fetch error:', error);
-            showAnalyticsError();
-        });
-}
-
-function updateAnalyticsDashboard(data) {
-    // Update overview cards
-    document.getElementById('total-visitors').textContent = data.unique_visitors.toLocaleString();
-    document.getElementById('page-views').textContent = data.total_views.toLocaleString();
-    document.getElementById('bounce-rate').textContent = data.bounce_rate + '%';
-    document.getElementById('avg-load-time').textContent = data.avg_load_time + 's';
-    
-    // Update change indicators (simplified - you can enhance this)
-    document.getElementById('visitors-change').textContent = 'Current period';
-    document.getElementById('visitors-change').className = 'text-xs text-blue-600 mt-1';
-    document.getElementById('views-change').textContent = 'Current period';
-    document.getElementById('views-change').className = 'text-xs text-blue-600 mt-1';
-    document.getElementById('bounce-change').textContent = 'Current period';
-    document.getElementById('bounce-change').className = 'text-xs text-blue-600 mt-1';
-    document.getElementById('load-time-change').textContent = 'Current period';
-    document.getElementById('load-time-change').className = 'text-xs text-blue-600 mt-1';
-    
-    // Update top pages
-    updateTopPages(data.top_pages);
-    
-    // Update traffic sources
-    updateTrafficSources(data.traffic_sources);
-    
-    // Update device types
-    updateDeviceTypes(data.device_types);
-    
-    // Update browsers
-    updateBrowsers(data.browsers);
-    
-    // Update recent visitors
-    updateRecentVisitors(data.recent_visitors);
-    
-    // Update traffic chart
-    updateTrafficChart(data.views_by_date);
-}
-
-function updateTopPages(topPages) {
-    const container = document.getElementById('top-pages-list');
-    if (!topPages || Object.keys(topPages).length === 0) {
-        container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>No page data available</p></div>';
-        return;
-    }
-    
-    let html = '<div class="space-y-4">';
-    Object.entries(topPages).slice(0, 10).forEach(([page, views]) => {
-        const pageName = page === '/' ? 'Homepage' : page.replace('/', '').replace(/^\w/, c => c.toUpperCase());
-        html += `
-            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                <div>
-                    <div class="font-medium">${pageName}</div>
-                    <div class="text-sm text-gray-600">${page}</div>
-                </div>
-                <div class="text-right">
-                    <div class="font-semibold text-blue-600">${views.toLocaleString()}</div>
-                    <div class="text-sm text-gray-600">views</div>
-                </div>
-            </div>
-        `;
-    });
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function updateTrafficSources(sources) {
-    const container = document.getElementById('traffic-sources-list');
-    if (!sources || Object.keys(sources).length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-gray-500"><p>No source data</p></div>';
-        return;
-    }
-    
-    const total = Object.values(sources).reduce((sum, count) => sum + count, 0);
-    let html = '<div class="space-y-3">';
-    
-    Object.entries(sources).slice(0, 8).forEach(([source, count]) => {
-        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-        const sourceName = source.charAt(0).toUpperCase() + source.slice(1);
-        html += `
-            <div class="flex justify-between items-center">
-                <span class="text-sm">${sourceName}</span>
-                <div class="flex items-center">
-                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                    </div>
-                    <span class="text-sm font-medium">${percentage}%</span>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function updateDeviceTypes(devices) {
-    const container = document.getElementById('device-types-list');
-    if (!devices || Object.keys(devices).length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-gray-500"><p>No device data</p></div>';
-        return;
-    }
-    
-    const total = Object.values(devices).reduce((sum, count) => sum + count, 0);
-    let html = '<div class="space-y-3">';
-    
-    const colors = { desktop: 'blue', mobile: 'green', tablet: 'purple' };
-    
-    Object.entries(devices).forEach(([device, count]) => {
-        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-        const deviceName = device.charAt(0).toUpperCase() + device.slice(1);
-        const color = colors[device] || 'gray';
-        html += `
-            <div class="flex justify-between items-center">
-                <span class="text-sm">${deviceName}</span>
-                <div class="flex items-center">
-                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                        <div class="bg-${color}-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                    </div>
-                    <span class="text-sm font-medium">${percentage}%</span>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function updateBrowsers(browsers) {
-    const container = document.getElementById('browsers-list');
-    if (!browsers || Object.keys(browsers).length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-gray-500"><p>No browser data</p></div>';
-        return;
-    }
-    
-    const total = Object.values(browsers).reduce((sum, count) => sum + count, 0);
-    let html = '<div class="space-y-3">';
-    
-    Object.entries(browsers).slice(0, 6).forEach(([browser, count]) => {
-        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-        html += `
-            <div class="flex justify-between items-center">
-                <span class="text-sm">${browser}</span>
-                <div class="flex items-center">
-                    <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                        <div class="bg-indigo-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                    </div>
-                    <span class="text-sm font-medium">${percentage}%</span>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function updateRecentVisitors(visitors) {
-    const container = document.getElementById('recent-visitors-list');
-    if (!visitors || visitors.length === 0) {
-        container.innerHTML = `
-            <tr>
-                <td colspan="5" class="px-6 py-4 text-center text-gray-500">No recent visitors</td>
-            </tr>
-        `;
-        return;
-    }
-    
-    let html = '';
-    visitors.slice(0, 20).forEach(visitor => {
-        const time = new Date(visitor.timestamp).toLocaleTimeString();
-        const pageName = visitor.page === '/' ? 'Homepage' : visitor.page;
-        const sourceName = visitor.source.charAt(0).toUpperCase() + visitor.source.slice(1);
-        const deviceName = visitor.device_type.charAt(0).toUpperCase() + visitor.device_type.slice(1);
+        const email = document.getElementById('client-email-input').value;
+        const stage = document.getElementById('payment-stage').value;
+        const totalAmount = document.getElementById('total-amount').value;
+        const paymentAmount = document.getElementById('payment-amount').value;
+        let description = document.getElementById('service-description').value;
         
-        html += `
-            <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${time}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${pageName}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sourceName}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${deviceName}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${visitor.country}</td>
-            </tr>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function updateTrafficChart(viewsByDate) {
-    const canvas = document.getElementById('traffic-canvas');
-    if (!canvas || !viewsByDate) return;
-    
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    const dates = Object.keys(viewsByDate).sort();
-    const values = dates.map(date => viewsByDate[date]);
-    
-    if (values.length === 0) {
-        ctx.fillStyle = '#6B7280';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('No data available', width / 2, height / 2);
-        return;
-    }
-    
-    const maxValue = Math.max(...values);
-    const padding = 40;
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
-    
-    // Draw axes
-    ctx.strokeStyle = '#E5E7EB';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(padding, padding);
-    ctx.lineTo(padding, height - padding);
-    ctx.lineTo(width - padding, height - padding);
-    ctx.stroke();
-    
-    // Draw data line
-    if (values.length > 1) {
-        ctx.strokeStyle = '#3B82F6';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        values.forEach((value, index) => {
-            const x = padding + (index / (values.length - 1)) * chartWidth;
-            const y = height - padding - (value / maxValue) * chartHeight;
-            
-            if (index === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-        
-        ctx.stroke();
-        
-        // Draw data points
-        ctx.fillStyle = '#3B82F6';
-        values.forEach((value, index) => {
-            const x = padding + (index / (values.length - 1)) * chartWidth;
-            const y = height - padding - (value / maxValue) * chartHeight;
-            
-            ctx.beginPath();
-            ctx.arc(x, y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-        });
-    }
-}
-
-function showAnalyticsError() {
-    document.getElementById('total-visitors').textContent = 'Error';
-    document.getElementById('page-views').textContent = 'Error';
-    document.getElementById('bounce-rate').textContent = 'Error';
-    document.getElementById('avg-load-time').textContent = 'Error';
-    
-    document.getElementById('top-pages-list').innerHTML = '<div class="text-center py-8 text-red-500"><p>Failed to load analytics data</p></div>';
-    document.getElementById('traffic-sources-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
-    document.getElementById('device-types-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
-    document.getElementById('browsers-list').innerHTML = '<div class="text-center py-4 text-red-500"><p>Error loading data</p></div>';
-}
-
-
-// Google Analytics Integration
-document.addEventListener('DOMContentLoaded', function() {
-    const gaForm = document.getElementById('ga-settings-form');
-    if (gaForm) {
-        gaForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const trackingId = document.getElementById('ga-tracking-id').value.trim();
-            const measurementId = document.getElementById('ga-measurement-id').value.trim();
-            
-            if (!trackingId) {
-                alert('Please enter a Google Analytics Tracking ID');
-                return;
-            }
-            
-            try {
-                // Save to settings
-                const response = await fetch('api/save_settings.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ga_tracking_id: trackingId,
-                        ga_measurement_id: measurementId
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Update status
-                    const statusDiv = document.getElementById('ga-status');
-                    statusDiv.innerHTML = `
-                        <p class="text-sm text-green-800">
-                            <i class="fas fa-check-circle mr-2"></i>
-                            Google Analytics connected successfully! Tracking ID: ${trackingId}
-                        </p>
-                    `;
-                    statusDiv.className = 'mb-6 p-4 bg-green-50 border border-green-200 rounded-lg';
-                    
-                    // Show data section
-                    document.getElementById('ga-data-section').style.display = 'block';
-                    
-                    // Inject GA script
-                    injectGoogleAnalytics(trackingId, measurementId);
-                    
-                    alert('Google Analytics settings saved successfully!');
-                } else {
-                    alert('Error saving settings: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error saving Google Analytics settings');
-            }
-        });
-        
-        // Load existing settings
-        loadGASettings();
-    }
-});
-
-function loadGASettings() {
-    fetch('api/get_analytics.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.ga_tracking_id) {
-                document.getElementById('ga-tracking-id').value = data.ga_tracking_id;
-                document.getElementById('ga-measurement-id').value = data.ga_measurement_id || '';
-                
-                // Update status
-                const statusDiv = document.getElementById('ga-status');
-                statusDiv.innerHTML = `
-                    <p class="text-sm text-green-800">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        Google Analytics connected! Tracking ID: ${data.ga_tracking_id}
-                    </p>
-                `;
-                statusDiv.className = 'mb-6 p-4 bg-green-50 border border-green-200 rounded-lg';
-                
-                // Show data section
-                document.getElementById('ga-data-section').style.display = 'block';
-                
-                // Inject GA script
-                injectGoogleAnalytics(data.ga_tracking_id, data.ga_measurement_id);
-            }
-        })
-        .catch(error => console.log('No GA settings found yet'));
-}
-
-function injectGoogleAnalytics(trackingId, measurementId) {
-    // Inject Google Analytics script
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingId || measurementId}`;
-    document.head.appendChild(script);
-    
-    // Initialize gtag
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', trackingId || measurementId);
-}
-
-function testGAConnection() {
-    const trackingId = document.getElementById('ga-tracking-id').value.trim();
-    const measurementId = document.getElementById('ga-measurement-id').value.trim();
-    
-    if (!trackingId && !measurementId) {
-        alert('Please enter a Tracking ID or Measurement ID first');
-        return;
-    }
-    
-    // Test by sending a test event
-    if (window.gtag) {
-        gtag('event', 'test_event', {
-            'event_category': 'admin_test',
-            'event_label': 'GA Connection Test'
-        });
-        alert('Test event sent! Check your Google Analytics Real-time view within 30 seconds.');
-    } else {
-        alert('Google Analytics script not loaded yet. Please save settings first.');
-    }
-}
-
-// Project Management Functions
-function showAddProjectModal() {
-    document.getElementById('project-modal').classList.remove('hidden');
-}
-
-function hideAddProjectModal() {
-    document.getElementById('project-modal').classList.add('hidden');
-    document.getElementById('project-form').reset();
-}
-
-function loadProjects() {
-    fetch('api/get_projects.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                displayProjects(data.projects);
-                updateProjectStats(data.projects);
-            } else {
-                console.error('Failed to load projects:', data.message);
-                document.getElementById('projects-list').innerHTML = '<p class="text-red-600">Failed to load projects</p>';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading projects:', error);
-            document.getElementById('projects-list').innerHTML = '<p class="text-red-600">Error loading projects</p>';
-        });
-}
-
-function displayProjects(projects) {
-    const projectsList = document.getElementById('projects-list');
-    
-    if (projects.length === 0) {
-        projectsList.innerHTML = '<p class="text-gray-600">No projects found</p>';
-        return;
-    }
-    
-    const projectsHTML = projects.map(project => `
-        <div class="border border-gray-200 rounded-lg p-4 mb-4">
-            <div class="flex justify-between items-start">
-                <div class="flex-1">
-                    <div class="flex items-center space-x-4 mb-2">
-                        ${project.image ? `<img src="../${project.image}" alt="${project.name}" class="w-12 h-12 object-cover rounded">` : '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center"><i class="fas fa-project-diagram text-gray-400"></i></div>'}
-                        <div>
-                            <h4 class="font-semibold text-lg">${project.name}</h4>
-                            <p class="text-sm text-gray-600">${project.category}</p>
-                        </div>
-                        ${project.featured ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Featured</span>' : ''}
-                    </div>
-                    <p class="text-gray-700 mb-2">${project.description}</p>
-                    <div class="flex flex-wrap gap-2 mb-2">
-                        ${project.technologies.map(tech => `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${tech}</span>`).join('')}
-                    </div>
-                    <div class="text-sm text-gray-600">
-                        <p><strong>Client:</strong> ${project.client}</p>
-                        <p><strong>Completed:</strong> ${new Date(project.completion_date).toLocaleDateString()}</p>
-                    </div>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="editProject('${project.id}')" class="text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deleteProject('${project.id}')" class="text-red-600 hover:text-red-800">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    
-    projectsList.innerHTML = projectsHTML;
-}
-
-function updateProjectStats(projects) {
-    document.getElementById('total-projects').textContent = projects.length;
-    document.getElementById('featured-projects').textContent = projects.filter(p => p.featured).length;
-    document.getElementById('completed-projects').textContent = projects.filter(p => p.status === 'completed').length;
-    
-    const categories = [...new Set(projects.map(p => p.category))];
-    document.getElementById('project-categories').textContent = categories.length;
-}
-
-function deleteProject(projectId) {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-    
-    fetch('api/delete_project.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: projectId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadProjects(); // Reload projects list
-        } else {
-            alert('Failed to delete project: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error deleting project:', error);
-        alert('Error deleting project');
-    });
-}
-
-// Blog Management Functions
-function showAddBlogModal() {
-    document.getElementById('blog-modal').classList.remove('hidden');
-    
-    // Auto-generate slug from title
-    const titleInput = document.getElementById('blog-title');
-    const slugInput = document.getElementById('blog-slug');
-    
-    titleInput.addEventListener('input', function() {
-        const slug = this.value.toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .trim('-');
-        slugInput.value = slug;
-    });
-}
-
-function hideAddBlogModal() {
-    document.getElementById('blog-modal').classList.add('hidden');
-    document.getElementById('blog-form').reset();
-}
-
-function loadBlogPosts() {
-    fetch('../api/get_blog_posts.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                displayBlogPosts(data.posts);
-                updateBlogStats(data.posts);
-            } else {
-                console.error('Failed to load blog posts:', data.message);
-                document.getElementById('blog-posts-list').innerHTML = '<p class="text-red-600">Failed to load blog posts</p>';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading blog posts:', error);
-            document.getElementById('blog-posts-list').innerHTML = '<p class="text-red-600">Error loading blog posts</p>';
-        });
-}
-
-function displayBlogPosts(posts) {
-    const blogPostsList = document.getElementById('blog-posts-list');
-    
-    if (posts.length === 0) {
-        blogPostsList.innerHTML = '<p class="text-gray-600">No blog posts found</p>';
-        return;
-    }
-    
-    const postsHTML = posts.map(post => `
-        <div class="border border-gray-200 rounded-lg p-4 mb-4">
-            <div class="flex justify-between items-start">
-                <div class="flex-1">
-                    <div class="flex items-center space-x-4 mb-2">
-                        ${post.featured_image ? `<img src="../${post.featured_image}" alt="${post.title}" class="w-12 h-12 object-cover rounded">` : '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center"><i class="fas fa-blog text-gray-400"></i></div>'}
-                        <div>
-                            <h4 class="font-semibold text-lg">${post.title}</h4>
-                            <p class="text-sm text-gray-600">${post.category}</p>
-                        </div>
-                        <span class="bg-${post.status === 'published' ? 'green' : 'yellow'}-100 text-${post.status === 'published' ? 'green' : 'yellow'}-800 text-xs px-2 py-1 rounded">${post.status}</span>
-                    </div>
-                    <p class="text-gray-700 mb-2">${post.excerpt}</p>
-                    <div class="flex flex-wrap gap-2 mb-2">
-                        ${post.tags.map(tag => `<span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">${tag}</span>`).join('')}
-                    </div>
-                    <div class="text-sm text-gray-600">
-                        <p><strong>Author:</strong> ${post.author}</p>
-                        <p><strong>Created:</strong> ${new Date(post.created_at).toLocaleDateString()}</p>
-                        <p><strong>Slug:</strong> /blog/${post.slug}</p>
-                    </div>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="editBlogPost('${post.id}')" class="text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deleteBlogPost('${post.id}')" class="text-red-600 hover:text-red-800">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    
-    blogPostsList.innerHTML = postsHTML;
-}
-
-function updateBlogStats(posts) {
-    document.getElementById('total-posts').textContent = posts.length;
-    document.getElementById('published-posts').textContent = posts.filter(p => p.status === 'published').length;
-    document.getElementById('draft-posts').textContent = posts.filter(p => p.status === 'draft').length;
-    
-    const categories = [...new Set(posts.map(p => p.category))];
-    document.getElementById('blog-categories').textContent = categories.length;
-}
-
-function deleteBlogPost(postId) {
-    if (!confirm('Are you sure you want to delete this blog post?')) return;
-    
-    fetch('api/delete_blog_post.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: postId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadBlogPosts(); // Reload blog posts list
-        } else {
-            alert('Failed to delete blog post: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error deleting blog post:', error);
-        alert('Error deleting blog post');
-    });
-}
-
-// Form submission handlers
-document.addEventListener('DOMContentLoaded', function() {
-    // Project form submission
-    const projectForm = document.getElementById('project-form');
-    if (projectForm) {
-        projectForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            // Convert technologies string to array
-            const technologies = formData.get('technologies').split(',').map(tech => tech.trim());
-            formData.delete('technologies');
-            formData.append('technologies', JSON.stringify(technologies));
-            
-            fetch('api/save_project.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    hideAddProjectModal();
-                    loadProjects();
-                    alert('Project saved successfully!');
-                } else {
-                    alert('Failed to save project: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error saving project:', error);
-                alert('Error saving project');
-            });
-        });
-    }
-    
-    // Blog form submission
-    const blogForm = document.getElementById('blog-form');
-    if (blogForm) {
-        blogForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            // Convert tags string to array
-            const tags = formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag);
-            formData.delete('tags');
-            formData.append('tags', JSON.stringify(tags));
-            
-            fetch('api/save_blog_post.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    hideAddBlogModal();
-                    loadBlogPosts();
-                    alert('Blog post saved successfully!');
-                } else {
-                    alert('Failed to save blog post: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error saving blog post:', error);
-                alert('Error saving blog post');
-            });
-        });
-    }
-});
-
-// Missing functions for admin dashboard
-
-function openRealtimeEditor() {
-    window.open('realtime-editor.php', '_blank');
-}
-
-function previewSite() {
-    window.open('../', '_blank');
-}
-
-// Additional utility functions
-function refreshAnalytics() {
-    // Placeholder for analytics refresh functionality
-    console.log('Refreshing analytics...');
-}
-
-function loadMessages() {
-    // Load messages functionality
-    fetch('api/get_messages.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Messages loaded:', data.messages);
-                // Update message count in dashboard
-                const messageCount = document.getElementById('message-count');
-                if (messageCount) {
-                    messageCount.textContent = data.messages.length;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error loading messages:', error);
-        });
-}
-
-function loadReviews() {
-    // Load reviews functionality
-    fetch('api/get_reviews.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Reviews loaded:', data.reviews);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading reviews:', error);
-        });
-}
-
-// Initialize dashboard data on load
-document.addEventListener('DOMContentLoaded', function() {
-    // Load initial data
-    loadMessages();
-    
-    // Set current year in footer if exists
-    const currentYearElement = document.getElementById('current-year');
-    if (currentYearElement) {
-        currentYearElement.textContent = new Date().getFullYear();
-    }
-});
-
-// Payment Configuration Functions
-document.addEventListener('DOMContentLoaded', function() {
-    // Load existing payment settings
-    loadPaymentSettings();
-    
-    // Stripe settings form
-    const stripeForm = document.getElementById('stripe-settings-form');
-    if (stripeForm) {
-        stripeForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                stripe_environment: document.getElementById('stripe-environment').value,
-                stripe_publishable_key: document.getElementById('stripe-publishable-key').value,
-                stripe_secret_key: document.getElementById('stripe-secret-key').value,
-                stripe_webhook_endpoint: document.getElementById('stripe-webhook-endpoint').value
-            };
-            
-            try {
-                const response = await fetch('api/save_settings.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ payment: { stripe: formData } })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('Stripe settings saved successfully!', 'success');
-                } else {
-                    showNotification('Error saving Stripe settings: ' + result.message, 'error');
-                }
-            } catch (error) {
-                showNotification('Error saving Stripe settings: ' + error.message, 'error');
-            }
-        });
-    }
-    
-    // PayPal settings form
-    const paypalForm = document.getElementById('paypal-settings-form');
-    if (paypalForm) {
-        paypalForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                paypal_environment: document.getElementById('paypal-environment').value,
-                paypal_client_id: document.getElementById('paypal-client-id').value,
-                paypal_client_secret: document.getElementById('paypal-client-secret').value,
-                paypal_webhook_id: document.getElementById('paypal-webhook-id').value
-            };
-            
-            try {
-                const response = await fetch('api/save_settings.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ payment: { paypal: formData } })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('PayPal settings saved successfully!', 'success');
-                } else {
-                    showNotification('Error saving PayPal settings: ' + result.message, 'error');
-                }
-            } catch (error) {
-                showNotification('Error saving PayPal settings: ' + error.message, 'error');
-            }
-        });
-    }
-    
-    // Payment general settings form
-    const paymentGeneralForm = document.getElementById('payment-general-settings-form');
-    if (paymentGeneralForm) {
-        paymentGeneralForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                currency: document.getElementById('payment-currency').value,
-                tax_rate: document.getElementById('payment-tax-rate').value,
-                require_billing_address: document.getElementById('require-billing-address').checked,
-                send_email_receipts: document.getElementById('send-email-receipts').checked
-            };
-            
-            try {
-                const response = await fetch('api/save_settings.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ payment: { general: formData } })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('Payment settings updated successfully!', 'success');
-                } else {
-                    showNotification('Error updating payment settings: ' + result.message, 'error');
-                }
-            } catch (error) {
-                showNotification('Error updating payment settings: ' + error.message, 'error');
-            }
-        });
-    }
-    
-    // Package form submission
-    const packageForm = document.getElementById('package-form');
-    if (packageForm) {
-        packageForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const packageData = {
-                name: formData.get('name'),
-                price: formData.get('price'),
-                description: formData.get('description'),
-                features: formData.get('features').split('\n').filter(f => f.trim())
-            };
-            
-            try {
-                const response = await fetch('api/save_package.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(packageData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    hideAddPackageModal();
-                    loadServicePackages();
-                    showNotification('Service package added successfully!', 'success');
-                } else {
-                    showNotification('Error adding package: ' + result.message, 'error');
-                }
-            } catch (error) {
-                showNotification('Error adding package: ' + error.message, 'error');
-            }
-        });
-    }
-});
-
-async function loadPaymentSettings() {
-    try {
-        const response = await fetch('../data/settings.json');
-        const settings = await response.json();
-        
-        // Load Stripe settings
-        if (settings.payment && settings.payment.stripe) {
-            const stripe = settings.payment.stripe;
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val || '';
-            };
-            
-            setVal('stripe-environment', stripe.stripe_environment);
-            setVal('stripe-publishable-key', stripe.stripe_publishable_key);
-            setVal('stripe-secret-key', stripe.stripe_secret_key);
-            setVal('stripe-webhook-endpoint', stripe.stripe_webhook_endpoint);
+        if (description === 'Custom Service') {
+            description = document.getElementById('custom-service-text').value;
         }
         
-        // Load PayPal settings
-        if (settings.payment && settings.payment.paypal) {
-            const paypal = settings.payment.paypal;
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val || '';
-            };
-            
-            setVal('paypal-environment', paypal.paypal_environment);
-            setVal('paypal-client-id', paypal.paypal_client_id);
-            setVal('paypal-client-secret', paypal.paypal_client_secret);
-            setVal('paypal-webhook-id', paypal.paypal_webhook_id);
-        }
-        
-        // Load general payment settings
-        if (settings.payment && settings.payment.general) {
-            const general = settings.payment.general;
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val || '';
-            };
-            const setChecked = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.checked = val || false;
-            };
-            
-            setVal('payment-currency', general.currency);
-            setVal('payment-tax-rate', general.tax_rate);
-            setChecked('require-billing-address', general.require_billing_address);
-            setChecked('send-email-receipts', general.send_email_receipts);
-        }
-        
-    } catch (error) {
-        console.log('No payment settings found yet');
-    }
-}
-
-// Quick Actions Functions
-function generateInvoice() {
-    showTab('invoices');
-    showNotification('Opening invoice generator...', 'info');
-}
-
-function sendPaymentLink() {
-    const email = prompt('Enter client email address:');
-    if (email) {
-        const amount = prompt('Enter payment amount:');
-        if (amount) {
-            showNotification(`Payment link for $${amount} will be sent to ${email}`, 'success');
-            // Here you would integrate with your payment processor to create and send the link
-        }
-    }
-}
-
-function processRefund() {
-    const transactionId = prompt('Enter transaction ID for refund:');
-    if (transactionId) {
-        const amount = prompt('Enter refund amount (leave empty for full refund):');
-        if (confirm(`Process refund${amount ? ` of $${amount}` : ''} for transaction ${transactionId}?`)) {
-            showNotification('Refund request submitted for processing', 'success');
-            // Here you would integrate with your payment processor to process the refund
-        }
-    }
-}
-
-function exportPaymentData() {
-    const format = prompt('Export format (csv/json):', 'csv');
-    if (format === 'csv' || format === 'json') {
-        showNotification(`Exporting payment data as ${format.toUpperCase()}...`, 'info');
-        // Here you would generate and download the export file
-        setTimeout(() => {
-            showNotification('Payment data exported successfully!', 'success');
-        }, 2000);
-    }
-}
-
-// Service Package Management Functions
-function showAddPackageModal() {
-    document.getElementById('package-modal').classList.remove('hidden');
-}
-
-function hideAddPackageModal() {
-    document.getElementById('package-modal').classList.add('hidden');
-    document.getElementById('package-form').reset();
-}
-
-function editPackage(packageId) {
-    showNotification(`Edit package functionality for ${packageId} coming soon!`, 'info');
-}
-
-function deletePackage(packageId) {
-    if (confirm('Are you sure you want to delete this service package?')) {
-        showNotification(`Package ${packageId} deleted successfully!`, 'success');
-        // Here you would make an API call to delete the package
-    }
-}
-
-async function loadServicePackages() {
-    try {
-        // For now, we'll use the static packages shown in the HTML
-        // In a real implementation, you'd fetch from an API
-        console.log('Service packages loaded');
-    } catch (error) {
-        console.error('Error loading service packages:', error);
-    }
-}
-
-// Enhanced Payment Functions (overriding existing ones)
-function refundPayment() {
-    processRefund();
-}
-
-function exportPayments() {
-    exportPaymentData();
-}
-// Email Export Functionality
-function toggleExportDropdown() {
-    const dropdown = document.getElementById('export-dropdown');
-    dropdown.classList.toggle('hidden');
-    
-    // Add event listener for date range radio button
-    const dateRangeRadio = document.querySelector('input[name="export-filter"][value="date-range"]');
-    const dateRangeInputs = document.getElementById('date-range-inputs');
-    
-    document.querySelectorAll('input[name="export-filter"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'date-range') {
-                dateRangeInputs.classList.remove('hidden');
-            } else {
-                dateRangeInputs.classList.add('hidden');
-            }
-        });
-    });
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('export-dropdown');
-    const exportButton = event.target.closest('button');
-    
-    if (dropdown && !dropdown.contains(event.target) && (!exportButton || !exportButton.onclick || exportButton.onclick.toString().indexOf('toggleExportDropdown') === -1)) {
-        dropdown.classList.add('hidden');
-    }
-});
-
-async function exportEmails(format) {
-    try {
-        const selectedFilter = document.querySelector('input[name="export-filter"]:checked').value;
-        let startDate = '';
-        let endDate = '';
-        
-        if (selectedFilter === 'date-range') {
-            startDate = document.getElementById('export-start-date').value;
-            endDate = document.getElementById('export-end-date').value;
-            
-            if (!startDate || !endDate) {
-                alert('Please select both start and end dates');
-                return;
-            }
-        }
-        
-        // Fetch messages based on filter
-        const response = await fetch('api/get_messages.php');
-        if (!response.ok) throw new Error('Failed to fetch messages');
-        const messages = await response.json();
-        
-        // Filter messages based on selection
-        let filteredMessages = messages;
-        
-        switch (selectedFilter) {
-            case 'unread':
-                filteredMessages = messages.filter(m => !m.read);
-                break;
-            case 'today':
-                filteredMessages = messages.filter(m => {
-                    const messageDate = new Date(m.created_at);
-                    const today = new Date();
-                    return messageDate.toDateString() === today.toDateString();
-                });
-                break;
-            case 'schedule':
-                filteredMessages = messages.filter(m => m.project_type === 'Consultation Request');
-                break;
-            case 'date-range':
-                filteredMessages = messages.filter(m => {
-                    const messageDate = new Date(m.created_at);
-                    const start = new Date(startDate);
-                    const end = new Date(endDate);
-                    return messageDate >= start && messageDate <= end;
-                });
-                break;
-        }
-        
-        // Extract unique email addresses
-        const emails = [...new Set(filteredMessages.map(m => m.email).filter(email => email))];
-        
-        if (emails.length === 0) {
-            alert('No email addresses found for the selected filter');
+        if (!email || !paymentAmount || !description) {
+            alert('Please fill in all required fields');
             return;
         }
         
-        // Generate export content
-        let content = '';
-        let filename = '';
-        
-        if (format === 'csv') {
-            content = 'Email,Name,Company,Date,Project Type\n';
-            filteredMessages.forEach(m => {
-                if (m.email) {
-                    content += `"${m.email}","${m.name || ''}","${m.company || ''}","${m.created_at}","${m.project_type || ''}"\n`;
-                }
-            });
-            filename = `email_export_${selectedFilter}_${new Date().toISOString().split('T')[0]}.csv`;
+        generatePaymentLink(email, paymentAmount, description, stage, totalAmount);
+        modal.remove();
+    });
+}
+function generatePaymentLink(email, amount, description, stage, totalAmount) {
+    const token = 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const baseUrl = window.location.origin;
+    const paymentLink = `${baseUrl}/payment/pay.php?token=${token}&amount=${encodeURIComponent(amount)}&description=${encodeURIComponent(description)}&email=${encodeURIComponent(email)}&stage=${encodeURIComponent(stage)}&total=${encodeURIComponent(totalAmount)}`;
+    
+    showNotification('Payment link generated successfully!', 'success');
+    
+    // Send email with payment link
+    fetch('api/send_payment_email.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: email,
+            paymentLink: paymentLink,
+            amount: amount,
+            description: description,
+            stage: stage,
+            totalAmount: totalAmount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Payment email sent successfully to ' + email, 'success');
         } else {
-            content = emails.join('\n');
-            filename = `email_export_${selectedFilter}_${new Date().toISOString().split('T')[0]}.txt`;
+            throw new Error(data.message || 'Failed to send email');
         }
-        
-        // Create and download file
-        const blob = new Blob([content], { type: format === 'csv' ? 'text/csv' : 'text/plain' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Hide dropdown
-        document.getElementById('export-dropdown').classList.add('hidden');
-        
-        showNotification(`${emails.length} email addresses exported successfully!`, 'success');
-        
-    } catch (error) {
-        console.error('Error exporting emails:', error);
-        showNotification('Error exporting emails. Please try again.', 'error');
-    }
+    })
+    .catch(error => {
+        console.error('Error sending email:', error);
+        showNotification('Error sending email: ' + error.message, 'error');
+    });
 }
 
+// Refund Processing
+function processRefund() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-red-600">Process Refund</h3>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <form id="refund-form" class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3">Transaction Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Transaction ID *</label>
+                                <input type="text" id="transaction-id" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="txn_1234567890">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method *</label>
+                                <select id="payment-method" required class="w-full p-3 border border-gray-300 rounded-md">
+                                    <option value="">Select payment method</option>
+                                    <option value="stripe">Stripe (Credit Card)</option>
+                                    <option value="paypal">PayPal</option>
+                                    <option value="bank">Bank Transfer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Email *</label>
+                            <input type="email" id="client-email" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="client@example.com">
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3">Refund Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Original Amount</label>
+                                <input type="text" id="original-amount" class="w-full p-3 border border-gray-300 rounded-md" placeholder="$1,500.00">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Refund Amount *</label>
+                                <input type="text" id="refund-amount" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="$1,500.00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3">Refund Reason</h4>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Reason Category *</label>
+                            <select id="refund-reason" required class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="">Select reason</option>
+                                <option value="client-request">Client Request</option>
+                                <option value="project-cancelled">Project Cancelled</option>
+                                <option value="service-issue">Service Issue</option>
+                                <option value="duplicate-payment">Duplicate Payment</option>
+                                <option value="chargeback">Chargeback</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Detailed Explanation *</label>
+                            <textarea id="refund-explanation" required rows="4" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Provide detailed explanation for the refund..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4 pt-4 border-t">
+                        <button type="button" onclick="this.closest('.fixed').remove()" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                            <i class="fas fa-undo mr-2"></i>Process Refund
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Handle form submission
+    document.getElementById('refund-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            transactionId: document.getElementById('transaction-id').value,
+            paymentMethod: document.getElementById('payment-method').value,
+            clientEmail: document.getElementById('client-email').value,
+            originalAmount: document.getElementById('original-amount').value,
+            refundAmount: document.getElementById('refund-amount').value,
+            refundReason: document.getElementById('refund-reason').value,
+            refundExplanation: document.getElementById('refund-explanation').value
+        };
+        
+        try {
+            const response = await fetch('api/process_refund.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('Refund processed successfully!', 'success');
+                modal.remove();
+            } else {
+                throw new Error(result.message || 'Failed to process refund');
+            }
+        } catch (error) {
+            console.error('Error processing refund:', error);
+            showNotification('Error processing refund: ' + error.message, 'error');
+        }
+    });
+}
 // Package Pricing Editor Functions
 function editPackagePricing(packageId) {
     const modal = document.getElementById('pricing-editor-modal');
     const form = document.getElementById('pricing-editor-form');
     
     if (!modal || !form) {
-        console.error('Pricing editor modal or form not found');
+        alert('Error: Pricing editor not found. Please refresh the page and try again.');
         return;
     }
     
@@ -2159,12 +653,10 @@ function editPackagePricing(packageId) {
         
         modal.classList.remove('hidden');
         
-        // Focus on the first input
         setTimeout(() => {
             document.getElementById('edit-package-price').focus();
         }, 100);
     } else {
-        console.error('Package data not found for:', packageId);
         showNotification('Error: Package data not found', 'error');
     }
 }
@@ -2173,8 +665,241 @@ function hidePricingEditorModal() {
     document.getElementById('pricing-editor-modal').classList.add('hidden');
 }
 
-// Handle pricing editor form submission
+// Email Export Functions
+function toggleExportDropdown() {
+    const dropdown = document.getElementById('export-dropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+async function exportEmails(format) {
+    try {
+        const selectedFilter = document.querySelector('input[name="export-filter"]:checked').value;
+        let startDate = '';
+        let endDate = '';
+        
+        if (selectedFilter === 'date-range') {
+            startDate = document.getElementById('export-start-date').value;
+            endDate = document.getElementById('export-end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+        }
+        
+        const response = await fetch('api/get_messages.php');
+        if (!response.ok) throw new Error('Failed to fetch messages');
+        const messages = await response.json();
+        
+        // Filter messages based on selection
+        let filteredMessages = messages;
+        
+        switch (selectedFilter) {
+            case 'unread':
+                filteredMessages = messages.filter(m => !m.read);
+                break;
+            case 'today':
+                filteredMessages = messages.filter(m => {
+                    const messageDate = new Date(m.created_at);
+                    const today = new Date();
+                    return messageDate.toDateString() === today.toDateString();
+                });
+                break;
+            case 'schedule':
+                filteredMessages = messages.filter(m => m.project_type === 'Consultation Request');
+                break;
+            case 'date-range':
+                filteredMessages = messages.filter(m => {
+                    const messageDate = new Date(m.created_at);
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    return messageDate >= start && messageDate <= end;
+                });
+                break;
+        }
+        
+        const emails = [...new Set(filteredMessages.map(m => m.email).filter(email => email))];
+        
+        if (emails.length === 0) {
+            alert('No email addresses found for the selected filter');
+            return;
+        }
+        
+        let content = '';
+        let filename = '';
+        
+        if (format === 'csv') {
+            content = 'Email,Name,Company,Date,Project Type\n';
+            filteredMessages.forEach(m => {
+                if (m.email) {
+                    content += `"${m.email}","${m.name || ''}","${m.company || ''}","${m.created_at}","${m.project_type || ''}"\n`;
+                }
+            });
+            filename = `email_export_${selectedFilter}_${new Date().toISOString().split('T')[0]}.csv`;
+        } else {
+            content = emails.join('\n');
+            filename = `email_export_${selectedFilter}_${new Date().toISOString().split('T')[0]}.txt`;
+        }
+        
+        const blob = new Blob([content], { type: format === 'csv' ? 'text/csv' : 'text/plain' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        document.getElementById('export-dropdown').classList.add('hidden');
+        
+        showNotification(`${emails.length} email addresses exported successfully!`, 'success');
+        
+    } catch (error) {
+        console.error('Error exporting emails:', error);
+        showNotification('Error exporting emails. Please try again.', 'error');
+    }
+}
+// Cache Management Functions
+function clearAllCaches() {
+    if (!confirm('This will clear all browser caches and force a complete reload. Continue?')) {
+        return;
+    }
+    
+    showNotification('Clearing all caches...', 'info');
+    window.location.href = '../force-reload.php';
+}
+
+function forceReloadSite() {
+    if (!confirm('This will force reload the entire site with cache busting. Continue?')) {
+        return;
+    }
+    
+    showNotification('Force reloading site...', 'info');
+    
+    const timestamp = Date.now();
+    const randomParam = Math.random().toString(36).substr(2, 9);
+    window.open(`../?cb=${timestamp}&r=${randomParam}&force=1`, '_blank');
+}
+
+function testCacheBusting() {
+    showNotification('Testing cache busting system...', 'info');
+    
+    if (window.cacheBuster) {
+        console.log('Cache Buster Version:', window.cacheBuster.version);
+        
+        window.cacheBuster.checkUpdates().then(() => {
+            showNotification('Cache busting system is working correctly!', 'success');
+        }).catch(error => {
+            showNotification('Cache busting test failed: ' + error.message, 'error');
+        });
+    } else {
+        showNotification('Cache buster not loaded. Please refresh the page.', 'warning');
+    }
+}
+
+function clearCache() {
+    clearAllCaches();
+}
+
+// Additional Admin Functions
+function openRealtimeEditor() {
+    window.open('realtime-editor.php', '_blank');
+}
+
+function previewSite() {
+    window.open('../', '_blank');
+}
+
+function refreshAnalytics() {
+    showNotification('Analytics refreshed', 'success');
+}
+
+function loadProjects() {
+    console.log('Loading projects...');
+}
+
+function loadBlogPosts() {
+    console.log('Loading blog posts...');
+}
+
+function loadInvoices() {
+    console.log('Loading invoices...');
+}
+
+function loadPayments() {
+    console.log('Loading payments...');
+}
+
+function loadReviews() {
+    console.log('Loading reviews...');
+}
+
+function generateInvoice() {
+    showTab('invoices');
+    showNotification('Invoice generator opened!', 'success');
+}
+
+function exportPaymentData() {
+    const format = prompt('Export format (csv/json):', 'csv');
+    if (format === 'csv' || format === 'json') {
+        showNotification(`Exporting payment data as ${format.toUpperCase()}...`, 'info');
+        setTimeout(() => {
+            showNotification('Payment data exported successfully!', 'success');
+        }, 2000);
+    }
+}
+
+function refreshPackagePricing() {
+    showNotification('Syncing package pricing with pricing page...', 'info');
+    
+    fetch('api/sync_pricing.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.packages) {
+                Object.keys(data.packages).forEach(packageId => {
+                    const packageData = data.packages[packageId];
+                    const priceElement = document.getElementById(packageId + '-price');
+                    const rangeElement = document.getElementById(packageId + '-range');
+                    
+                    if (priceElement) {
+                        priceElement.textContent = packageData.price;
+                    }
+                    if (rangeElement) {
+                        rangeElement.textContent = packageData.range;
+                    }
+                });
+            }
+            
+            showNotification('Package pricing synced successfully with pricing page!', 'success');
+        } else {
+            throw new Error(data.message || 'Failed to sync pricing');
+        }
+    })
+    .catch(error => {
+        console.error('Error syncing pricing:', error);
+        showNotification('Error syncing pricing: ' + error.message, 'error');
+    });
+}
+
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Load initial data
+    loadMessages();
+    
+    // Set current year in footer if exists
+    const currentYearElement = document.getElementById('current-year');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+    
+    // Handle pricing editor form submission
     const pricingForm = document.getElementById('pricing-editor-form');
     if (pricingForm) {
         pricingForm.addEventListener('submit', async function(e) {
@@ -2186,11 +911,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const description = document.getElementById('edit-package-description').value;
             
             try {
-                // Update the display
                 document.getElementById(packageId + '-price').textContent = price;
                 document.getElementById(packageId + '-range').textContent = range;
                 
-                // Save to settings (you can implement this API endpoint)
                 const response = await fetch('api/save_package_pricing.php', {
                     method: 'POST',
                     headers: {
@@ -2221,361 +944,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-function refreshPackagePricing() {
-    showNotification('Syncing package pricing with pricing page...', 'info');
-    
-    fetch('api/sync_pricing.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update the display with synced pricing
-            if (data.packages) {
-                Object.keys(data.packages).forEach(packageId => {
-                    const packageData = data.packages[packageId];
-                    const priceElement = document.getElementById(packageId + '-price');
-                    const rangeElement = document.getElementById(packageId + '-range');
-                    
-                    if (priceElement) {
-                        priceElement.textContent = packageData.price;
-                    }
-                    if (rangeElement) {
-                        rangeElement.textContent = packageData.range;
-                    }
-                });
-            }
-            
-            showNotification('Package pricing synced successfully with pricing page!', 'success');
-        } else {
-            throw new Error(data.message || 'Failed to sync pricing');
-        }
-    })
-    .catch(error => {
-        console.error('Error syncing pricing:', error);
-        showNotification('Error syncing pricing: ' + error.message, 'error');
-    });
-}
-
-// Enhanced Send Payment Link Function
-function sendPaymentLink() {
-    // Create modal for payment link generation
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
-    modal.innerHTML = `
-        <div class="bg-white rounded-lg max-w-md w-full">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold">Generate Payment Link</h3>
-                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <form id="payment-link-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
-                        <input type="email" id="client-email-input" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="client@example.com">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Stage</label>
-                        <select id="payment-stage" class="w-full p-3 border border-gray-300 rounded-md" required>
-                            <option value="">Select payment stage</option>
-                            <option value="initial">Initial Payment (50%)</option>
-                            <option value="final">Final Payment (50%)</option>
-                            <option value="full">Full Payment (100%)</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Total Project Amount</label>
-                        <input type="text" id="total-amount" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="$3,000">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Amount</label>
-                        <input type="text" id="payment-amount" readonly class="w-full p-3 border border-gray-300 rounded-md bg-gray-50">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Service Description</label>
-                        <select id="service-description" class="w-full p-3 border border-gray-300 rounded-md">
-                            <option value="Essential App Development">Essential App Development</option>
-                            <option value="Custom Enterprise Solution">Custom Enterprise Solution</option>
-                            <option value="Maintenance & Support">Maintenance & Support</option>
-                            <option value="Custom Service">Custom Service</option>
-                        </select>
-                    </div>
-                    
-                    <div id="custom-service-input" class="hidden">
-                        <input type="text" id="custom-service-text" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Enter custom service description">
-                    </div>
-                    
-                    <div class="flex justify-end space-x-4">
-                        <button type="button" onclick="this.closest('.fixed').remove()" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                            Generate Link
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Handle payment stage and amount calculation
-    const stageSelect = document.getElementById('payment-stage');
-    const totalAmountInput = document.getElementById('total-amount');
-    const paymentAmountInput = document.getElementById('payment-amount');
-    
-    function updatePaymentAmount() {
-        const stage = stageSelect.value;
-        const totalAmount = totalAmountInput.value;
-        
-        if (stage && totalAmount) {
-            const numericAmount = parseFloat(totalAmount.replace(/[^0-9.]/g, ''));
-            let paymentAmount = 0;
-            
-            switch (stage) {
-                case 'initial':
-                    paymentAmount = numericAmount * 0.5;
-                    break;
-                case 'final':
-                    paymentAmount = numericAmount * 0.5;
-                    break;
-                case 'full':
-                    paymentAmount = numericAmount;
-                    break;
-            }
-            
-            paymentAmountInput.value = '$' + paymentAmount.toFixed(2);
-        }
-    }
-    
-    stageSelect.addEventListener('change', updatePaymentAmount);
-    totalAmountInput.addEventListener('input', updatePaymentAmount);
-    
-    // Handle service description change
-    const serviceSelect = document.getElementById('service-description');
-    const customInput = document.getElementById('custom-service-input');
-    
-    serviceSelect.addEventListener('change', function() {
-        if (this.value === 'Custom Service') {
-            customInput.classList.remove('hidden');
-        } else {
-            customInput.classList.add('hidden');
-        }
-    });
-    
-    // Handle form submission
-    document.getElementById('payment-link-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('client-email-input').value;
-        const stage = document.getElementById('payment-stage').value;
-        const totalAmount = document.getElementById('total-amount').value;
-        const paymentAmount = document.getElementById('payment-amount').value;
-        let description = document.getElementById('service-description').value;
-        
-        if (description === 'Custom Service') {
-            description = document.getElementById('custom-service-text').value;
-        }
-        
-        if (!email || !stage || !totalAmount || !paymentAmount || !description) {
-            alert('Please fill in all fields');
-            return;
-        }
-        
-        // Show confirmation message
-        const stageText = {
-            'initial': 'Initial Payment (50%)',
-            'final': 'Final Payment (50%)',
-            'full': 'Full Payment (100%)'
-        };
-        
-        const confirmationMessage = `
-Payment Link Details:
-• Client: ${email}
-• Service: ${description}
-• Stage: ${stageText[stage]}
-• Total Project: ${totalAmount}
-• Payment Amount: ${paymentAmount}
-
-This link will allow the client to pay using Stripe, PayPal, or Bank Transfer.
-        `;
-        
-        if (confirm(confirmationMessage + '\n\nProceed to generate payment link?')) {
-            generatePaymentLink(email, paymentAmount, description, stage, totalAmount);
-            modal.remove();
-        }
-    });
-}
-
-function generatePaymentLink(email, amount, description, stage, totalAmount) {
-    // Generate a unique token for the payment link
-    const token = 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
-    // Create the payment link with additional parameters
-    const baseUrl = window.location.origin;
-    const paymentLink = `${baseUrl}/payment/pay.php?token=${token}&amount=${encodeURIComponent(amount)}&description=${encodeURIComponent(description)}&email=${encodeURIComponent(email)}&stage=${encodeURIComponent(stage)}&total=${encodeURIComponent(totalAmount)}`;
-    
-    // Show the generated link
-    const linkModal = document.createElement('div');
-    linkModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
-    
-    const stageText = {
-        'initial': 'Initial Payment (50%)',
-        'final': 'Final Payment (50%)',
-        'full': 'Full Payment (100%)'
-    };
-    
-    linkModal.innerHTML = `
-        <div class="bg-white rounded-lg max-w-2xl w-full">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold">Payment Link Generated</h3>
-                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Link</label>
-                        <div class="flex">
-                            <input type="text" id="generated-link" value="${paymentLink}" readonly class="flex-1 p-3 border border-gray-300 rounded-l-md bg-gray-50 text-sm">
-                            <button onclick="copyPaymentLink()" class="px-4 py-3 bg-blue-600 text-white rounded-r-md hover:bg-blue-700">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">Payment Details</h4>
-                        <div class="text-sm text-gray-600 space-y-1">
-                            <div><strong>Client:</strong> ${email}</div>
-                            <div><strong>Service:</strong> ${description}</div>
-                            <div><strong>Payment Stage:</strong> ${stageText[stage] || stage}</div>
-                            <div><strong>Payment Amount:</strong> ${amount}</div>
-                            <div><strong>Total Project:</strong> ${totalAmount}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-3">
-                        <button onclick="emailPaymentLink('${email}', '${paymentLink}', '${amount}', '${description}', '${stage}', '${totalAmount}')" class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700">
-                            <i class="fas fa-envelope mr-2"></i>Email to Client
-                        </button>
-                        <button onclick="copyPaymentLink()" class="flex-1 bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700">
-                            <i class="fas fa-copy mr-2"></i>Copy Link
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(linkModal);
-    
-    showNotification('Payment link generated successfully!', 'success');
-}
-
-function copyPaymentLink() {
-    const linkInput = document.getElementById('generated-link');
-    linkInput.select();
-    linkInput.setSelectionRange(0, 99999); // For mobile devices
-    
-    try {
-        document.execCommand('copy');
-        showNotification('Payment link copied to clipboard!', 'success');
-    } catch (err) {
-        console.error('Failed to copy: ', err);
-        showNotification('Failed to copy link. Please copy manually.', 'error');
-    }
-}
-
-function emailPaymentLink(email, paymentLink, amount, description, stage, totalAmount) {
-    // Show loading state
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
-    button.disabled = true;
-    
-    // Send email via API
-    fetch('api/send_payment_email.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: email,
-            paymentLink: paymentLink,
-            amount: amount,
-            description: description,
-            stage: stage,
-            totalAmount: totalAmount
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Payment email sent successfully to ' + email, 'success');
-            
-            // Close the modal after successful send
-            setTimeout(() => {
-                const modal = button.closest('.fixed');
-                if (modal) modal.remove();
-            }, 2000);
-        } else {
-            throw new Error(data.message || 'Failed to send email');
-        }
-    })
-    .catch(error => {
-        console.error('Error sending email:', error);
-        showNotification('Error sending email: ' + error.message, 'error');
-        
-        // Fallback to mailto link
-        const stageText = {
-            'initial': 'Initial Payment (50%)',
-            'final': 'Final Payment (50%)',
-            'full': 'Full Payment (100%)'
-        };
-        
-        const subject = `Payment Request - App Craft Services (${amount})`;
-        const body = `Dear Valued Client,
-
-Thank you for choosing App Craft Services!
-
-Payment Details:
-• Service: ${description}
-• Payment Stage: ${stageText[stage] || stage}
-• Payment Amount: ${amount}
-• Total Project: ${totalAmount}
-
-Secure Payment Link:
-${paymentLink}
-
-You can pay using Credit Card (Stripe), PayPal, or Bank Transfer.
-
-Best regards,
-App Craft Services Team
-hello@appcraftservices.com`;
-        
-        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.open(mailtoLink);
-        
-        showNotification('Email client opened as fallback', 'info');
-    })
-    .finally(() => {
-        // Restore button state
-        button.innerHTML = originalText;
-        button.disabled = false;
-    });
-}

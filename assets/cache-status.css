@@ -1,0 +1,84 @@
+/* Cache Status Indicator Styles */
+#cache-status-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    user-select: none;
+}
+
+#cache-status-indicator.show {
+    opacity: 0.8;
+}
+
+#cache-status-indicator:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+#cache-status-indicator .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+}
+
+#cache-status-indicator .status-dot.active {
+    background: #4CAF50;
+}
+
+#cache-status-indicator .status-dot.inactive {
+    background: #f44336;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Development mode indicator */
+.dev-mode #cache-status-indicator {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+}
+
+.dev-mode #cache-status-indicator::after {
+    content: " [DEV]";
+    font-weight: bold;
+}
+
+/* Cache cleared notification */
+.cache-cleared-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(76, 175, 80, 0.95);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}

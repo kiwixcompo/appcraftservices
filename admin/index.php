@@ -1828,9 +1828,20 @@ $content = array_merge($defaultContent, $content);
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Cache Duration (hours)</label>
                                 <input type="number" id="cache-duration" value="24" min="1" max="168" class="w-full p-3 border border-gray-300 rounded-md">
                             </div>
-                            <button onclick="clearCache()" class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
-                                <i class="fas fa-trash mr-2"></i>Clear Cache
-                            </button>
+                            <div class="border-t pt-4">
+                                <h5 class="font-medium text-gray-900 mb-3">Cache Management</h5>
+                                <div class="space-y-2">
+                                    <button onclick="clearAllCaches()" class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                                        <i class="fas fa-trash mr-2"></i>Clear All Caches
+                                    </button>
+                                    <button onclick="forceReloadSite()" class="w-full bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-700">
+                                        <i class="fas fa-sync-alt mr-2"></i>Force Site Reload
+                                    </button>
+                                    <button onclick="testCacheBusting()" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                                        <i class="fas fa-vial mr-2"></i>Test Cache Busting
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1932,6 +1943,7 @@ $content = array_merge($defaultContent, $content);
     </div>
 
     <script src="../assets/config.js"></script>
+    <script src="../assets/cache-buster.js"></script>
     <script src="admin.js"></script>
     <script>
         // Invoice functionality
