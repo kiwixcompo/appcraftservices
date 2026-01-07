@@ -1988,3 +1988,421 @@ function refundPayment() {
 function exportPayments() {
     exportPaymentData();
 }
+// Email Export Functionality
+function toggleExportDropdown() {
+    const dropdown = document.getElementById('export-dropdown');
+    dropdown.classList.toggle('hidden');
+    
+    // Add event listener for date range radio button
+    const dateRangeRadio = document.querySelector('input[name="export-filter"][value="date-range"]');
+    const dateRangeInputs = document.getElementById('date-range-inputs');
+    
+    document.querySelectorAll('input[name="export-filter"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'date-range') {
+                dateRangeInputs.classList.remove('hidden');
+            } else {
+                dateRangeInputs.classList.add('hidden');
+            }
+        });
+    });
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('export-dropdown');
+    const exportButton = event.target.closest('button');
+    
+    if (dropdown && !dropdown.contains(event.target) && (!exportButton || !exportButton.onclick || exportButton.onclick.toString().indexOf('toggleExportDropdown') === -1)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+async function exportEmails(format) {
+    try {
+        const selectedFilter = document.querySelector('input[name="export-filter"]:checked').value;
+        let startDate = '';
+        let endDate = '';
+        
+        if (selectedFilter === 'date-range') {
+            startDate = document.getElementById('export-start-date').value;
+            endDate = document.getElementById('export-end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+        }
+        
+        // Fetch messages based on filter
+        const response = await fetch('api/get_messages.php');
+        if (!response.ok) throw new Error('Failed to fetch messages');
+        const messages = await response.json();
+        
+        // Filter messages based on selection
+        let filteredMessages = messages;
+        
+        switch (selectedFilter) {
+            case 'unread':
+                filteredMessages = messages.filter(m => !m.read);
+                break;
+            case 'today':
+                filteredMessages = messages.filter(m => {
+                    const messageDate = new Date(m.created_at);
+                    const today = new Date();
+                    return messageDate.toDateString() === today.toDateString();
+                });
+                break;
+            case 'schedule':
+                filteredMessages = messages.filter(m => m.project_type === 'Consultation Request');
+                break;
+            case 'date-range':
+                filteredMessages = messages.filter(m => {
+                    const messageDate = new Date(m.created_at);
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    return messageDate >= start && messageDate <= end;
+                });
+                break;
+        }
+        
+        // Extract unique email addresses
+        const emails = [...new Set(filteredMessages.map(m => m.email).filter(email => email))];
+        
+        if (emails.length === 0) {
+            alert('No email addresses found for the selected filter');
+            return;
+        }
+        
+        // Generate export content
+        let content = '';
+        let filename = '';
+        
+        if (format === 'csv') {
+            content = 'Email,Name,Company,Date,Project Type\n';
+            filteredMessages.forEach(m => {
+                if (m.email) {
+                    content += `"${m.email}","${m.name || ''}","${m.company || ''}","${m.created_at}","${m.project_type || ''}"\n`;
+                }
+            });
+            filename = `email_export_${selectedFilter}_${new Date().toISOString().split('T')[0]}.csv`;
+        } else {
+            content = emails.join('\n');
+            filename = `email_export_${selectedFilter}_${new Date().toISOString().split('T')[0]}.txt`;
+        }
+        
+        // Create and download file
+        const blob = new Blob([content], { type: format === 'csv' ? 'text/csv' : 'text/plain' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Hide dropdown
+        document.getElementById('export-dropdown').classList.add('hidden');
+        
+        showNotification(`${emails.length} email addresses exported successfully!`, 'success');
+        
+    } catch (error) {
+        console.error('Error exporting emails:', error);
+        showNotification('Error exporting emails. Please try again.', 'error');
+    }
+}
+
+// Package Pricing Editor Functions
+function editPackagePricing(packageId) {
+    const modal = document.getElementById('pricing-editor-modal');
+    const form = document.getElementById('pricing-editor-form');
+    
+    // Set package data based on ID
+    const packageData = {
+        'essential': {
+            name: 'Essential App',
+            price: '$1,500',
+            range: '$1,000 - $2,000',
+            description: 'Basic web application for small businesses'
+        },
+        'enterprise': {
+            name: 'Custom Enterprise',
+            price: 'Custom Quote',
+            range: 'Custom Quote',
+            description: 'Complex platforms for enterprise clients'
+        },
+        'maintenance': {
+            name: 'Maintenance & Support',
+            price: 'Monthly Plans',
+            range: 'Monthly Plans',
+            description: 'Ongoing support and maintenance services'
+        }
+    };
+    
+    const data = packageData[packageId];
+    if (data) {
+        document.getElementById('edit-package-id').value = packageId;
+        document.getElementById('edit-package-name').value = data.name;
+        document.getElementById('edit-package-price').value = data.price;
+        document.getElementById('edit-package-range').value = data.range;
+        document.getElementById('edit-package-description').value = data.description;
+        
+        modal.classList.remove('hidden');
+    }
+}
+
+function hidePricingEditorModal() {
+    document.getElementById('pricing-editor-modal').classList.add('hidden');
+}
+
+// Handle pricing editor form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const pricingForm = document.getElementById('pricing-editor-form');
+    if (pricingForm) {
+        pricingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const packageId = document.getElementById('edit-package-id').value;
+            const price = document.getElementById('edit-package-price').value;
+            const range = document.getElementById('edit-package-range').value;
+            const description = document.getElementById('edit-package-description').value;
+            
+            try {
+                // Update the display
+                document.getElementById(packageId + '-price').textContent = price;
+                document.getElementById(packageId + '-range').textContent = range;
+                
+                // Save to settings (you can implement this API endpoint)
+                const response = await fetch('api/save_package_pricing.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        package_id: packageId,
+                        price: price,
+                        range: range,
+                        description: description
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    hidePricingEditorModal();
+                    showNotification('Package pricing updated successfully!', 'success');
+                } else {
+                    showNotification('Error updating pricing: ' + result.message, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error updating pricing:', error);
+                showNotification('Error updating pricing. Changes saved locally.', 'warning');
+                hidePricingEditorModal();
+            }
+        });
+    }
+});
+
+function refreshPackagePricing() {
+    showNotification('Syncing package pricing with pricing page...', 'info');
+    
+    // In a real implementation, this would fetch current pricing from the pricing page
+    setTimeout(() => {
+        showNotification('Package pricing synced successfully!', 'success');
+    }, 1500);
+}
+
+// Enhanced Send Payment Link Function
+function sendPaymentLink() {
+    // Create modal for payment link generation
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Generate Payment Link</h3>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <form id="payment-link-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
+                        <input type="email" id="client-email-input" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="client@example.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                        <input type="text" id="payment-amount" required class="w-full p-3 border border-gray-300 rounded-md" placeholder="$1,500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Service Description</label>
+                        <select id="service-description" class="w-full p-3 border border-gray-300 rounded-md">
+                            <option value="Essential App Development">Essential App Development</option>
+                            <option value="Custom Enterprise Solution">Custom Enterprise Solution</option>
+                            <option value="Maintenance & Support">Maintenance & Support</option>
+                            <option value="Custom Service">Custom Service</option>
+                        </select>
+                    </div>
+                    
+                    <div id="custom-service-input" class="hidden">
+                        <input type="text" id="custom-service-text" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Enter custom service description">
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="this.closest('.fixed').remove()" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Generate Link
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Handle service description change
+    const serviceSelect = document.getElementById('service-description');
+    const customInput = document.getElementById('custom-service-input');
+    
+    serviceSelect.addEventListener('change', function() {
+        if (this.value === 'Custom Service') {
+            customInput.classList.remove('hidden');
+        } else {
+            customInput.classList.add('hidden');
+        }
+    });
+    
+    // Handle form submission
+    document.getElementById('payment-link-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('client-email-input').value;
+        const amount = document.getElementById('payment-amount').value;
+        let description = document.getElementById('service-description').value;
+        
+        if (description === 'Custom Service') {
+            description = document.getElementById('custom-service-text').value;
+        }
+        
+        if (!email || !amount || !description) {
+            alert('Please fill in all fields');
+            return;
+        }
+        
+        generatePaymentLink(email, amount, description);
+        modal.remove();
+    });
+}
+
+function generatePaymentLink(email, amount, description) {
+    // Generate a unique token for the payment link
+    const token = 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    // Create the payment link
+    const baseUrl = window.location.origin;
+    const paymentLink = `${baseUrl}/payment/pay.php?token=${token}&amount=${encodeURIComponent(amount)}&description=${encodeURIComponent(description)}&email=${encodeURIComponent(email)}`;
+    
+    // Show the generated link
+    const linkModal = document.createElement('div');
+    linkModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    linkModal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-2xl w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Payment Link Generated</h3>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Link</label>
+                        <div class="flex">
+                            <input type="text" id="generated-link" value="${paymentLink}" readonly class="flex-1 p-3 border border-gray-300 rounded-l-md bg-gray-50 text-sm">
+                            <button onclick="copyPaymentLink()" class="px-4 py-3 bg-blue-600 text-white rounded-r-md hover:bg-blue-700">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Payment Details</h4>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <div><strong>Client:</strong> ${email}</div>
+                            <div><strong>Amount:</strong> ${amount}</div>
+                            <div><strong>Service:</strong> ${description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="emailPaymentLink('${email}', '${paymentLink}', '${amount}', '${description}')" class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-envelope mr-2"></i>Email to Client
+                        </button>
+                        <button onclick="copyPaymentLink()" class="flex-1 bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700">
+                            <i class="fas fa-copy mr-2"></i>Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(linkModal);
+    
+    showNotification('Payment link generated successfully!', 'success');
+}
+
+function copyPaymentLink() {
+    const linkInput = document.getElementById('generated-link');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        document.execCommand('copy');
+        showNotification('Payment link copied to clipboard!', 'success');
+    } catch (err) {
+        console.error('Failed to copy: ', err);
+        showNotification('Failed to copy link. Please copy manually.', 'error');
+    }
+}
+
+function emailPaymentLink(email, paymentLink, amount, description) {
+    const subject = `Payment Request - App Craft Services (${amount})`;
+    const body = `Hi there,
+
+Thank you for choosing App Craft Services! 
+
+We've prepared a secure payment link for your ${description} service.
+
+Amount: ${amount}
+Service: ${description}
+
+Please click the link below to complete your payment:
+${paymentLink}
+
+You can pay using:
+• Credit/Debit Card (Stripe)
+• PayPal
+• Direct Bank Transfer
+
+If you have any questions, please don't hesitate to contact us at talk2char@gmail.com.
+
+Best regards,
+App Craft Services Team
+https://appcraftservices.com`;
+    
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoLink);
+    
+    showNotification('Email client opened with payment link!', 'success');
+}

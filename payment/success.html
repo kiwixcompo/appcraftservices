@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Successful - App Craft Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
         tailwind.config = {
             theme: {
@@ -20,69 +21,220 @@
     </script>
 </head>
 <body class="bg-light-gray min-h-screen">
-    <div class="max-w-2xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto text-center">
+            <!-- Success Icon -->
+            <div class="mb-8">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-3xl text-green-600"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-navy mb-2">Payment Successful!</h1>
+                <p class="text-gray-600">Thank you for your payment to App Craft Services</p>
             </div>
-            
-            <h1 class="text-3xl font-bold text-navy mb-4">Payment Successful!</h1>
-            <p class="text-gray-600 mb-6">Thank you for your payment. We've received your order and will begin processing it shortly.</p>
-            
-            <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                <h2 class="text-lg font-semibold text-navy mb-4">What happens next?</h2>
-                <div class="text-left space-y-3">
-                    <div class="flex items-start">
-                        <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">1</div>
-                        <div>
-                            <p class="font-medium">Confirmation Email</p>
-                            <p class="text-sm text-gray-600">You'll receive a payment confirmation email within the next few minutes.</p>
-                        </div>
+
+            <!-- Payment Details -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Payment Details</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Payment Method:</span>
+                        <span class="font-medium capitalize" id="payment-method">-</span>
                     </div>
-                    <div class="flex items-start">
-                        <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">2</div>
-                        <div>
-                            <p class="font-medium">Project Kickoff</p>
-                            <p class="text-sm text-gray-600">Our team will contact you within 24 hours to discuss project details and timeline.</p>
-                        </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Amount:</span>
+                        <span class="font-medium text-green-600" id="payment-amount">-</span>
                     </div>
-                    <div class="flex items-start">
-                        <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">3</div>
-                        <div>
-                            <p class="font-medium">Development Begins</p>
-                            <p class="text-sm text-gray-600">We'll start working on your project according to the agreed timeline.</p>
-                        </div>
+                    <div class="flex justify-between items-center" id="transaction-row" style="display: none;">
+                        <span class="text-gray-600">Transaction ID:</span>
+                        <span class="font-medium" id="transaction-id">-</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Date:</span>
+                        <span class="font-medium" id="payment-date">-</span>
                     </div>
                 </div>
             </div>
-            
-            <div class="space-y-4">
-                <a href="/appcraftservices/" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 inline-block">
-                    Return to Homepage
+
+            <!-- Next Steps -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">What's Next?</h2>
+                <div id="next-steps-content">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 class="font-semibold text-blue-900 mb-2">Need Help?</h3>
+                <p class="text-blue-700 text-sm mb-3">
+                    If you have any questions about your payment or service, please contact us:
+                </p>
+                <div class="space-y-1 text-sm text-blue-700">
+                    <div><i class="fas fa-envelope mr-2"></i>talk2char@gmail.com</div>
+                    <div><i class="fas fa-globe mr-2"></i>https://appcraftservices.com</div>
+                </div>
+            </div>
+
+            <!-- Return Home Button -->
+            <div class="mt-8">
+                <a href="../" class="inline-flex items-center px-6 py-3 bg-electric-blue text-white rounded-lg hover:bg-blue-700 font-medium">
+                    <i class="fas fa-home mr-2"></i>Return to Homepage
                 </a>
-                <div>
-                    <p class="text-sm text-gray-600">
-                        Questions? Contact us at 
-                        <a href="mailto:williamsaonen@gmail.com" class="text-electric-blue hover:text-blue-700">williamsaonen@gmail.com</a>
-                    </p>
-                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Get payment details from URL parameters
+        // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        const paymentMethod = urlParams.get('payment_method');
+        const method = urlParams.get('method');
         const amount = urlParams.get('amount');
-        
-        if (paymentMethod && amount) {
-            console.log('Payment completed:', { method: paymentMethod, amount: amount });
-            
-            // You could send this data to your analytics or tracking system
-            // trackPaymentSuccess(paymentMethod, amount);
+        const transaction = urlParams.get('transaction');
+
+        // Update payment details
+        document.getElementById('payment-method').textContent = getPaymentMethodName(method);
+        document.getElementById('payment-amount').textContent = amount || 'N/A';
+        document.getElementById('payment-date').textContent = new Date().toLocaleDateString();
+
+        if (transaction) {
+            document.getElementById('transaction-row').style.display = 'flex';
+            document.getElementById('transaction-id').textContent = transaction;
+        }
+
+        // Update next steps based on payment method
+        updateNextSteps(method);
+
+        function getPaymentMethodName(method) {
+            switch (method) {
+                case 'stripe': return 'Credit Card (Stripe)';
+                case 'paypal': return 'PayPal';
+                case 'bank': return 'Bank Transfer';
+                default: return 'Unknown';
+            }
+        }
+
+        function updateNextSteps(method) {
+            const container = document.getElementById('next-steps-content');
+            let content = '';
+
+            switch (method) {
+                case 'stripe':
+                    content = `
+                        <div class="text-left space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Payment Processed</h4>
+                                    <p class="text-sm text-gray-600">Your payment has been successfully processed through Stripe.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-blue-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Confirmation Email</h4>
+                                    <p class="text-sm text-gray-600">You'll receive a payment confirmation email shortly.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-rocket text-purple-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Project Kickoff</h4>
+                                    <p class="text-sm text-gray-600">We'll contact you within 24 hours to begin your project.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'paypal':
+                    content = `
+                        <div class="text-left space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">PayPal Payment Complete</h4>
+                                    <p class="text-sm text-gray-600">Your PayPal payment has been successfully processed.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-receipt text-blue-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Receipt Available</h4>
+                                    <p class="text-sm text-gray-600">Check your PayPal account for the transaction receipt.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-rocket text-purple-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Project Kickoff</h4>
+                                    <p class="text-sm text-gray-600">We'll contact you within 24 hours to begin your project.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'bank':
+                    content = `
+                        <div class="text-left space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-clock text-yellow-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Transfer Confirmation Received</h4>
+                                    <p class="text-sm text-gray-600">We've received your bank transfer confirmation.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-search text-blue-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Verification in Progress</h4>
+                                    <p class="text-sm text-gray-600">We'll verify the transfer within 1-2 business days.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-green-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Confirmation Email</h4>
+                                    <p class="text-sm text-gray-600">You'll receive an email once the transfer is confirmed.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-rocket text-purple-600 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium">Project Start</h4>
+                                    <p class="text-sm text-gray-600">Your project will begin once payment is verified.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                default:
+                    content = `
+                        <div class="text-left space-y-3">
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">1</div>
+                                <div>
+                                    <p class="font-medium">Confirmation Email</p>
+                                    <p class="text-sm text-gray-600">You'll receive a payment confirmation email within the next few minutes.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">2</div>
+                                <div>
+                                    <p class="font-medium">Project Kickoff</p>
+                                    <p class="text-sm text-gray-600">Our team will contact you within 24 hours to discuss project details and timeline.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-electric-blue text-white rounded-full flex items-center justify-center text-sm mr-3 mt-0.5">3</div>
+                                <div>
+                                    <p class="font-medium">Development Begins</p>
+                                    <p class="text-sm text-gray-600">We'll start working on your project according to the agreed timeline.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }
+
+            container.innerHTML = content;
         }
     </script>
 </body>

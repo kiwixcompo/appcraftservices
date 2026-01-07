@@ -758,9 +758,50 @@ $content = array_merge($defaultContent, $content);
                             <button onclick="filterMessages('unread')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Unread</button>
                             <button onclick="filterMessages('today')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Today</button>
                             <button onclick="filterMessages('schedule')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">📅 Consultations</button>
-                            <button onclick="exportMessages()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                <i class="fas fa-download mr-2"></i>Export
-                            </button>
+                            <div class="relative">
+                                <button onclick="toggleExportDropdown()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center">
+                                    <i class="fas fa-download mr-2"></i>Export <i class="fas fa-chevron-down ml-2"></i>
+                                </button>
+                                <div id="export-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border">
+                                    <div class="p-4">
+                                        <h4 class="font-medium text-gray-900 mb-3">Export Email Addresses</h4>
+                                        <div class="space-y-2 mb-4">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="export-filter" value="all" checked class="mr-2">
+                                                <span class="text-sm">All contacts</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="export-filter" value="unread" class="mr-2">
+                                                <span class="text-sm">Unread messages only</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="export-filter" value="today" class="mr-2">
+                                                <span class="text-sm">Today's contacts</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="export-filter" value="schedule" class="mr-2">
+                                                <span class="text-sm">Consultation requests</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="export-filter" value="date-range" class="mr-2">
+                                                <span class="text-sm">Date range</span>
+                                            </label>
+                                        </div>
+                                        <div id="date-range-inputs" class="hidden space-y-2 mb-4">
+                                            <input type="date" id="export-start-date" class="w-full p-2 border border-gray-300 rounded text-sm">
+                                            <input type="date" id="export-end-date" class="w-full p-2 border border-gray-300 rounded text-sm">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <button onclick="exportEmails('csv')" class="w-full bg-blue-600 text-white py-2 px-3 rounded hover:bg-blue-700 text-sm">
+                                                <i class="fas fa-file-csv mr-2"></i>Export as CSV
+                                            </button>
+                                            <button onclick="exportEmails('txt')" class="w-full bg-gray-600 text-white py-2 px-3 rounded hover:bg-gray-700 text-sm">
+                                                <i class="fas fa-file-alt mr-2"></i>Export as TXT
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="messages-list">
@@ -1040,27 +1081,51 @@ $content = array_merge($defaultContent, $content);
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">Service Packages</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Service Packages</h3>
+                            <button onclick="refreshPackagePricing()" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-sync-alt mr-1"></i>Sync with Pricing Page
+                            </button>
+                        </div>
                         <div id="service-packages" class="space-y-3">
                             <div class="border border-gray-200 rounded p-4">
                                 <div class="flex justify-between items-start mb-2">
                                     <h4 class="font-medium">Essential App</h4>
-                                    <button onclick="editPackage('essential')" class="text-blue-600 hover:text-blue-800">
+                                    <button onclick="editPackagePricing('essential')" class="text-blue-600 hover:text-blue-800">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
-                                <p class="text-2xl font-bold text-green-600">$1,500</p>
+                                <p class="text-2xl font-bold text-green-600" id="essential-price">$1,500</p>
                                 <p class="text-sm text-gray-600">Basic web application</p>
+                                <div class="mt-2 text-xs text-gray-500">
+                                    Range: <span id="essential-range">$1,000 - $2,000</span>
+                                </div>
                             </div>
                             <div class="border border-gray-200 rounded p-4">
                                 <div class="flex justify-between items-start mb-2">
                                     <h4 class="font-medium">Custom Enterprise</h4>
-                                    <button onclick="editPackage('enterprise')" class="text-blue-600 hover:text-blue-800">
+                                    <button onclick="editPackagePricing('enterprise')" class="text-blue-600 hover:text-blue-800">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
-                                <p class="text-2xl font-bold text-green-600">Custom Quote</p>
+                                <p class="text-2xl font-bold text-green-600" id="enterprise-price">Custom Quote</p>
                                 <p class="text-sm text-gray-600">Complex platforms</p>
+                                <div class="mt-2 text-xs text-gray-500">
+                                    Range: <span id="enterprise-range">Custom Quote</span>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-medium">Maintenance & Support</h4>
+                                    <button onclick="editPackagePricing('maintenance')" class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <p class="text-2xl font-bold text-green-600" id="maintenance-price">Monthly Plans</p>
+                                <p class="text-sm text-gray-600">Ongoing support</p>
+                                <div class="mt-2 text-xs text-gray-500">
+                                    Range: <span id="maintenance-range">Monthly Plans</span>
+                                </div>
                             </div>
                         </div>
                         <button onclick="addPackage()" class="w-full mt-4 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
@@ -1809,6 +1874,53 @@ $content = array_merge($defaultContent, $content);
                                     </button>
                                     <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                                         Add Package
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Pricing Editor Modal -->
+                <div id="pricing-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg max-w-lg w-full">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Edit Package Pricing</h3>
+                                <button onclick="hidePricingEditorModal()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <form id="pricing-editor-form" class="space-y-4">
+                                <input type="hidden" id="edit-package-id">
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
+                                    <input type="text" id="edit-package-name" readonly class="w-full p-3 border border-gray-300 rounded-md bg-gray-50">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Display Price</label>
+                                    <input type="text" id="edit-package-price" placeholder="$1,500 or Custom Quote" required class="w-full p-3 border border-gray-300 rounded-md">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                                    <input type="text" id="edit-package-range" placeholder="$1,000 - $2,000" required class="w-full p-3 border border-gray-300 rounded-md">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea id="edit-package-description" rows="3" class="w-full p-3 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                                
+                                <div class="flex justify-end space-x-4">
+                                    <button type="button" onclick="hidePricingEditorModal()" class="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        Update Pricing
                                     </button>
                                 </div>
                             </form>
