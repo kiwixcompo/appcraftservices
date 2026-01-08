@@ -172,7 +172,7 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                                 <i class="fab fa-paypal mr-2 text-xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
                             </a>
                             <p class="text-xs text-gray-500 mt-2 text-center">
-                                Click above to pay directly through PayPal
+                                Click above to pay securely through PayPal
                             </p>
                         </div>
                         
