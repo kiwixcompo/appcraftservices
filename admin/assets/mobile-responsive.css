@@ -1,0 +1,336 @@
+/* Mobile Responsive Styles for Admin Dashboard */
+
+/* Base Mobile Styles */
+@media (max-width: 768px) {
+    /* Sidebar Mobile Styles */
+    .admin-sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        z-index: 1000;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .admin-sidebar.mobile-open {
+        left: 0;
+    }
+    
+    /* Mobile Overlay */
+    .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+    
+    .mobile-overlay.active {
+        display: block;
+    }
+    
+    /* Main Content Area */
+    .admin-main-content {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+    
+    /* Header Adjustments */
+    .mobile-header-buttons {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .mobile-header-buttons a,
+    .mobile-header-buttons button {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* Hide elements on mobile */
+    .mobile-hide {
+        display: none !important;
+    }
+    
+    /* Tables - Horizontal Scroll */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        font-size: 0.875rem;
+    }
+    
+    table th,
+    table td {
+        padding: 0.5rem !important;
+        white-space: nowrap;
+    }
+    
+    /* Cards and Containers */
+    .bg-white {
+        border-radius: 0.5rem;
+    }
+    
+    .p-6 {
+        padding: 1rem !important;
+    }
+    
+    .p-4 {
+        padding: 0.75rem !important;
+    }
+    
+    /* Forms */
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="date"],
+    input[type="password"],
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 0.75rem !important;
+    }
+    
+    /* Buttons */
+    button,
+    .btn {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+        min-height: 44px; /* Touch-friendly */
+    }
+    
+    /* Modals */
+    .modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 1rem auto !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    /* Action Buttons in Cards */
+    .flex.space-x-2,
+    .flex.space-x-4 {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    /* Text Sizes */
+    h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    h2 {
+        font-size: 1.25rem !important;
+    }
+    
+    h3 {
+        font-size: 1.125rem !important;
+    }
+    
+    /* Spacing Adjustments */
+    .gap-6 {
+        gap: 1rem !important;
+    }
+    
+    .space-y-4 > * + * {
+        margin-top: 0.75rem !important;
+    }
+    
+    /* Invoice and Payment Forms */
+    .invoice-form,
+    .payment-form {
+        padding: 1rem !important;
+    }
+    
+    /* Tab Content Padding */
+    .tab-content {
+        padding: 1rem !important;
+    }
+    
+    /* Sidebar Navigation */
+    .sidebar-item {
+        padding: 0.875rem 1rem !important;
+        font-size: 0.9375rem;
+    }
+    
+    .sidebar-item i {
+        font-size: 1.125rem;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 640px) {
+    .admin-sidebar {
+        width: 100%;
+        left: -100%;
+    }
+    
+    #page-title {
+        font-size: 1.125rem !important;
+    }
+    
+    /* Stack all grid columns */
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Reduce padding further */
+    .p-6,
+    .p-4 {
+        padding: 0.75rem !important;
+    }
+    
+    /* Smaller text */
+    body {
+        font-size: 0.875rem;
+    }
+    
+    /* Compact buttons */
+    button,
+    .btn {
+        padding: 0.625rem 0.875rem !important;
+        font-size: 0.8125rem !important;
+    }
+    
+    /* Modal full screen on small devices */
+    .modal-content {
+        width: 100% !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Compact stats */
+    .text-3xl {
+        font-size: 1.875rem !important;
+    }
+    
+    .text-2xl {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Hide long text, show icons only */
+    .mobile-icon-only span {
+        display: none;
+    }
+    
+    .mobile-icon-only i {
+        margin-right: 0 !important;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .admin-sidebar {
+        width: 240px;
+    }
+    
+    .sidebar-item {
+        padding: 0.625rem 0.875rem !important;
+        font-size: 0.875rem;
+    }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .admin-sidebar {
+        width: 220px;
+    }
+    
+    .sidebar-item {
+        font-size: 0.9375rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Adjust grid columns for tablets */
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Touch-Friendly Enhancements */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets */
+    a, button, input, select, textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .hover\:bg-gray-700:hover {
+        background-color: inherit;
+    }
+    
+    /* Active states for touch */
+    .sidebar-item:active {
+        background-color: #374151;
+    }
+    
+    button:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .admin-sidebar,
+    .mobile-overlay,
+    header,
+    button,
+    .no-print {
+        display: none !important;
+    }
+    
+    .admin-main-content {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    .tab-content {
+        display: block !important;
+    }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+    .admin-sidebar,
+    .mobile-overlay,
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .admin-sidebar {
+        border-right: 2px solid #000;
+    }
+    
+    .sidebar-item {
+        border-bottom: 1px solid #666;
+    }
+    
+    button {
+        border: 2px solid currentColor;
+    }
+}

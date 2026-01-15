@@ -83,6 +83,7 @@ $content = array_merge($defaultContent, $content);
     <title>Admin Dashboard - App Craft Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/mobile-responsive.css">
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -111,15 +112,108 @@ $content = array_merge($defaultContent, $content);
         .sidebar-nav::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                height: 100vh;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s ease-in-out;
+            }
+            
+            .admin-sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+            
+            .mobile-overlay.active {
+                display: block;
+            }
+            
+            .admin-main-content {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+            
+            .mobile-header-buttons {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .mobile-header-buttons a,
+            .mobile-header-buttons button {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            /* Make tables responsive */
+            .responsive-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            /* Stack form elements on mobile */
+            .form-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Adjust card padding on mobile */
+            .mobile-card {
+                padding: 1rem !important;
+            }
+            
+            /* Make stats cards stack */
+            .stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .admin-sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            #page-title {
+                font-size: 1.25rem;
+            }
+            
+            .mobile-hide {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileSidebar()"></div>
+    
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-gray-800 text-white flex flex-col h-full">
-            <div class="p-4 flex-shrink-0">
-                <h1 class="text-xl font-bold">Admin Dashboard</h1>
-                <p class="text-sm text-gray-300">App Craft Services</p>
+        <div class="admin-sidebar w-64 bg-gray-800 text-white flex flex-col h-full" id="adminSidebar">
+            <div class="p-4 flex-shrink-0 flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-bold">Admin Dashboard</h1>
+                    <p class="text-sm text-gray-300">App Craft Services</p>
+                </div>
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             
             <nav class="flex-1 overflow-y-auto py-4 sidebar-nav">
@@ -186,18 +280,23 @@ $content = array_merge($defaultContent, $content);
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto">
+        <div class="admin-main-content flex-1 overflow-y-auto">
             <!-- Header -->
             <header class="bg-white shadow-sm border-b border-gray-200 p-4">
-                <div class="flex justify-between items-center">
-                    <h2 id="page-title" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm text-gray-600">Welcome, Admin</span>
-                        <a href="../" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                            <i class="fas fa-external-link-alt mr-2"></i>View Website
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleMobileSidebar()" class="md:hidden text-gray-800 text-2xl">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h2 id="page-title" class="text-xl md:text-2xl font-semibold text-gray-800">Dashboard</h2>
+                    </div>
+                    <div class="mobile-header-buttons flex items-center space-x-2 md:space-x-4">
+                        <span class="text-sm text-gray-600 mobile-hide">Welcome, Admin</span>
+                        <a href="../" target="_blank" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 text-sm">
+                            <i class="fas fa-external-link-alt mr-1"></i><span class="mobile-hide">View </span>Website
                         </a>
-                        <button onclick="previewSite()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                            <i class="fas fa-eye mr-2"></i>Preview Site
+                        <button onclick="previewSite()" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-sm mobile-hide">
+                            <i class="fas fa-eye mr-1"></i>Preview
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,23 @@
 // Admin Dashboard JavaScript
 
+// Mobile Sidebar Toggle Function
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('active');
+    }
+}
+
+// Close mobile sidebar when clicking on a menu item
+function closeMobileSidebarOnClick() {
+    if (window.innerWidth <= 768) {
+        toggleMobileSidebar();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Setup Navigation Event Listeners
     const sidebarItems = document.querySelectorAll('.sidebar-item');
@@ -13,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (href && href.startsWith('#')) {
                 const tabId = href.substring(1);
                 showTab(tabId);
+                
+                // Close mobile sidebar after clicking
+                closeMobileSidebarOnClick();
             }
         });
     });
@@ -27,6 +48,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 3. Load initial dashboard data
     if (typeof loadMessages === 'function') loadMessages();
+    
+    // 4. Handle window resize
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        
+        // Close mobile menu when resizing to desktop
+        if (window.innerWidth > 768) {
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('active');
+        }
+    });
 });
 
 // Tab Management Function

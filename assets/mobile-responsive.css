@@ -1,0 +1,420 @@
+/* Mobile Responsive Styles for Frontend */
+
+/* Base Mobile Styles */
+@media (max-width: 768px) {
+    /* Navigation */
+    nav {
+        padding: 1rem !important;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        padding: 2rem 1rem !important;
+        min-height: auto !important;
+    }
+    
+    .hero-section h1 {
+        font-size: 1.875rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero-section p {
+        font-size: 1rem !important;
+    }
+    
+    /* Buttons */
+    .btn,
+    button,
+    a.button {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.9375rem !important;
+        min-height: 44px;
+    }
+    
+    /* Cards and Containers */
+    .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .card,
+    .service-card,
+    .pricing-card {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem !important;
+    }
+    
+    /* Grid Layouts */
+    .grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    
+    /* Forms */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    input[type="password"],
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 0.875rem !important;
+        width: 100%;
+    }
+    
+    textarea {
+        min-height: 120px;
+    }
+    
+    /* Contact Form */
+    .contact-form {
+        padding: 1.5rem !important;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    /* Pricing Tables */
+    .pricing-table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .pricing-card {
+        min-width: 280px;
+    }
+    
+    /* Project Slider */
+    .project-slider {
+        padding: 1rem !important;
+    }
+    
+    .project-slide {
+        min-height: 300px;
+    }
+    
+    .project-slide img {
+        max-height: 200px;
+        object-fit: cover;
+    }
+    
+    /* Footer */
+    footer {
+        padding: 2rem 1rem !important;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    /* Modal */
+    .modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 1rem !important;
+        padding: 1.5rem !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    /* Tables */
+    table {
+        font-size: 0.875rem;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    table th,
+    table td {
+        padding: 0.5rem !important;
+    }
+    
+    /* Spacing */
+    .section {
+        padding: 3rem 1rem !important;
+    }
+    
+    .py-16 {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+    
+    .py-12 {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+    }
+    
+    /* Text Sizes */
+    h1 {
+        font-size: 1.875rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    h3 {
+        font-size: 1.25rem !important;
+    }
+    
+    h4 {
+        font-size: 1.125rem !important;
+    }
+    
+    /* Hide on Mobile */
+    .mobile-hide {
+        display: none !important;
+    }
+    
+    /* Show only on Mobile */
+    .mobile-only {
+        display: block !important;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 640px) {
+    /* Even more compact */
+    .hero-section h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-section p {
+        font-size: 0.9375rem !important;
+    }
+    
+    .btn,
+    button {
+        padding: 0.625rem 1.25rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    .card,
+    .service-card,
+    .pricing-card {
+        padding: 1rem !important;
+    }
+    
+    .section {
+        padding: 2rem 0.75rem !important;
+    }
+    
+    /* Stack everything */
+    .flex {
+        flex-direction: column !important;
+    }
+    
+    .flex-row {
+        flex-direction: column !important;
+    }
+    
+    /* Full width buttons */
+    .btn-group {
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero-section {
+        min-height: auto !important;
+        padding: 1.5rem 1rem !important;
+    }
+    
+    .modal-content {
+        max-height: 85vh;
+    }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 720px;
+    }
+    
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Touch-Friendly Enhancements */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets */
+    a, button, input, select, textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects */
+    .hover\:scale-105:hover {
+        transform: none;
+    }
+    
+    /* Active states */
+    button:active,
+    a:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+}
+
+/* Payment Page Mobile */
+@media (max-width: 768px) {
+    .payment-method {
+        padding: 1rem !important;
+    }
+    
+    .payment-details {
+        font-size: 0.875rem;
+    }
+    
+    .payment-button {
+        width: 100%;
+        padding: 1rem !important;
+    }
+}
+
+/* Blog Page Mobile */
+@media (max-width: 768px) {
+    .blog-post {
+        padding: 1rem !important;
+    }
+    
+    .blog-post img {
+        max-height: 200px;
+        object-fit: cover;
+    }
+    
+    .blog-content {
+        font-size: 0.9375rem;
+        line-height: 1.6;
+    }
+}
+
+/* Schedule Page Mobile */
+@media (max-width: 768px) {
+    .calendar {
+        font-size: 0.875rem;
+    }
+    
+    .time-slot {
+        padding: 0.75rem !important;
+        font-size: 0.875rem;
+    }
+}
+
+/* Services Page Mobile */
+@media (max-width: 768px) {
+    .service-detail {
+        padding: 1.5rem 1rem !important;
+    }
+    
+    .service-feature {
+        padding: 1rem !important;
+    }
+}
+
+/* Pricing Page Mobile */
+@media (max-width: 768px) {
+    .pricing-comparison {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .pricing-tier {
+        min-width: 280px;
+    }
+}
+
+/* Process Page Mobile */
+@media (max-width: 768px) {
+    .process-step {
+        padding: 1.5rem 1rem !important;
+    }
+    
+    .process-timeline {
+        flex-direction: column;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast */
+@media (prefers-contrast: high) {
+    button,
+    .btn {
+        border: 2px solid currentColor;
+    }
+    
+    input,
+    textarea,
+    select {
+        border: 2px solid #000;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+    }
+    
+    .card,
+    .bg-white {
+        background-color: #2a2a2a;
+        color: #f0f0f0;
+    }
+    
+    input,
+    textarea,
+    select {
+        background-color: #333;
+        color: #f0f0f0;
+        border-color: #555;
+    }
+}
+
+/* Print Styles */
+@media print {
+    nav,
+    footer,
+    .no-print,
+    button {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+    }
+    
+    .container {
+        max-width: 100%;
+    }
+}
