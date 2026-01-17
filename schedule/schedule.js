@@ -61,6 +61,22 @@ Please contact me to confirm the consultation time.`;
                 console.log('Parsed result:', result);
                 
                 if (result.success) {
+                    // Track conversion with Google Analytics
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'conversion', {
+                            'send_to': 'AW-17861189621/T_F2CMGFjOAbEPW_8MRC',
+                            'value': 1.0,
+                            'currency': 'USD'
+                        });
+                        
+                        // Track as a custom event
+                        gtag('event', 'schedule_consultation', {
+                            'event_category': 'engagement',
+                            'event_label': 'consultation_request',
+                            'value': 1
+                        });
+                    }
+                    
                     // Hide form and show success message
                     scheduleForm.style.display = 'none';
                     successMessage.classList.remove('hidden');

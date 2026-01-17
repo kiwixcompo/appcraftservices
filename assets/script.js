@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Track conversion with Google Analytics
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'conversion', {
-                            'send_to': 'AW-17861189621/contact_form_submission',
+                            'send_to': 'AW-17861189621/T_F2CMGFjOAbEPW_8MRC',
                             'value': 1.0,
                             'currency': 'USD'
                         });
