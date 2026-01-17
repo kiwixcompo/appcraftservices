@@ -13,20 +13,33 @@ header('Content-Type: application/json');
 try {
     $input = json_decode(file_get_contents('php://input'), true);
     
-    if (!$input || !isset($input['client_email']) || !isset($input['invoice_id'])) {
-        throw new Exception('Invalid input data');
+    if (!$input || !isset($input['client_email'])) {
+        throw new Exception('Invalid input data - client email is required');
     }
     
     $clientEmail = $input['client_email'];
     $clientName = $input['client_name'] ?? 'Valued Client';
-    $invoiceId = $input['invoice_id'];
     $invoiceNumber = $input['invoice_number'] ?? '';
     $amountDue = $input['amount_due'] ?? '0';
     $dueDate = $input['due_date'] ?? '';
+    $projectName = $input['project_name'] ?? '';
+    $projectType = $input['project_type'] ?? '';
+    $totalAmount = $input['total_amount'] ?? '0';
+    $amountPaid = $input['amount_paid'] ?? '0';
+    $currency = $input['currency'] ?? 'USD';
+    $notes = $input['notes'] ?? '';
     
-    // Ensure amount has $ sign
-    if ($amountDue && !str_starts_with($amountDue, '$')) {
-        $amountDue = '$' . $amountDue;
+    // Ensure amounts have $ sign if currency is USD
+    if ($currency === 'USD') {
+        if ($amountDue && !str_starts_with($amountDue, '$')) {
+            $amountDue = '$' . $amountDue;
+        }
+        if ($totalAmount && !str_starts_with($totalAmount, '$')) {
+            $totalAmount = '$' . $totalAmount;
+        }
+        if ($amountPaid && !str_starts_with($amountPaid, '$')) {
+            $amountPaid = '$' . $amountPaid;
+        }
     }
     
     // Create email subject
@@ -48,6 +61,133 @@ try {
         .invoice-box { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 25px; margin: 25px 0; }
         .invoice-button { display: block; width: 100%; max-width: 300px; margin: 30px auto; padding: 18px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; }
         .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .details-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+        .details-table .label { font-weight: bold; color: #495057; width: 40%; }
+        .amount-due { font-size: 24px; font-weight: bold; color: #dc3545; text-align: center; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 30px; text-align: center; color: #6c757d; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>App Craft Services</h1>
+            <p style='color: #e9ecef; margin: 10px 0 0 0; font-size: 16px;'>Professional Web Development</p>
+        </div>
+        
+        <div class='content'>
+            <h2 style='color: #495057; margin-bottom: 10px;'>Hello {$clientName},</h2>
+            <p style='color: #6c757d; line-height: 1.6; margin-bottom: 30px;'>
+                Thank you for choosing App Craft Services for your web development needs. 
+                Please find your invoice details below.
+            </p>
+            
+            <div class='invoice-box'>
+                <h3 style='color: #495057; margin-top: 0; text-align: center;'>Invoice {$invoiceNumber}</h3>
+                
+                <table class='details-table'>
+                    <tr>
+                        <td class='label'>Project:</td>
+                        <td>{$projectName}</td>
+                    </tr>
+                    <tr>
+                        <td class='label'>Type:</td>
+                        <td>{$projectType}</td>
+                    </tr>
+                    <tr>
+                        <td class='label'>Total Amount:</td>
+                        <td><strong>{$totalAmount}</strong></td>
+                    </tr>
+                    <tr>
+                        <td class='label'>Amount Paid:</td>
+                        <td style='color: #28a745;'><strong>{$amountPaid}</strong></td>
+                    </tr>
+                    <tr>
+                        <td class='label'>Due Date:</td>
+                        <td>{$dueDate}</td>
+                    </tr>
+                </table>
+                
+                <div class='amount-due'>
+                    Amount Due: {$amountDue}
+                </div>
+                
+                " . ($notes ? "<div style='margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px;'>
+                    <strong>Notes:</strong><br>
+                    " . nl2br(htmlspecialchars($notes)) . "
+                </div>" : "") . "
+            </div>
+            
+            <p style='color: #6c757d; line-height: 1.6; text-align: center;'>
+                If you have any questions about this invoice, please don't hesitate to contact us.
+            </p>
+        </div>
+        
+        <div class='footer'>
+            <p><strong>App Craft Services</strong></p>
+            <p>Email: hello@appcraftservices.com | Phone: +2348061581916</p>
+            <p>Thank you for your business!</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+    // Create plain text version
+    $textBody = "Invoice {$invoiceNumber} from App Craft Services\n\n";
+    $textBody .= "Hello {$clientName},\n\n";
+    $textBody .= "Thank you for choosing App Craft Services. Please find your invoice details below:\n\n";
+    $textBody .= "Project: {$projectName}\n";
+    $textBody .= "Type: {$projectType}\n";
+    $textBody .= "Total Amount: {$totalAmount}\n";
+    $textBody .= "Amount Paid: {$amountPaid}\n";
+    $textBody .= "Amount Due: {$amountDue}\n";
+    $textBody .= "Due Date: {$dueDate}\n\n";
+    if ($notes) {
+        $textBody .= "Notes: {$notes}\n\n";
+    }
+    $textBody .= "If you have any questions, please contact us at hello@appcraftservices.com\n\n";
+    $textBody .= "Thank you for your business!\n";
+    $textBody .= "App Craft Services";
+
+    // Email headers for better deliverability
+    $headers = [
+        'From: App Craft Services <hello@appcraftservices.com>',
+        'Reply-To: hello@appcraftservices.com',
+        'X-Mailer: PHP/' . phpversion(),
+        'MIME-Version: 1.0',
+        'Content-Type: multipart/alternative; boundary="boundary123"',
+        'X-Priority: 3',
+        'X-MSMail-Priority: Normal',
+        'Importance: Normal'
+    ];
+
+    // Create multipart email body
+    $emailBody = "--boundary123\r\n";
+    $emailBody .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $emailBody .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+    $emailBody .= $textBody . "\r\n\r\n";
+    $emailBody .= "--boundary123\r\n";
+    $emailBody .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $emailBody .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+    $emailBody .= $htmlBody . "\r\n\r\n";
+    $emailBody .= "--boundary123--";
+
+    // Send email
+    $success = mail($clientEmail, $subject, $emailBody, implode("\r\n", $headers));
+    
+    if ($success) {
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Invoice email sent successfully to ' . $clientEmail
+        ]);
+    } else {
+        throw new Exception('Failed to send email');
+    }
+    
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+}
+?>
         .details-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
         .details-table td:first-child { font-weight: bold; color: #495057; width: 40%; }
         .footer { background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #dee2e6; }

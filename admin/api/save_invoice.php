@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Check if user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     http_response_code(401);
@@ -14,8 +18,11 @@ try {
     $input = json_decode(file_get_contents('php://input'), true);
     
     if (!$input) {
-        throw new Exception('Invalid input data');
+        throw new Exception('Invalid input data - no JSON received');
     }
+    
+    // Log received data for debugging
+    error_log('Invoice save attempt: ' . json_encode($input));
     
     // Validate required fields
     $required = ['invoice_number', 'client_name', 'project_name', 'total_amount'];
@@ -28,9 +35,26 @@ try {
     $invoicesFile = '../../data/invoices.json';
     $invoices = [];
     
+    // Check if directory exists
+    $dataDir = '../../data/';
+    if (!is_dir($dataDir)) {
+        throw new Exception('Data directory does not exist');
+    }
+    
+    if (!is_writable($dataDir)) {
+        throw new Exception('Data directory is not writable');
+    }
+    
     // Load existing invoices
     if (file_exists($invoicesFile)) {
-        $invoices = json_decode(file_get_contents($invoicesFile), true) ?: [];
+        $content = file_get_contents($invoicesFile);
+        if ($content === false) {
+            throw new Exception('Cannot read invoices file');
+        }
+        $invoices = json_decode($content, true);
+        if ($invoices === null) {
+            throw new Exception('Invalid JSON in invoices file');
+        }
     }
     
     // Check if invoice number already exists
@@ -66,18 +90,25 @@ try {
     $invoices[] = $invoice;
     
     // Save invoices
-    if (file_put_contents($invoicesFile, json_encode($invoices, JSON_PRETTY_PRINT))) {
-        echo json_encode([
-            'success' => true, 
-            'message' => 'Invoice saved successfully', 
-            'invoice_id' => $invoice['id'],
-            'invoice_number' => $invoice['invoice_number']
-        ]);
-    } else {
-        throw new Exception('Failed to save invoice');
+    $jsonData = json_encode($invoices, JSON_PRETTY_PRINT);
+    if ($jsonData === false) {
+        throw new Exception('Failed to encode JSON data');
     }
     
+    $result = file_put_contents($invoicesFile, $jsonData);
+    if ($result === false) {
+        throw new Exception('Failed to write to invoices file');
+    }
+    
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Invoice saved successfully', 
+        'invoice_id' => $invoice['id'],
+        'invoice_number' => $invoice['invoice_number']
+    ]);
+    
 } catch (Exception $e) {
+    error_log('Invoice save error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

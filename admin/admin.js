@@ -1274,18 +1274,31 @@ async function saveInvoice() {
     const form = document.getElementById('invoice-form');
     if (!form) return;
     
-    const formData = new FormData(form);
-    const invoiceData = {};
+    // Collect form data directly from elements by ID
+    const invoiceData = {
+        invoice_number: document.getElementById('invoice-number')?.value || '',
+        invoice_date: document.getElementById('invoice-date')?.value || '',
+        due_date: document.getElementById('due-date')?.value || '',
+        status: document.getElementById('invoice-status')?.value || 'draft',
+        client_name: document.getElementById('client-name')?.value || '',
+        client_email: document.getElementById('client-email')?.value || '',
+        client_address: document.getElementById('client-address')?.value || '',
+        project_name: document.getElementById('project-name')?.value || '',
+        project_type: document.getElementById('project-type')?.value || '',
+        project_description: document.getElementById('project-description')?.value || '',
+        total_amount: parseFloat(document.getElementById('total-amount')?.value || 0),
+        amount_paid: parseFloat(document.getElementById('amount-paid')?.value || 0),
+        amount_due: parseFloat(document.getElementById('amount-due')?.value || 0),
+        tax_rate: parseFloat(document.getElementById('tax-rate-1')?.value || 0),
+        currency: document.getElementById('currency')?.value || 'USD',
+        notes: document.getElementById('invoice-notes')?.value || ''
+    };
     
-    // Collect all form data
-    for (let [key, value] of formData.entries()) {
-        invoiceData[key.replace('-', '_')] = value;
+    // Validate required fields
+    if (!invoiceData.client_name || !invoiceData.project_name || !invoiceData.total_amount) {
+        showNotification('Please fill in all required fields (Client Name, Project Name, Total Amount)', 'error');
+        return;
     }
-    
-    // Add calculated fields
-    invoiceData.amount_due = document.getElementById('amount-due')?.value || '0';
-    invoiceData.created_at = new Date().toISOString();
-    invoiceData.id = 'inv_' + Date.now();
     
     try {
         const response = await fetch('api/save_invoice.php', {
