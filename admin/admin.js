@@ -60,7 +60,68 @@ document.addEventListener('DOMContentLoaded', function() {
             if (overlay) overlay.classList.remove('active');
         }
     });
+    
+    // 5. Setup invoice form listeners
+    setupInvoiceFormListeners();
 });
+
+function setupInvoiceFormListeners() {
+    // Invoice form submission
+    const invoiceForm = document.getElementById('invoice-form');
+    if (invoiceForm) {
+        invoiceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveInvoice();
+        });
+    }
+    
+    // Auto-calculate amount due
+    const totalAmountField = document.getElementById('total-amount');
+    const amountPaidField = document.getElementById('amount-paid');
+    
+    if (totalAmountField) {
+        totalAmountField.addEventListener('input', calculateAmountDue);
+    }
+    
+    if (amountPaidField) {
+        amountPaidField.addEventListener('input', calculateAmountDue);
+    }
+    
+    // Auto-update preview when form fields change
+    const formFields = [
+        'invoice-number', 'invoice-date', 'due-date', 'client-name', 'client-email',
+        'client-address', 'project-name', 'project-type', 'project-description',
+        'total-amount', 'amount-paid', 'tax-rate-1', 'currency', 'invoice-notes'
+    ];
+    
+    formFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', updateInvoicePreview);
+            field.addEventListener('change', updateInvoicePreview);
+        }
+    });
+    
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 30);
+    const dueDateStr = dueDate.toISOString().split('T')[0];
+    
+    const invoiceDateField = document.getElementById('invoice-date');
+    const dueDateField = document.getElementById('due-date');
+    
+    if (invoiceDateField && !invoiceDateField.value) {
+        invoiceDateField.value = today;
+    }
+    
+    if (dueDateField && !dueDateField.value) {
+        dueDateField.value = dueDateStr;
+    }
+    
+    // Generate initial invoice number
+    generateNewInvoiceNumber();
+}
 
 // Tab Management Function
 function showTab(tabName) {
@@ -374,14 +435,109 @@ async function deleteMessage(messageId) {
 }
 
 function replyToMessage(messageId, email, name) {
-    const subject = `Re: Your inquiry to App Craft Services`;
-    const body = `Hi ${name},\n\nThank you for contacting App Craft Services. \n\n[Your response here]\n\nBest regards,\nApp Craft Services Team\nhello@appcraftservices.com`;
+    // Create reply modal
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Reply to ${escapeHtml(name)}</h3>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <form id="reply-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">To:</label>
+                        <div class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md text-gray-700">
+                            ${escapeHtml(email)}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">From:</label>
+                        <div class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md text-gray-700">
+                            App Craft Services &lt;hello@appcraftservices.com&gt;
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subject:</label>
+                        <input type="text" id="reply-subject" class="w-full p-3 border border-gray-300 rounded-md" 
+                               value="Re: Your inquiry to App Craft Services" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Message:</label>
+                        <textarea id="reply-message" rows="8" class="w-full p-3 border border-gray-300 rounded-md" 
+                                  placeholder="Hi ${escapeHtml(name)},&#10;&#10;Thank you for contacting App Craft Services.&#10;&#10;[Your response here]&#10;&#10;Best regards,&#10;App Craft Services Team" required></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="this.closest('.fixed').remove()" 
+                                class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Reply
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
     
-    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
+    document.body.appendChild(modal);
     
-    // Mark as read when replying
-    markAsRead(messageId);
+    // Handle form submission
+    const form = modal.querySelector('#reply-form');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+        submitBtn.disabled = true;
+        
+        try {
+            const replyData = {
+                message_id: messageId,
+                client_email: email,
+                client_name: name,
+                original_subject: 'Your inquiry to App Craft Services',
+                reply_message: document.getElementById('reply-message').value
+            };
+            
+            const response = await fetch('api/send_message_reply.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(replyData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('Reply sent successfully!', 'success');
+                modal.remove();
+                
+                // Mark message as read and reload messages
+                await markAsRead(messageId);
+                loadMessages();
+            } else {
+                throw new Error(result.message || 'Failed to send reply');
+            }
+        } catch (error) {
+            console.error('Error sending reply:', error);
+            showNotification('Error sending reply: ' + error.message, 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
 }
 
 function filterMessages(filter) {
@@ -866,6 +1022,388 @@ function loadBlogPosts() {
 
 function loadInvoices() {
     console.log('Loading invoices...');
+    
+    fetch('api/get_invoices.php')
+        .then(response => response.json())
+        .then(invoices => {
+            const invoicesList = document.getElementById('invoices-list');
+            if (!invoicesList) return;
+            
+            if (invoices.length === 0) {
+                invoicesList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-file-invoice text-4xl mb-4"></i>
+                        <p>No invoices created yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="border-b bg-gray-50">
+                                <th class="text-left p-3 font-medium">Invoice #</th>
+                                <th class="text-left p-3 font-medium">Client</th>
+                                <th class="text-left p-3 font-medium">Project</th>
+                                <th class="text-left p-3 font-medium">Amount</th>
+                                <th class="text-left p-3 font-medium">Status</th>
+                                <th class="text-left p-3 font-medium">Due Date</th>
+                                <th class="text-left p-3 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            invoices.forEach(invoice => {
+                const statusColors = {
+                    'draft': 'bg-gray-100 text-gray-800',
+                    'sent': 'bg-blue-100 text-blue-800',
+                    'paid': 'bg-green-100 text-green-800',
+                    'overdue': 'bg-red-100 text-red-800'
+                };
+                
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 font-medium">${invoice.invoice_number}</td>
+                        <td class="p-3">${invoice.client_name}</td>
+                        <td class="p-3">${invoice.project_name}</td>
+                        <td class="p-3">$${parseFloat(invoice.amount_due || 0).toFixed(2)}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${statusColors[invoice.status] || 'bg-gray-100 text-gray-800'}">
+                                ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                            </span>
+                        </td>
+                        <td class="p-3">${formatDate(invoice.due_date)}</td>
+                        <td class="p-3">
+                            <div class="flex space-x-2">
+                                <button onclick="viewInvoice('${invoice.id}')" class="text-blue-600 hover:text-blue-800" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button onclick="editInvoice('${invoice.id}')" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="emailInvoice('${invoice.id}')" class="text-purple-600 hover:text-purple-800" title="Email">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="downloadInvoicePDF('${invoice.id}')" class="text-red-600 hover:text-red-800" title="PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button onclick="deleteInvoice('${invoice.id}')" class="text-red-600 hover:text-red-800" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            invoicesList.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading invoices:', error);
+            showNotification('Error loading invoices', 'error');
+        });
+}
+
+// Calculate amount due automatically
+function calculateAmountDue() {
+    const totalAmount = parseFloat(document.getElementById('total-amount')?.value || 0);
+    const amountPaid = parseFloat(document.getElementById('amount-paid')?.value || 0);
+    const amountDue = Math.max(0, totalAmount - amountPaid);
+    
+    const amountDueField = document.getElementById('amount-due');
+    if (amountDueField) {
+        amountDueField.value = amountDue.toFixed(2);
+    }
+    
+    // Update preview if visible
+    updateInvoicePreview();
+}
+
+// Preview invoice function
+function previewInvoice() {
+    updateInvoicePreview();
+}
+
+function updateInvoicePreview() {
+    const previewDiv = document.getElementById('invoice-preview');
+    if (!previewDiv) return;
+    
+    const invoiceData = {
+        invoice_number: document.getElementById('invoice-number')?.value || '',
+        invoice_date: document.getElementById('invoice-date')?.value || '',
+        due_date: document.getElementById('due-date')?.value || '',
+        client_name: document.getElementById('client-name')?.value || '',
+        client_email: document.getElementById('client-email')?.value || '',
+        client_address: document.getElementById('client-address')?.value || '',
+        project_name: document.getElementById('project-name')?.value || '',
+        project_type: document.getElementById('project-type')?.value || '',
+        project_description: document.getElementById('project-description')?.value || '',
+        total_amount: parseFloat(document.getElementById('total-amount')?.value || 0),
+        amount_paid: parseFloat(document.getElementById('amount-paid')?.value || 0),
+        amount_due: parseFloat(document.getElementById('amount-due')?.value || 0),
+        tax_rate: parseFloat(document.getElementById('tax-rate-1')?.value || 0),
+        currency: document.getElementById('currency')?.value || 'USD',
+        notes: document.getElementById('invoice-notes')?.value || ''
+    };
+    
+    if (!invoiceData.client_name && !invoiceData.project_name) {
+        previewDiv.innerHTML = `
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-file-invoice text-4xl mb-4"></i>
+                <p>Fill out the form to see preview</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const currencySymbol = getCurrencySymbol(invoiceData.currency);
+    
+    previewDiv.innerHTML = `
+        <div class="invoice-preview border border-gray-200 rounded-lg p-4 bg-white">
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-navy">App Craft Services</h2>
+                    <p class="text-gray-600">Professional Web Development</p>
+                    <p class="text-sm text-gray-500">hello@appcraftservices.com</p>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-xl font-bold text-gray-800">INVOICE</h3>
+                    <p class="text-gray-600">${invoiceData.invoice_number}</p>
+                </div>
+            </div>
+            
+            <!-- Invoice Details -->
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Bill To:</h4>
+                    <p class="font-medium">${invoiceData.client_name}</p>
+                    <p class="text-sm text-gray-600">${invoiceData.client_email}</p>
+                    ${invoiceData.client_address ? `<p class="text-sm text-gray-600 whitespace-pre-line">${invoiceData.client_address}</p>` : ''}
+                </div>
+                <div class="text-right">
+                    <div class="mb-2">
+                        <span class="text-gray-600">Invoice Date:</span>
+                        <span class="font-medium">${formatDate(invoiceData.invoice_date)}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-gray-600">Due Date:</span>
+                        <span class="font-medium">${formatDate(invoiceData.due_date)}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Project Details -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-3">Project Details</h4>
+                <div class="bg-gray-50 p-4 rounded">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="font-medium">${invoiceData.project_name}</span>
+                        <span class="text-gray-600">(${invoiceData.project_type})</span>
+                    </div>
+                    ${invoiceData.project_description ? `<p class="text-sm text-gray-600">${invoiceData.project_description}</p>` : ''}
+                </div>
+            </div>
+            
+            <!-- Payment Summary -->
+            <div class="border-t pt-4">
+                <div class="flex justify-end">
+                    <div class="w-64">
+                        <div class="flex justify-between py-2">
+                            <span>Total Amount:</span>
+                            <span class="font-medium">${currencySymbol}${invoiceData.total_amount.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span>Amount Paid:</span>
+                            <span class="text-green-600">${currencySymbol}${invoiceData.amount_paid.toFixed(2)}</span>
+                        </div>
+                        ${invoiceData.tax_rate > 0 ? `
+                        <div class="flex justify-between py-2">
+                            <span>Tax (${invoiceData.tax_rate}%):</span>
+                            <span>${currencySymbol}${(invoiceData.amount_due * invoiceData.tax_rate / 100).toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        <div class="flex justify-between py-2 border-t font-bold text-lg">
+                            <span>Amount Due:</span>
+                            <span class="text-red-600">${currencySymbol}${invoiceData.amount_due.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            ${invoiceData.notes ? `
+            <div class="mt-6 pt-4 border-t">
+                <h4 class="font-semibold text-gray-800 mb-2">Notes</h4>
+                <p class="text-sm text-gray-600 whitespace-pre-line">${invoiceData.notes}</p>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function getCurrencySymbol(currency) {
+    const symbols = {
+        'USD': '$',
+        'EUR': '€',
+        'GBP': '£',
+        'NGN': '₦'
+    };
+    return symbols[currency] || '$';
+}
+
+// Save invoice function
+async function saveInvoice() {
+    const form = document.getElementById('invoice-form');
+    if (!form) return;
+    
+    const formData = new FormData(form);
+    const invoiceData = {};
+    
+    // Collect all form data
+    for (let [key, value] of formData.entries()) {
+        invoiceData[key.replace('-', '_')] = value;
+    }
+    
+    // Add calculated fields
+    invoiceData.amount_due = document.getElementById('amount-due')?.value || '0';
+    invoiceData.created_at = new Date().toISOString();
+    invoiceData.id = 'inv_' + Date.now();
+    
+    try {
+        const response = await fetch('api/save_invoice.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(invoiceData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Invoice saved successfully!', 'success');
+            loadInvoices();
+            form.reset();
+            generateNewInvoiceNumber();
+            updateInvoicePreview();
+        } else {
+            showNotification('Error saving invoice: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error saving invoice:', error);
+        showNotification('Error saving invoice', 'error');
+    }
+}
+
+// Generate new invoice number
+function generateNewInvoiceNumber() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const timestamp = now.getTime().toString().slice(-4);
+    
+    const invoiceNumber = `INV-${year}${month}-${timestamp}`;
+    
+    const numberField = document.getElementById('invoice-number');
+    const displayField = document.getElementById('invoice-number-display');
+    
+    if (numberField) numberField.value = invoiceNumber;
+    if (displayField) displayField.textContent = invoiceNumber;
+}
+
+// Email invoice function
+async function emailInvoice(invoiceId) {
+    try {
+        const response = await fetch(`api/get_invoices.php?id=${invoiceId}`);
+        const invoice = await response.json();
+        
+        if (!invoice || !invoice.client_email) {
+            showNotification('Invoice not found or missing client email', 'error');
+            return;
+        }
+        
+        const emailData = {
+            invoice_id: invoiceId,
+            client_email: invoice.client_email,
+            client_name: invoice.client_name,
+            invoice_number: invoice.invoice_number,
+            amount_due: invoice.amount_due,
+            due_date: invoice.due_date
+        };
+        
+        const emailResponse = await fetch('api/send_invoice_email.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData)
+        });
+        
+        const result = await emailResponse.json();
+        
+        if (result.success) {
+            showNotification('Invoice emailed successfully!', 'success');
+        } else {
+            showNotification('Error sending invoice email: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error emailing invoice:', error);
+        showNotification('Error sending invoice email', 'error');
+    }
+}
+
+// Other invoice functions
+function viewInvoice(invoiceId) {
+    // Implementation for viewing invoice
+    showNotification('View invoice: ' + invoiceId, 'info');
+}
+
+function editInvoice(invoiceId) {
+    // Implementation for editing invoice
+    showNotification('Edit invoice: ' + invoiceId, 'info');
+}
+
+function downloadInvoicePDF(invoiceId) {
+    // Implementation for PDF download
+    window.open(`api/generate_invoice_pdf.php?id=${invoiceId}`, '_blank');
+}
+
+function deleteInvoice(invoiceId) {
+    if (confirm('Are you sure you want to delete this invoice?')) {
+        fetch('api/delete_invoice.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: invoiceId })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showNotification('Invoice deleted successfully!', 'success');
+                loadInvoices();
+            } else {
+                showNotification('Error deleting invoice', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting invoice:', error);
+            showNotification('Error deleting invoice', 'error');
+        });
+    }
+}
+
+function refreshInvoices() {
+    loadInvoices();
 }
 
 function loadPayments() {
