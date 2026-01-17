@@ -87,7 +87,7 @@ function setupInvoiceFormListeners() {
         amountPaidField.addEventListener('input', calculateAmountDue);
     }
     
-    // Auto-update preview when form fields change
+    // Auto-update preview when form fields change - comprehensive list
     const formFields = [
         'invoice-number', 'invoice-date', 'due-date', 'client-name', 'client-email',
         'client-address', 'project-name', 'project-type', 'project-description',
@@ -97,8 +97,11 @@ function setupInvoiceFormListeners() {
     formFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
+            // Add multiple event listeners for comprehensive real-time updates
             field.addEventListener('input', updateInvoicePreview);
             field.addEventListener('change', updateInvoicePreview);
+            field.addEventListener('keyup', updateInvoicePreview);
+            field.addEventListener('blur', updateInvoicePreview);
         }
     });
     
@@ -121,6 +124,11 @@ function setupInvoiceFormListeners() {
     
     // Generate initial invoice number
     generateNewInvoiceNumber();
+    
+    // Trigger initial preview update
+    setTimeout(() => {
+        updateInvoicePreview();
+    }, 100);
 }
 
 // Tab Management Function
@@ -1159,7 +1167,8 @@ function updateInvoicePreview() {
         previewDiv.innerHTML = `
             <div class="text-center text-gray-500 py-8">
                 <i class="fas fa-file-invoice text-4xl mb-4"></i>
-                <p>Fill out the form to see preview</p>
+                <p>Fill out the form to see live preview</p>
+                <p class="text-xs mt-2">Preview updates automatically as you type</p>
             </div>
         `;
         return;
@@ -1172,7 +1181,7 @@ function updateInvoicePreview() {
             <!-- Header -->
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-navy">App Craft Services</h2>
+                    <h2 class="text-2xl font-bold text-blue-900">App Craft Services</h2>
                     <p class="text-gray-600">Professional Web Development</p>
                     <p class="text-sm text-gray-500">hello@appcraftservices.com</p>
                 </div>
@@ -1318,6 +1327,60 @@ function generateNewInvoiceNumber() {
     
     if (numberField) numberField.value = invoiceNumber;
     if (displayField) displayField.textContent = invoiceNumber;
+}
+
+// Email current invoice function (for unsaved invoices)
+async function emailCurrentInvoice() {
+    const clientEmail = document.getElementById('client-email')?.value;
+    const clientName = document.getElementById('client-name')?.value;
+    const invoiceNumber = document.getElementById('invoice-number')?.value;
+    const amountDue = document.getElementById('amount-due')?.value;
+    const dueDate = document.getElementById('due-date')?.value;
+    
+    if (!clientEmail || !clientName || !invoiceNumber) {
+        showNotification('Please fill in client email, name, and invoice number before sending', 'error');
+        return;
+    }
+    
+    if (!clientEmail.includes('@')) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    try {
+        const emailData = {
+            client_email: clientEmail,
+            client_name: clientName,
+            invoice_number: invoiceNumber,
+            amount_due: amountDue || '0.00',
+            due_date: dueDate,
+            project_name: document.getElementById('project-name')?.value || '',
+            project_type: document.getElementById('project-type')?.value || '',
+            total_amount: document.getElementById('total-amount')?.value || '0.00',
+            amount_paid: document.getElementById('amount-paid')?.value || '0.00',
+            currency: document.getElementById('currency')?.value || 'USD',
+            notes: document.getElementById('invoice-notes')?.value || ''
+        };
+        
+        const response = await fetch('api/send_invoice_email.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Invoice emailed successfully to ' + clientEmail + '!', 'success');
+        } else {
+            showNotification('Error sending invoice email: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error emailing invoice:', error);
+        showNotification('Error sending invoice email. Please try again.', 'error');
+    }
 }
 
 // Email invoice function

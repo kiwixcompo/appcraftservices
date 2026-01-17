@@ -83,7 +83,11 @@
         if (!CACHE_CONFIG.isDevelopment) return;
         
         try {
-            const response = await fetch('/api/check_updates.php', {
+            // Determine the correct path based on current location
+            const isAdminArea = window.location.pathname.includes('/admin/');
+            const apiPath = isAdminArea ? '../api/check_updates.php' : '/api/check_updates.php';
+            
+            const response = await fetch(apiPath, {
                 method: 'GET',
                 cache: 'no-cache',
                 headers: {

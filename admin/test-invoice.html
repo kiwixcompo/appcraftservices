@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Test - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // Suppress production warning
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                corePlugins: {
+                    preflight: false,
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Invoice System Test</h1>
+        
+        <!-- Test Invoice Form -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4">Test Invoice Form</h2>
+                <form id="test-invoice-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Number</label>
+                        <input type="text" id="invoice-number" value="INV-202412-0001" class="w-full p-3 border border-gray-300 rounded-md" readonly>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Date</label>
+                            <input type="date" id="invoice-date" class="w-full p-3 border border-gray-300 rounded-md" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                            <input type="date" id="due-date" class="w-full p-3 border border-gray-300 rounded-md" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
+                            <input type="text" id="client-name" value="Test Client" class="w-full p-3 border border-gray-300 rounded-md" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
+                            <input type="email" id="client-email" value="client@example.com" class="w-full p-3 border border-gray-300 rounded-md" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+                            <input type="text" id="project-name" value="Test Project" class="w-full p-3 border border-gray-300 rounded-md" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
+                            <select id="project-type" class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="Essential App">Essential App</option>
+                                <option value="Custom Enterprise">Custom Enterprise</option>
+                                <option value="MVP Development">MVP Development</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Total Amount ($)</label>
+                            <input type="number" id="total-amount" value="1500" step="0.01" min="0" class="w-full p-3 border border-gray-300 rounded-md" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount Paid ($)</label>
+                            <input type="number" id="amount-paid" value="500" step="0.01" min="0" class="w-full p-3 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount Due ($)</label>
+                            <input type="number" id="amount-due" step="0.01" min="0" class="w-full p-3 border border-gray-300 rounded-md bg-gray-50" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tax Rate (%)</label>
+                            <input type="number" id="tax-rate-1" value="0" step="0.01" min="0" max="100" class="w-full p-3 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                            <select id="currency" class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="NGN">NGN - Nigerian Naira</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                        <textarea id="invoice-notes" rows="3" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Payment terms, additional information, etc."></textarea>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="testPreviewInvoice()" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+                            <i class="fas fa-eye mr-2"></i>Test Preview
+                        </button>
+                        <button type="button" onclick="testCalculateAmountDue()" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+                            <i class="fas fa-calculator mr-2"></i>Test Calculation
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Test Preview -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4">Invoice Preview Test</h2>
+                <div id="invoice-preview" class="text-sm">
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-file-invoice text-4xl mb-4"></i>
+                        <p>Click "Test Preview" to see preview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Results -->
+        <div class="mt-6 bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-2">
+                <p class="text-gray-600">Run tests to see results...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test functions
+        function testCalculateAmountDue() {
+            const totalAmount = parseFloat(document.getElementById('total-amount')?.value || 0);
+            const amountPaid = parseFloat(document.getElementById('amount-paid')?.value || 0);
+            const amountDue = Math.max(0, totalAmount - amountPaid);
+            
+            const amountDueField = document.getElementById('amount-due');
+            if (amountDueField) {
+                amountDueField.value = amountDue.toFixed(2);
+            }
+            
+            // Show test result
+            const results = document.getElementById('test-results');
+            results.innerHTML = `
+                <div class="p-4 bg-green-50 border border-green-200 rounded">
+                    <h3 class="font-semibold text-green-800">✅ Amount Due Calculation Test</h3>
+                    <p class="text-green-700">Total: $${totalAmount.toFixed(2)} - Paid: $${amountPaid.toFixed(2)} = Due: $${amountDue.toFixed(2)}</p>
+                </div>
+            `;
+            
+            // Update preview
+            testPreviewInvoice();
+        }
+        
+        function testPreviewInvoice() {
+            const previewDiv = document.getElementById('invoice-preview');
+            if (!previewDiv) return;
+            
+            const invoiceData = {
+                invoice_number: document.getElementById('invoice-number')?.value || '',
+                invoice_date: document.getElementById('invoice-date')?.value || '',
+                due_date: document.getElementById('due-date')?.value || '',
+                client_name: document.getElementById('client-name')?.value || '',
+                client_email: document.getElementById('client-email')?.value || '',
+                project_name: document.getElementById('project-name')?.value || '',
+                project_type: document.getElementById('project-type')?.value || '',
+                total_amount: parseFloat(document.getElementById('total-amount')?.value || 0),
+                amount_paid: parseFloat(document.getElementById('amount-paid')?.value || 0),
+                amount_due: parseFloat(document.getElementById('amount-due')?.value || 0),
+                tax_rate: parseFloat(document.getElementById('tax-rate-1')?.value || 0),
+                currency: document.getElementById('currency')?.value || 'USD',
+                notes: document.getElementById('invoice-notes')?.value || ''
+            };
+            
+            if (!invoiceData.client_name && !invoiceData.project_name) {
+                previewDiv.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-file-invoice text-4xl mb-4"></i>
+                        <p>Fill out the form to see preview</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currencySymbol = getCurrencySymbol(invoiceData.currency);
+            
+            previewDiv.innerHTML = `
+                <div class="invoice-preview border border-gray-200 rounded-lg p-4 bg-white">
+                    <!-- Header -->
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-blue-900">App Craft Services</h2>
+                            <p class="text-gray-600">Professional Web Development</p>
+                            <p class="text-sm text-gray-500">hello@appcraftservices.com</p>
+                        </div>
+                        <div class="text-right">
+                            <h3 class="text-xl font-bold text-gray-800">INVOICE</h3>
+                            <p class="text-gray-600">${invoiceData.invoice_number}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Invoice Details -->
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">Bill To:</h4>
+                            <p class="font-medium">${invoiceData.client_name}</p>
+                            <p class="text-sm text-gray-600">${invoiceData.client_email}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="mb-2">
+                                <span class="text-gray-600">Invoice Date:</span>
+                                <span class="font-medium">${formatDate(invoiceData.invoice_date)}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-gray-600">Due Date:</span>
+                                <span class="font-medium">${formatDate(invoiceData.due_date)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Details -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-800 mb-3">Project Details</h4>
+                        <div class="bg-gray-50 p-4 rounded">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-medium">${invoiceData.project_name}</span>
+                                <span class="text-gray-600">(${invoiceData.project_type})</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Summary -->
+                    <div class="border-t pt-4">
+                        <div class="flex justify-end">
+                            <div class="w-64">
+                                <div class="flex justify-between py-2">
+                                    <span>Total Amount:</span>
+                                    <span class="font-medium">${currencySymbol}${invoiceData.total_amount.toFixed(2)}</span>
+                                </div>
+                                <div class="flex justify-between py-2">
+                                    <span>Amount Paid:</span>
+                                    <span class="text-green-600">${currencySymbol}${invoiceData.amount_paid.toFixed(2)}</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-t font-bold text-lg">
+                                    <span>Amount Due:</span>
+                                    <span class="text-red-600">${currencySymbol}${invoiceData.amount_due.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${invoiceData.notes ? `
+                    <div class="mt-6 pt-4 border-t">
+                        <h4 class="font-semibold text-gray-800 mb-2">Notes</h4>
+                        <p class="text-sm text-gray-600 whitespace-pre-line">${invoiceData.notes}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Show test result
+            const results = document.getElementById('test-results');
+            results.innerHTML = `
+                <div class="p-4 bg-green-50 border border-green-200 rounded">
+                    <h3 class="font-semibold text-green-800">✅ Invoice Preview Test</h3>
+                    <p class="text-green-700">Preview generated successfully with all data populated!</p>
+                </div>
+            `;
+        }
+        
+        function getCurrencySymbol(currency) {
+            const symbols = {
+                'USD': '$',
+                'EUR': '€',
+                'GBP': '£',
+                'NGN': '₦'
+            };
+            return symbols[currency] || '$';
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+        
+        // Initialize with default dates
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            const dueDateStr = dueDate.toISOString().split('T')[0];
+            
+            document.getElementById('invoice-date').value = today;
+            document.getElementById('due-date').value = dueDateStr;
+            
+            // Add event listeners for auto-calculation
+            document.getElementById('total-amount').addEventListener('input', testCalculateAmountDue);
+            document.getElementById('amount-paid').addEventListener('input', testCalculateAmountDue);
+            
+            // Initial calculation
+            testCalculateAmountDue();
+        });
+    </script>
+</body>
+</html>

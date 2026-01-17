@@ -82,12 +82,127 @@ $content = array_merge($defaultContent, $content);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - App Craft Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind CSS
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+        
+        // Suppress console warnings in production
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            console.warn = function() {};
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="assets/mobile-responsive.css">
     <style>
+        /* Base Admin Styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+        }
+        
+        /* Ensure Tailwind classes work properly */
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-gray-800 { background-color: #1f2937; }
+        .bg-white { background-color: #ffffff; }
+        .text-white { color: #ffffff; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-800 { color: #1f2937; }
+        .text-blue-600 { color: #2563eb; }
+        .text-green-600 { color: #16a34a; }
+        .text-red-600 { color: #dc2626; }
+        
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1 1 0%; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .space-x-2 > * + * { margin-left: 0.5rem; }
+        .space-x-4 > * + * { margin-left: 1rem; }
+        
+        .w-64 { width: 16rem; }
+        .h-screen { height: 100vh; }
+        .h-full { height: 100%; }
+        
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        
+        .border { border-width: 1px; border-color: #d1d5db; }
+        .border-b { border-bottom-width: 1px; border-bottom-color: #d1d5db; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        
+        .overflow-y-auto { overflow-y: auto; }
+        .overflow-x-auto { overflow-x: auto; }
+        
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        
+        .hover\\:bg-gray-700:hover { background-color: #374151; }
+        .hover\\:bg-blue-700:hover { background-color: #1d4ed8; }
+        .hover\\:bg-green-700:hover { background-color: #15803d; }
+        .hover\\:bg-red-700:hover { background-color: #b91c1c; }
+        
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .sidebar-item.active { background-color: #3b82f6; color: white; }
+        .sidebar-item { 
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+        }
+        .sidebar-item:hover { 
+            background-color: #374151; 
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar-item.active { background-color: #3b82f6; color: white; }
+        .sidebar-item { 
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .sidebar-item:hover { 
+            background-color: #374151; 
+            text-decoration: none;
+            color: inherit;
+        }
         
         /* Ensure sidebar scrolling works properly */
         .sidebar-nav {
@@ -111,6 +226,49 @@ $content = array_merge($defaultContent, $content);
         
         .sidebar-nav::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
+        }
+        
+        /* Form Styles */
+        input, textarea, select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            width: 100%;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        .bg-blue-600 { background-color: #2563eb; color: white; }
+        .bg-green-600 { background-color: #16a34a; color: white; }
+        .bg-red-600 { background-color: #dc2626; color: white; }
+        .bg-gray-600 { background-color: #4b5563; color: white; }
+        
+        /* Card Styles */
+        .bg-white {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
         
         /* Mobile Responsive Styles */
@@ -1049,8 +1207,8 @@ $content = array_merge($defaultContent, $content);
                                 <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
                                     <i class="fas fa-save mr-2"></i>Save Invoice
                                 </button>
-                                <button type="button" onclick="previewInvoice()" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
-                                    <i class="fas fa-eye mr-2"></i>Preview
+                                <button type="button" onclick="emailCurrentInvoice()" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+                                    <i class="fas fa-envelope mr-2"></i>Email Invoice
                                 </button>
                                 <button type="button" onclick="generateInvoicePDF()" class="bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700">
                                     <i class="fas fa-file-pdf mr-2"></i>Export PDF
@@ -1061,11 +1219,12 @@ $content = array_merge($defaultContent, $content);
                     
                     <!-- Invoice Preview -->
                     <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">Invoice Preview</h3>
+                        <h3 class="text-lg font-semibold mb-4">Live Invoice Preview</h3>
                         <div id="invoice-preview" class="text-sm">
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-file-invoice text-4xl mb-4"></i>
-                                <p>Fill out the form to see preview</p>
+                                <p>Fill out the form to see live preview</p>
+                                <p class="text-xs mt-2">Preview updates automatically as you type</p>
                             </div>
                         </div>
                     </div>
@@ -2055,812 +2214,26 @@ $content = array_merge($defaultContent, $content);
     <script src="../assets/cache-buster.js"></script>
     <script src="admin.js"></script>
     <script>
-        // Invoice functionality
-        let currentInvoiceNumber = 1;
-        
-        // Load existing invoices to get the next invoice number
-        async function loadNextInvoiceNumber() {
-            try {
-                const response = await fetch('api/get_invoices.php');
-                const invoices = await response.json();
-                
-                if (invoices.length > 0) {
-                    // Find the highest invoice number
-                    const numbers = invoices.map(inv => {
-                        const match = inv.invoice_number.match(/INV-\d{6}-(\d+)/);
-                        return match ? parseInt(match[1]) : 0;
-                    });
-                    currentInvoiceNumber = Math.max(...numbers) + 1;
-                } else {
-                    currentInvoiceNumber = 1;
-                }
-                
-                generateNewInvoiceNumber();
-            } catch (error) {
-                console.error('Error loading invoices:', error);
-                generateNewInvoiceNumber();
-            }
-        }
-        
-        function generateNewInvoiceNumber() {
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const counter = String(currentInvoiceNumber).padStart(4, '0');
-            
-            const invoiceNumber = `INV-${year}${month}-${counter}`;
-            
-            // Update the display and hidden field
-            const displayElement = document.getElementById('invoice-number-display');
-            const hiddenElement = document.getElementById('invoice-number');
-            
-            if (displayElement) {
-                displayElement.textContent = invoiceNumber;
-            }
-            
-            if (hiddenElement) {
-                hiddenElement.value = invoiceNumber;
-            }
-            
-            console.log('Generated invoice number:', invoiceNumber);
-        }
-        
-        function calculateAmountDue() {
-            const totalAmount = parseFloat(document.getElementById('total-amount')?.value) || 0;
-            const amountPaid = parseFloat(document.getElementById('amount-paid')?.value) || 0;
-            const taxRate = parseFloat(document.getElementById('tax-rate')?.value) || 0;
-            
-            // Calculate tax amount
-            const taxAmount = (totalAmount * taxRate) / 100;
-            
-            // Calculate total with tax
-            const totalWithTax = totalAmount + taxAmount;
-            
-            // Calculate amount due
-            const amountDue = totalWithTax - amountPaid;
-            
-            // Update the amount due field
-            const amountDueField = document.getElementById('amount-due');
-            if (amountDueField) {
-                amountDueField.value = Math.max(0, amountDue).toFixed(2);
-            }
-            
-            // Update preview
-            updateInvoicePreview();
-            
-            console.log('Amount calculation:', {
-                totalAmount,
-                taxRate,
-                taxAmount,
-                totalWithTax,
-                amountPaid,
-                amountDue: Math.max(0, amountDue)
-            });
-        }
-        
-        function updateInvoicePreview() {
-            const previewElement = document.getElementById('invoice-preview');
-            if (!previewElement) return;
-            
-            const invoiceData = {
-                invoice_number: document.getElementById('invoice-number')?.value || 'INV-202412-0001',
-                invoice_date: document.getElementById('invoice-date')?.value || '',
-                due_date: document.getElementById('due-date')?.value || '',
-                client_name: document.getElementById('client-name')?.value || '',
-                client_email: document.getElementById('client-email')?.value || '',
-                project_name: document.getElementById('project-name')?.value || '',
-                project_type: document.getElementById('project-type')?.value || 'Essential App',
-                total_amount: parseFloat(document.getElementById('total-amount')?.value) || 0,
-                amount_paid: parseFloat(document.getElementById('amount-paid')?.value) || 0,
-                amount_due: parseFloat(document.getElementById('amount-due')?.value) || 0,
-                tax_rate: parseFloat(document.getElementById('tax-rate')?.value) || 0,
-                currency: document.getElementById('currency')?.value || 'USD'
-            };
-            
-            if (!invoiceData.client_name && !invoiceData.project_name) {
-                previewElement.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-file-invoice text-4xl mb-4"></i>
-                        <p>Fill out the form to see preview</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const taxAmount = (invoiceData.total_amount * invoiceData.tax_rate) / 100;
-            const totalWithTax = invoiceData.total_amount + taxAmount;
-            
-            previewElement.innerHTML = `
-                <div class="border border-gray-200 rounded p-4">
-                    <div class="text-center mb-4 pb-2 border-b">
-                        <h4 class="font-bold text-blue-600">App Craft Services</h4>
-                        <p class="text-xs text-gray-600">Professional Web Development</p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="font-semibold text-sm">INVOICE</div>
-                        <div class="text-xs">${invoiceData.invoice_number}</div>
-                        <div class="text-xs">${invoiceData.invoice_date}</div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="font-semibold text-sm">BILL TO</div>
-                        <div class="text-xs">${invoiceData.client_name}</div>
-                        <div class="text-xs">${invoiceData.client_email}</div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="font-semibold text-sm">PROJECT</div>
-                        <div class="text-xs">${invoiceData.project_name}</div>
-                        <div class="text-xs">${invoiceData.project_type}</div>
-                    </div>
-                    
-                    <div class="border-t pt-2 text-xs">
-                        <div class="flex justify-between">
-                            <span>Subtotal:</span>
-                            <span>${invoiceData.currency} ${invoiceData.total_amount.toFixed(2)}</span>
-                        </div>
-                        ${invoiceData.tax_rate > 0 ? `
-                        <div class="flex justify-between">
-                            <span>Tax (${invoiceData.tax_rate}%):</span>
-                            <span>${invoiceData.currency} ${taxAmount.toFixed(2)}</span>
-                        </div>
-                        ` : ''}
-                        <div class="flex justify-between font-semibold">
-                            <span>Total:</span>
-                            <span>${invoiceData.currency} ${totalWithTax.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-green-600">
-                            <span>Paid:</span>
-                            <span>${invoiceData.currency} ${invoiceData.amount_paid.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between font-bold text-red-600">
-                            <span>Amount Due:</span>
-                            <span>${invoiceData.currency} ${invoiceData.amount_due}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function previewInvoice() {
-            const invoiceData = {
-                invoice_number: document.getElementById('invoice-number')?.value,
-                client_name: document.getElementById('client-name')?.value,
-                project_name: document.getElementById('project-name')?.value
-            };
-            
-            if (!invoiceData.client_name || !invoiceData.project_name) {
-                showNotification('Please fill in client name and project name first', 'warning');
-                return;
-            }
-            
-            updateInvoicePreview();
-            showNotification('Invoice preview updated!', 'success');
-        }
-        
-        async function saveInvoice(event) {
-            event.preventDefault();
-            
-            // Collect all form data
-            const invoiceData = {
-                invoice_number: document.getElementById('invoice-number')?.value,
-                invoice_date: document.getElementById('invoice-date')?.value,
-                due_date: document.getElementById('due-date')?.value,
-                status: document.getElementById('invoice-status')?.value,
-                client_name: document.getElementById('client-name')?.value,
-                client_email: document.getElementById('client-email')?.value,
-                client_address: document.getElementById('client-address')?.value,
-                project_name: document.getElementById('project-name')?.value,
-                project_type: document.getElementById('project-type')?.value,
-                project_description: document.getElementById('project-description')?.value,
-                total_amount: parseFloat(document.getElementById('total-amount')?.value) || 0,
-                amount_paid: parseFloat(document.getElementById('amount-paid')?.value) || 0,
-                amount_due: parseFloat(document.getElementById('amount-due')?.value) || 0,
-                tax_rate: parseFloat(document.getElementById('tax-rate')?.value) || 0,
-                currency: document.getElementById('currency')?.value,
-                notes: document.getElementById('invoice-notes')?.value
-            };
-            
-            // Validate required fields
-            if (!invoiceData.client_name || !invoiceData.project_name || !invoiceData.total_amount) {
-                showNotification('Please fill in all required fields (Client Name, Project Name, Total Amount)', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch('api/save_invoice.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(invoiceData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('Invoice saved successfully!', 'success');
-                    
-                    // Increment invoice number for next invoice
-                    currentInvoiceNumber++;
-                    generateNewInvoiceNumber();
-                    
-                    // Optionally reset form or keep data for editing
-                    // resetInvoiceForm();
-                } else {
-                    showNotification('Error saving invoice: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Save error:', error);
-                showNotification('Error saving invoice: ' + error.message, 'error');
-            }
-        }tart(2, '0');
-            const counter = String(currentInvoiceNumber).padStart(4, '0');
-            const invoiceNumber = `INV-${year}${month}-${counter}`;
-            
-            const invoiceNumberDisplay = document.getElementById('invoice-number-display');
-            const invoiceNumberHidden = document.getElementById('invoice-number');
-            
-            if (invoiceNumberDisplay) {
-                invoiceNumberDisplay.textContent = invoiceNumber;
-            }
-            if (invoiceNumberHidden) {
-                invoiceNumberHidden.value = invoiceNumber;
-            }
-        }
-
-        function calculateAmountDue() {
-            const totalAmountEl = document.getElementById('total-amount');
-            const amountPaidEl = document.getElementById('amount-paid');
-            const taxRateEl = document.getElementById('tax-rate');
-            const amountDueEl = document.getElementById('amount-due');
-            
-            if (!totalAmountEl || !amountPaidEl || !amountDueEl) {
-                console.log('Required elements not found for calculation');
-                return;
-            }
-            
-            const totalAmount = parseFloat(totalAmountEl.value) || 0;
-            const amountPaid = parseFloat(amountPaidEl.value) || 0;
-            const taxRate = parseFloat(taxRateEl ? taxRateEl.value : 0) || 0;
-            
-            console.log('Calculating amount due:', { totalAmount, amountPaid, taxRate });
-            
-            const taxAmount = (totalAmount * taxRate) / 100;
-            const totalWithTax = totalAmount + taxAmount;
-            const amountDue = totalWithTax - amountPaid;
-            
-            const finalAmountDue = Math.max(0, amountDue);
-            amountDueEl.value = finalAmountDue.toFixed(2);
-            
-            console.log('Amount due calculated:', finalAmountDue);
-            
-            // Update preview immediately
-            updateInvoicePreview();
-        }
-        
-        function updateInvoicePreview() {
-            const preview = document.getElementById('invoice-preview');
-            if (!preview) return;
-            
-            const invoiceNumber = document.getElementById('invoice-number')?.value || '';
-            const clientName = document.getElementById('client-name')?.value || '';
-            const projectName = document.getElementById('project-name')?.value || '';
-            const projectType = document.getElementById('project-type')?.value || '';
-            const totalAmount = parseFloat(document.getElementById('total-amount')?.value) || 0;
-            const amountPaid = parseFloat(document.getElementById('amount-paid')?.value) || 0;
-            const amountDue = parseFloat(document.getElementById('amount-due')?.value) || 0;
-            const currency = document.getElementById('currency')?.value || 'USD';
-            const invoiceDate = document.getElementById('invoice-date')?.value || '';
-            const dueDate = document.getElementById('due-date')?.value || '';
-            
-            if (!clientName || !projectName || !totalAmount) {
-                preview.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-file-invoice text-4xl mb-4"></i>
-                        <p>Fill out the form to see preview</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            preview.innerHTML = `
-                <div class="border border-gray-300 p-4 bg-white text-xs">
-                    <div class="text-center mb-4">
-                        <h2 class="text-lg font-bold text-navy">App Craft Services</h2>
-                        <p class="text-xs text-gray-600">Professional Web Development</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div>
-                            <p><strong>Invoice:</strong> ${invoiceNumber}</p>
-                            <p><strong>Date:</strong> ${invoiceDate}</p>
-                            <p><strong>Due:</strong> ${dueDate}</p>
-                        </div>
-                        <div>
-                            <p><strong>Client:</strong> ${clientName}</p>
-                            <p><strong>Project:</strong> ${projectName}</p>
-                            <p><strong>Type:</strong> ${projectType}</p>
-                        </div>
-                    </div>
-                    <div class="text-right border-t pt-2">
-                        <p class="text-sm"><strong>Total: ${currency} ${totalAmount.toFixed(2)}</strong></p>
-                        <p class="text-green-600 text-sm"><strong>Paid: ${currency} ${amountPaid.toFixed(2)}</strong></p>
-                        <p class="text-red-600 text-sm"><strong>Due: ${currency} ${amountDue.toFixed(2)}</strong></p>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Make functions globally accessible
-        window.previewInvoice = function() {
-            console.log('Preview button clicked');
-            updateInvoicePreview();
-            showNotification('Invoice preview updated!', 'success');
-        }
-        
-        window.saveInvoice = async function() {
-            console.log('Save button clicked');
-            
-            // Get form data
-            const invoiceData = {
-                invoice_number: document.getElementById('invoice-number')?.value,
-                invoice_date: document.getElementById('invoice-date')?.value,
-                due_date: document.getElementById('due-date')?.value,
-                status: document.getElementById('invoice-status')?.value || 'draft',
-                client_name: document.getElementById('client-name')?.value,
-                client_email: document.getElementById('client-email')?.value,
-                client_address: document.getElementById('client-address')?.value,
-                project_name: document.getElementById('project-name')?.value,
-                project_type: document.getElementById('project-type')?.value,
-                project_description: document.getElementById('project-description')?.value,
-                total_amount: parseFloat(document.getElementById('total-amount')?.value) || 0,
-                amount_paid: parseFloat(document.getElementById('amount-paid')?.value) || 0,
-                amount_due: parseFloat(document.getElementById('amount-due')?.value) || 0,
-                tax_rate: parseFloat(document.getElementById('tax-rate')?.value) || 0,
-                currency: document.getElementById('currency')?.value || 'USD',
-                notes: document.getElementById('invoice-notes')?.value
-            };
-            
-            console.log('Invoice data:', invoiceData);
-            
-            // Validate required fields
-            if (!invoiceData.client_name || !invoiceData.project_name || !invoiceData.total_amount) {
-                showNotification('Please fill in all required fields (Client Name, Project Name, Total Amount)', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch('api/save_invoice.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(invoiceData)
-                });
-                
-                const result = await response.json();
-                console.log('Save response:', result);
-                
-                if (result.success) {
-                    showNotification('Invoice saved successfully!', 'success');
-                    currentInvoiceNumber++;
-                    resetInvoiceForm();
-                    if (typeof loadInvoices === 'function') {
-                        loadInvoices();
-                    }
-                } else {
-                    showNotification('Error saving invoice: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Save error:', error);
-                showNotification('Error saving invoice: ' + error.message, 'error');
-            }
-        }
-        
-        window.generateInvoicePDF = function() {
-            console.log('Export PDF button clicked');
-            
-            const invoiceData = {
-                invoice_number: document.getElementById('invoice-number')?.value,
-                invoice_date: document.getElementById('invoice-date')?.value,
-                due_date: document.getElementById('due-date')?.value,
-                client_name: document.getElementById('client-name')?.value,
-                client_email: document.getElementById('client-email')?.value,
-                client_address: document.getElementById('client-address')?.value,
-                project_name: document.getElementById('project-name')?.value,
-                project_type: document.getElementById('project-type')?.value,
-                project_description: document.getElementById('project-description')?.value,
-                total_amount: parseFloat(document.getElementById('total-amount')?.value) || 0,
-                amount_paid: parseFloat(document.getElementById('amount-paid')?.value) || 0,
-                amount_due: parseFloat(document.getElementById('amount-due')?.value) || 0,
-                tax_rate: parseFloat(document.getElementById('tax-rate')?.value) || 0,
-                currency: document.getElementById('currency')?.value || 'USD',
-                notes: document.getElementById('invoice-notes')?.value
-            };
-            
-            if (!invoiceData.client_name || !invoiceData.project_name) {
-                showNotification('Please fill in client name and project name first', 'warning');
-                return;
-            }
-            
-            const taxAmount = (invoiceData.total_amount * invoiceData.tax_rate) / 100;
-            const totalWithTax = invoiceData.total_amount + taxAmount;
-            
-            const pdfContent = `<!DOCTYPE html>
-<html>
-<head>
-    <title>Invoice ${invoiceData.invoice_number}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; line-height: 1.6; }
-        .header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid #1e3a8a; padding-bottom: 20px; }
-        .company-name { font-size: 32px; font-weight: bold; color: #1e3a8a; margin-bottom: 8px; }
-        .company-tagline { font-size: 16px; color: #666; margin-bottom: 12px; }
-        .company-contact { font-size: 14px; color: #666; }
-        .invoice-details { display: flex; justify-content: space-between; margin: 40px 0; }
-        .invoice-info, .client-info { width: 45%; }
-        .invoice-info h2 { color: #1e3a8a; font-size: 28px; margin-bottom: 15px; }
-        .client-info h3 { color: #1e3a8a; font-size: 18px; margin-bottom: 12px; }
-        .project-section { margin: 30px 0; padding: 20px; background-color: #f8fafc; border-left: 5px solid #3b82f6; }
-        .invoice-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
-        .invoice-table th { background-color: #1e3a8a; color: white; padding: 15px; text-align: left; font-size: 16px; }
-        .invoice-table td { border: 1px solid #ddd; padding: 15px; font-size: 14px; }
-        .invoice-table tr:nth-child(even) { background-color: #f9f9f9; }
-        .totals { text-align: right; margin-top: 30px; }
-        .total-line { margin: 10px 0; font-size: 16px; }
-        .grand-total { font-size: 20px; font-weight: bold; color: #1e3a8a; border-top: 2px solid #1e3a8a; padding-top: 15px; margin-top: 15px; }
-        .amount-due { font-size: 24px; font-weight: bold; color: #dc2626; margin-top: 15px; }
-        .notes { margin-top: 40px; padding: 20px; background-color: #f8fafc; border-radius: 8px; }
-        .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
-        @media print { body { margin: 0; } .no-print { display: none; } }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="company-name">App Craft Services</div>
-        <div class="company-tagline">Professional Web Development Services</div>
-        <div class="company-contact">
-            Email: williamsaonen@gmail.com | Phone: +2348061581916
-        </div>
-    </div>
-    
-    <div class="invoice-details">
-        <div class="invoice-info">
-            <h2>INVOICE</h2>
-            <p><strong>Invoice Number:</strong> ${invoiceData.invoice_number}</p>
-            <p><strong>Invoice Date:</strong> ${invoiceData.invoice_date}</p>
-            <p><strong>Due Date:</strong> ${invoiceData.due_date}</p>
-        </div>
-        <div class="client-info">
-            <h3>BILL TO</h3>
-            <p><strong>${invoiceData.client_name}</strong></p>
-            <p>${invoiceData.client_email}</p>
-            ${invoiceData.client_address ? `<p>${invoiceData.client_address.replace(/\n/g, '<br>')}</p>` : ''}
-        </div>
-    </div>
-    
-    <div class="project-section">
-        <h3 style="color: #1e3a8a; margin-bottom: 15px; font-size: 18px;">PROJECT DETAILS</h3>
-        <p><strong>Project Name:</strong> ${invoiceData.project_name}</p>
-        <p><strong>Project Type:</strong> ${invoiceData.project_type}</p>
-        ${invoiceData.project_description ? `<p><strong>Description:</strong> ${invoiceData.project_description}</p>` : ''}
-    </div>
-    
-    <table class="invoice-table">
-        <thead>
-            <tr>
-                <th>Description</th>
-                <th style="text-align: right;">Amount</th>
-                <th style="text-align: right;">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>${invoiceData.project_type} Development</td>
-                <td style="text-align: right;">${invoiceData.currency} ${invoiceData.total_amount.toFixed(2)}</td>
-                <td style="text-align: right;">${invoiceData.currency} ${invoiceData.total_amount.toFixed(2)}</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <div class="totals">
-        <div class="total-line"><strong>Subtotal: ${invoiceData.currency} ${invoiceData.total_amount.toFixed(2)}</strong></div>
-        ${invoiceData.tax_rate > 0 ? `<div class="total-line"><strong>Tax (${invoiceData.tax_rate}%): ${invoiceData.currency} ${taxAmount.toFixed(2)}</strong></div>` : ''}
-        <div class="grand-total">Total: ${invoiceData.currency} ${totalWithTax.toFixed(2)}</div>
-        <div class="total-line" style="color: #059669;"><strong>Amount Paid: ${invoiceData.currency} ${invoiceData.amount_paid.toFixed(2)}</strong></div>
-        <div class="amount-due">Amount Due: ${invoiceData.currency} ${invoiceData.amount_due.toFixed(2)}</div>
-    </div>
-    
-    ${invoiceData.notes ? `
-    <div class="notes">
-        <h4 style="color: #1e3a8a; margin-bottom: 15px;">Additional Notes</h4>
-        <p>${invoiceData.notes.replace(/\n/g, '<br>')}</p>
-    </div>
-    ` : ''}
-    
-    <div class="footer">
-        <p><strong>Thank you for choosing App Craft Services!</strong></p>
-        <p>Payment terms: Net 30 days. Late payments may incur additional charges.</p>
-        <p>For questions about this invoice, please contact us at williamsaonen@gmail.com</p>
-    </div>
-    
-    <scr` + `ipt>
-        window.onload = function() {
-            window.print();
-            window.onafterprint = function() {
-                window.close();
-            }
-        }
-    </scr` + `ipt>
-</body>
-</html>`;
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(pdfContent);
-            printWindow.document.close();
-            
-            showNotification('Professional invoice PDF generated and ready for printing/saving!', 'success');
-        }
-        
-        function resetInvoiceForm() {
-            const form = document.getElementById('invoice-form');
-            if (form) {
-                form.reset();
-                generateNewInvoiceNumber();
-                
-                // Set default dates
-                const invoiceDateField = document.getElementById('invoice-date');
-                const dueDateField = document.getElementById('due-date');
-                
-                if (invoiceDateField) {
-                    invoiceDateField.value = new Date().toISOString().split('T')[0];
-                }
-                
-                if (dueDateField) {
-                    const dueDate = new Date();
-                    dueDate.setDate(dueDate.getDate() + 30);
-                    dueDateField.value = dueDate.toISOString().split('T')[0];
-                }
-                
-                // Reset amount due
-                const amountDueField = document.getElementById('amount-due');
-                if (amountDueField) {
-                    amountDueField.value = '0.00';
-                }
-                
-                // Clear preview
-                updateInvoicePreview();
-            }
-        }
-        
-        async function loadInvoices() {
-            try {
-                const response = await fetch('api/get_invoices.php');
-                const invoices = await response.json();
-                
-                // Update invoice statistics
-                const totalInvoices = invoices.length;
-                const paidInvoices = invoices.filter(inv => inv.status === 'paid').length;
-                const pendingInvoices = invoices.filter(inv => inv.status === 'sent' || inv.status === 'draft').length;
-                const overdueInvoices = invoices.filter(inv => inv.status === 'overdue').length;
-                
-                document.getElementById('total-invoices').textContent = totalInvoices;
-                document.getElementById('paid-invoices').textContent = paidInvoices;
-                document.getElementById('pending-invoices').textContent = pendingInvoices;
-                document.getElementById('overdue-invoices').textContent = overdueInvoices;
-                
-                // Display invoices list
-                displayInvoicesList(invoices);
-                
-            } catch (error) {
-                console.error('Error loading invoices:', error);
-                showNotification('Error loading invoices', 'error');
-            }
-        }
-        
-        function displayInvoicesList(invoices) {
-            const invoicesList = document.getElementById('invoices-list');
-            
-            if (invoices.length === 0) {
-                invoicesList.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-file-invoice text-4xl mb-4"></i>
-                        <p>No invoices created yet</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = `
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="border-b bg-gray-50">
-                                <th class="text-left p-3 font-semibold">Invoice #</th>
-                                <th class="text-left p-3 font-semibold">Client</th>
-                                <th class="text-left p-3 font-semibold">Project</th>
-                                <th class="text-left p-3 font-semibold">Amount</th>
-                                <th class="text-left p-3 font-semibold">Due</th>
-                                <th class="text-left p-3 font-semibold">Status</th>
-                                <th class="text-left p-3 font-semibold">Date</th>
-                                <th class="text-left p-3 font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            invoices.forEach(invoice => {
-                const statusColors = {
-                    'draft': 'bg-gray-100 text-gray-800',
-                    'sent': 'bg-blue-100 text-blue-800',
-                    'paid': 'bg-green-100 text-green-800',
-                    'overdue': 'bg-red-100 text-red-800'
-                };
-                
-                const statusColor = statusColors[invoice.status] || 'bg-gray-100 text-gray-800';
-                
-                html += `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 font-medium">${invoice.invoice_number}</td>
-                        <td class="p-3">${escapeHtml(invoice.client_name)}</td>
-                        <td class="p-3">${escapeHtml(invoice.project_name)}</td>
-                        <td class="p-3 font-semibold">${invoice.currency} ${parseFloat(invoice.total_amount).toFixed(2)}</td>
-                        <td class="p-3 font-semibold ${invoice.amount_due > 0 ? 'text-red-600' : 'text-green-600'}">
-                            ${invoice.currency} ${parseFloat(invoice.amount_due).toFixed(2)}
-                        </td>
-                        <td class="p-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium ${statusColor}">
-                                ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                            </span>
-                        </td>
-                        <td class="p-3 text-sm text-gray-600">${formatDate(invoice.invoice_date)}</td>
-                        <td class="p-3">
-                            <div class="flex space-x-1">
-                                <button onclick="viewInvoice('${invoice.id}')" class="text-blue-600 hover:text-blue-800 p-1" title="View">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button onclick="editInvoice('${invoice.id}')" class="text-green-600 hover:text-green-800 p-1" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="duplicateInvoice('${invoice.id}')" class="text-purple-600 hover:text-purple-800 p-1" title="Duplicate">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button onclick="deleteInvoice('${invoice.id}')" class="text-red-600 hover:text-red-800 p-1" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            invoicesList.innerHTML = html;
-        }
-        
-        function refreshInvoices() {
-            loadInvoices();
-            showNotification('Invoices refreshed', 'success');
-        }
-        
-        function viewInvoice(invoiceId) {
-            showNotification('View invoice functionality coming soon!', 'info');
-        }
-        
-        function editInvoice(invoiceId) {
-            showNotification('Edit invoice functionality coming soon!', 'info');
-        }
-        
-        function duplicateInvoice(invoiceId) {
-            showNotification('Duplicate invoice functionality coming soon!', 'info');
-        }
-        
-        function deleteInvoice(invoiceId) {
-            if (confirm('Are you sure you want to delete this invoice?')) {
-                showNotification('Delete invoice functionality coming soon!', 'info');
-            }
-        }
-        
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString();
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text || '';
-            return div.innerHTML;
-        }
+        // Simple initialization script
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Initializing invoice functionality');
+            console.log('Admin dashboard loaded');
             
-            // Load next invoice number
-            loadNextInvoiceNumber();
+            // Set default dates for invoice form
+            const today = new Date().toISOString().split('T')[0];
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            const dueDateStr = dueDate.toISOString().split('T')[0];
             
-            // Load existing invoices
-            loadInvoices();
-            
-            // Set up form submission handler
-            const invoiceForm = document.getElementById('invoice-form');
-            if (invoiceForm) {
-                invoiceForm.addEventListener('submit', saveInvoice);
-                console.log('Added form submission handler');
-            }
-            
-            // Set up event listeners for invoice form with multiple event types
-            const totalAmountField = document.getElementById('total-amount');
-            const amountPaidField = document.getElementById('amount-paid');
-            const taxRateField = document.getElementById('tax-rate');
-            
-            if (totalAmountField) {
-                totalAmountField.addEventListener('input', calculateAmountDue);
-                totalAmountField.addEventListener('keyup', calculateAmountDue);
-                totalAmountField.addEventListener('change', calculateAmountDue);
-                totalAmountField.addEventListener('blur', calculateAmountDue);
-                console.log('Added event listeners to total amount field');
-            }
-            
-            if (amountPaidField) {
-                amountPaidField.addEventListener('input', calculateAmountDue);
-                amountPaidField.addEventListener('keyup', calculateAmountDue);
-                amountPaidField.addEventListener('change', calculateAmountDue);
-                amountPaidField.addEventListener('blur', calculateAmountDue);
-                console.log('Added event listeners to amount paid field');
-            }
-            
-            if (taxRateField) {
-                taxRateField.addEventListener('input', calculateAmountDue);
-                taxRateField.addEventListener('keyup', calculateAmountDue);
-                taxRateField.addEventListener('change', calculateAmountDue);
-                taxRateField.addEventListener('blur', calculateAmountDue);
-                console.log('Added event listeners to tax rate field');
-            }
-            
-            // Add event listeners to other fields for preview updates
-            const clientNameField = document.getElementById('client-name');
-            const projectNameField = document.getElementById('project-name');
-            const projectTypeField = document.getElementById('project-type');
-            
-            if (clientNameField) {
-                clientNameField.addEventListener('input', updateInvoicePreview);
-                clientNameField.addEventListener('blur', updateInvoicePreview);
-            }
-            
-            if (projectNameField) {
-                projectNameField.addEventListener('input', updateInvoicePreview);
-                projectNameField.addEventListener('blur', updateInvoicePreview);
-            }
-            
-            if (projectTypeField) {
-                projectTypeField.addEventListener('change', updateInvoicePreview);
-            }
-            
-            // Set default dates
             const invoiceDateField = document.getElementById('invoice-date');
             const dueDateField = document.getElementById('due-date');
             
-            if (invoiceDateField) {
-                invoiceDateField.value = new Date().toISOString().split('T')[0];
+            if (invoiceDateField && !invoiceDateField.value) {
+                invoiceDateField.value = today;
             }
             
-            if (dueDateField) {
-                const dueDate = new Date();
-                dueDate.setDate(dueDate.getDate() + 30);
-                dueDateField.value = dueDate.toISOString().split('T')[0];
+            if (dueDateField && !dueDateField.value) {
+                dueDateField.value = dueDateStr;
             }
-            
-            // Initialize amount due field
-            const amountDueField = document.getElementById('amount-due');
-            if (amountDueField) {
-                amountDueField.value = '0.00';
-            }
-            
-            console.log('Invoice functionality initialized successfully');
         });
     </script>
 
