@@ -1,15 +1,66 @@
 [
     {
-        "id": "msg_6958d2dd577888.74806666",
-        "name": "Michael Bay",
-        "email": "mike@bay.com",
+        "id": "msg_696ba76885b5c3.94887006",
+        "name": "Smith Row",
+        "email": "smith@row.com",
+        "phone": "",
         "company": "",
         "project_type": "essential-app",
-        "timeline": "1-month",
-        "budget": "",
-        "message": "We are looking for a software developer to join our company, OctoHorizon, for a full-time contract position. The work can be performed remotely, and there is no requirement to be on-site. You should be able to handle medium-sized projects and possess skills relevant to software development. We are keen to review applicants who are interested in collaborating with our team to deliver quality software solutions.",
-        "created_at": "2026-01-03 08:27:09",
+        "funding_stage": "",
+        "investor_deadline": "",
+        "timeline": "asap",
+        "budget": "800-2k",
+        "message": "This is the project description",
+        "created_at": "2026-01-17 15:14:48",
         "read": false,
-        "ip_address": "::1"
+        "ip_address": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36",
+        "lead_score": {
+            "total_score": 38,
+            "max_score": 100,
+            "percentage": 38,
+            "qualification_level": "Needs Qualification",
+            "factors": [
+                {
+                    "name": "Funding Stage",
+                    "value": "",
+                    "points": 0,
+                    "max": 25
+                },
+                {
+                    "name": "Timeline Urgency",
+                    "value": "Asap",
+                    "points": 20,
+                    "max": 20
+                },
+                {
+                    "name": "Budget Qualification",
+                    "value": "800 2k",
+                    "points": 15,
+                    "max": 20
+                },
+                {
+                    "name": "Project Clarity",
+                    "value": "0 words provided",
+                    "points": 0,
+                    "max": 15
+                },
+                {
+                    "name": "Contact Quality",
+                    "value": "\u2713",
+                    "points": 3,
+                    "max": 10
+                },
+                {
+                    "name": "Investor Readiness",
+                    "value": "Low",
+                    "points": 0,
+                    "max": 10
+                }
+            ],
+            "recommendation": "Requires qualification call. Determine specific needs and timeline."
+        },
+        "status": "read",
+        "read_at": "2026-01-17 15:16:14"
     }
 ]

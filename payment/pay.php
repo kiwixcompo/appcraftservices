@@ -60,11 +60,19 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17861189621"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17861189621');
+    </script>
     <title>Payment - App Craft Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=AYiPC9BjkCyDFQXbSdqzXDtezVDxy2Z1OHq6EpHC9AQqF3UMPHWhfjwpRn8HVBp5dJwWh8l6TXb7M6LE&currency=USD"></script>
+    <link rel="stylesheet" href="../assets/mobile-responsive.css">
 </head>
 <body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
@@ -110,55 +118,18 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
 
             <!-- Payment Methods -->
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-xl font-semibold mb-6">Choose Payment Method</h2>
+                <h2 class="text-xl font-semibold mb-6">Payment Method</h2>
                 
-                <!-- Payment Method Tabs -->
-                <div class="flex border-b mb-6">
-                    <button onclick="showPaymentMethod('stripe')" id="stripe-tab" class="px-6 py-3 border-b-2 border-blue-600 text-blue-600 font-medium">
-                        <i class="fab fa-stripe mr-2"></i>Credit Card
-                    </button>
-                    <button onclick="showPaymentMethod('paypal')" id="paypal-tab" class="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
-                        <i class="fab fa-paypal mr-2"></i>PayPal
-                    </button>
-                    <button onclick="showPaymentMethod('bank')" id="bank-tab" class="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
-                        <i class="fas fa-university mr-2"></i>Bank Transfer
-                    </button>
-                </div>
-
-                <!-- Stripe Payment Form -->
-                <div id="stripe-payment" class="payment-method">
+                <!-- PayPal Payment Only -->
+                <div id="paypal-payment" class="payment-method">
                     <div class="mb-4">
-                        <p class="text-gray-600 mb-4">Pay securely with your credit or debit card using Stripe</p>
+                        <p class="text-gray-600 mb-4">Pay securely with your PayPal account</p>
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                             <div class="flex items-center">
-                                <i class="fab fa-stripe text-blue-600 text-2xl mr-3"></i>
+                                <i class="fab fa-paypal text-blue-600 text-3xl mr-3"></i>
                                 <div>
-                                    <h4 class="font-medium text-blue-900">Stripe Payment</h4>
-                                    <p class="text-blue-700 text-sm">Amount: <?php echo htmlspecialchars($amount); ?></p>
-                                    <p class="text-blue-700 text-sm">Processed via Stripe secure payment system</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="stripe-card-element" class="p-3 border border-gray-300 rounded-md">
-                            <!-- Stripe Elements will create form elements here -->
-                        </div>
-                        <div id="stripe-card-errors" class="text-red-600 text-sm mt-2"></div>
-                    </div>
-                    <button id="stripe-submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 font-medium">
-                        <i class="fas fa-lock mr-2"></i>Pay <?php echo htmlspecialchars($amount); ?> Securely
-                    </button>
-                </div>
-
-                <!-- PayPal Payment -->
-                <div id="paypal-payment" class="payment-method hidden">
-                    <div class="mb-4">
-                        <p class="text-gray-600 mb-4">Pay with your PayPal account</p>
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                            <div class="flex items-center">
-                                <i class="fab fa-paypal text-blue-600 text-2xl mr-3"></i>
-                                <div>
-                                    <h4 class="font-medium text-blue-900">PayPal Payment</h4>
-                                    <p class="text-blue-700 text-sm">Amount: <?php echo htmlspecialchars($amount); ?></p>
+                                    <h4 class="font-medium text-blue-900 text-lg">PayPal Payment</h4>
+                                    <p class="text-blue-700 text-sm mt-1">Amount: <?php echo htmlspecialchars($amount); ?></p>
                                     <p class="text-blue-700 text-sm">Recipient: talk2char@gmail.com</p>
                                 </div>
                             </div>
@@ -168,32 +139,37 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                         <div class="mb-4">
                             <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=talk2char@gmail.com&amount=<?php echo $numericAmount; ?>&currency_code=USD&item_name=<?php echo urlencode($description); ?>" 
                                target="_blank" 
-                               class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center">
-                                <i class="fab fa-paypal mr-2 text-xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
+                               class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center text-lg transition-colors">
+                                <i class="fab fa-paypal mr-2 text-2xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
                             </a>
                             <p class="text-xs text-gray-500 mt-2 text-center">
                                 Click above to pay securely through PayPal
                             </p>
                         </div>
                         
-                        <!-- Alternative: PayPal SDK Button -->
-                        <div class="border-t pt-4">
-                            <p class="text-sm text-gray-600 mb-3">Or use PayPal checkout:</p>
-                            <div id="paypal-button-container"></div>
-                        </div>
-                        
                         <div class="mt-4 text-center">
                             <p class="text-sm text-gray-600">
                                 <i class="fas fa-info-circle mr-1"></i>
-                                You'll be redirected to PayPal to complete your payment
+                                You'll be redirected to PayPal to complete your payment securely
                             </p>
+                        </div>
+                        
+                        <!-- Alternative Payment Methods -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <p class="text-sm font-medium text-gray-700 mb-3">Other Payment Options:</p>
+                            <button onclick="showBankTransfer()" class="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 font-medium flex items-center justify-center">
+                                <i class="fas fa-university mr-2"></i>Bank Transfer (ACH)
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bank Transfer -->
+                <!-- Bank Transfer (Hidden by default) -->
                 <div id="bank-payment" class="payment-method hidden">
                     <div class="mb-4">
+                        <button onclick="showPayPal()" class="mb-4 text-blue-600 hover:text-blue-700 flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to PayPal
+                        </button>
                         <p class="text-gray-600 mb-4">Transfer funds directly to our bank account</p>
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                             <h3 class="font-semibold text-gray-900 mb-3">Bank Transfer Details</h3>
@@ -253,107 +229,14 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
 
     <script>
         // Payment method switching
-        function showPaymentMethod(method) {
-            // Hide all payment methods
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.add('hidden'));
-            
-            // Remove active state from all tabs
-            document.querySelectorAll('[id$="-tab"]').forEach(tab => {
-                tab.classList.remove('border-blue-600', 'text-blue-600');
-                tab.classList.add('border-transparent', 'text-gray-500');
-            });
-            
-            // Show selected payment method
-            document.getElementById(method + '-payment').classList.remove('hidden');
-            
-            // Activate selected tab
-            const activeTab = document.getElementById(method + '-tab');
-            activeTab.classList.remove('border-transparent', 'text-gray-500');
-            activeTab.classList.add('border-blue-600', 'text-blue-600');
-            
-            // Initialize PayPal when PayPal tab is selected
-            if (method === 'paypal') {
-                initializePayPal();
-            }
+        function showPayPal() {
+            document.getElementById('paypal-payment').classList.remove('hidden');
+            document.getElementById('bank-payment').classList.add('hidden');
         }
-
-        // Stripe Integration
-        const stripe = Stripe('pk_test_51234567890abcdef'); // Replace with your actual key
-        const elements = stripe.elements();
-        const cardElement = elements.create('card');
-        cardElement.mount('#stripe-card-element');
-
-        cardElement.on('change', ({error}) => {
-            const displayError = document.getElementById('stripe-card-errors');
-            if (error) {
-                displayError.textContent = error.message;
-            } else {
-                displayError.textContent = '';
-            }
-        });
-
-        document.getElementById('stripe-submit').addEventListener('click', async (event) => {
-            event.preventDefault();
-            
-            const {token, error} = await stripe.createToken(cardElement);
-            
-            if (error) {
-                document.getElementById('stripe-card-errors').textContent = error.message;
-            } else {
-                // Submit token to your server
-                processStripePayment(token);
-            }
-        });
-
-        function processStripePayment(token) {
-            // Here you would send the token to your server to process the payment
-            alert('Stripe payment processing... (Demo mode)');
-            window.location.href = 'success.html?method=stripe&amount=<?php echo urlencode($amount); ?>';
-        }
-
-        // PayPal Integration
-        let paypalInitialized = false;
         
-        function initializePayPal() {
-            if (paypalInitialized) return;
-            
-            paypal.Buttons({
-                createOrder: function(data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: '<?php echo $numericAmount; ?>'
-                            },
-                            payee: {
-                                email_address: 'talk2char@gmail.com'
-                            },
-                            description: '<?php echo htmlspecialchars($description); ?>',
-                            custom_id: 'payment_<?php echo time(); ?>_<?php echo substr(md5($email), 0, 8); ?>'
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        alert('Payment completed successfully!');
-                        window.location.href = 'success.html?method=paypal&amount=<?php echo urlencode($amount); ?>&transaction=' + details.id;
-                    });
-                },
-                onError: function(err) {
-                    console.error('PayPal error:', err);
-                    alert('PayPal payment failed. Please try again or contact support.');
-                },
-                onCancel: function(data) {
-                    alert('Payment was cancelled. You can try again or choose a different payment method.');
-                },
-                style: {
-                    layout: 'vertical',
-                    color: 'blue',
-                    shape: 'rect',
-                    label: 'paypal'
-                }
-            }).render('#paypal-button-container');
-            
-            paypalInitialized = true;
+        function showBankTransfer() {
+            document.getElementById('paypal-payment').classList.add('hidden');
+            document.getElementById('bank-payment').classList.remove('hidden');
         }
 
         // Bank Transfer Confirmation
@@ -376,8 +259,8 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
             }
         }
 
-        // Initialize with Stripe as default
-        showPaymentMethod('stripe');
+        // Initialize with PayPal as default
+        showPayPal();
     </script>
 </body>
 </html>

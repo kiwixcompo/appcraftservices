@@ -1,4 +1,14 @@
 <?php
+/**
+ * Enhanced Payment Email Sender with SMTP Support
+ * This version uses SMTP for better deliverability
+ * 
+ * To use this file:
+ * 1. Install PHPMailer: composer require phpmailer/phpmailer
+ * 2. Configure SMTP settings in data/settings.json
+ * 3. Rename this file to send_payment_email.php (backup the old one first)
+ */
+
 session_start();
 
 // Check if user is logged in
@@ -9,6 +19,22 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 }
 
 header('Content-Type: application/json');
+
+// Check if PHPMailer is installed
+if (!file_exists('../../vendor/autoload.php')) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'PHPMailer not installed. Run: composer require phpmailer/phpmailer'
+    ]);
+    exit;
+}
+
+require '../../vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 try {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -41,10 +67,44 @@ try {
     
     $stageDisplay = isset($stageText[$stage]) ? $stageText[$stage] : $stage;
     
-    // Create email subject - more personal and less spammy
-    $subject = "Your payment details for " . $description;
+    // Load SMTP settings
+    $settingsFile = '../../data/settings.json';
+    $smtpSettings = [];
+    if (file_exists($settingsFile)) {
+        $settings = json_decode(file_get_contents($settingsFile), true);
+        if (isset($settings['email'])) {
+            $smtpSettings = $settings['email'];
+        }
+    }
     
-    // Create HTML email body with improved anti-spam techniques
+    // Create PHPMailer instance
+    $mail = new PHPMailer(true);
+    
+    // Server settings
+    if (!empty($smtpSettings['smtp_host'])) {
+        $mail->isSMTP();
+        $mail->Host = $smtpSettings['smtp_host'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $smtpSettings['smtp_username'] ?? '';
+        $mail->Password = $smtpSettings['smtp_password'] ?? '';
+        $mail->SMTPSecure = ($smtpSettings['smtp_encryption'] ?? true) ? PHPMailer::ENCRYPTION_STARTTLS : '';
+        $mail->Port = $smtpSettings['smtp_port'] ?? 587;
+    } else {
+        // Fallback to PHP mail()
+        $mail->isMail();
+    }
+    
+    // Recipients
+    $mail->setFrom('hello@appcraftservices.com', 'App Craft Services');
+    $mail->addAddress($clientEmail);
+    $mail->addReplyTo('hello@appcraftservices.com', 'App Craft Services');
+    
+    // Content
+    $mail->isHTML(true);
+    $mail->CharSet = 'UTF-8';
+    $mail->Subject = "Your payment details for " . $description;
+    
+    // HTML body
     $htmlBody = "<!DOCTYPE html>
 <html>
 <head>
@@ -59,7 +119,6 @@ try {
         .content { padding: 40px 30px; }
         .payment-box { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 25px; margin: 25px 0; }
         .payment-button { display: block; width: 100%; max-width: 300px; margin: 30px auto; padding: 18px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; }
-        .payment-button:hover { background: #218838; }
         .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         .details-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
         .details-table td:first-child { font-weight: bold; color: #495057; width: 40%; }
@@ -145,7 +204,9 @@ try {
 </body>
 </html>";
 
-    // Plain text version for better deliverability
+    $mail->Body = $htmlBody;
+    
+    // Plain text version
     $textBody = "Hello!
 
 Thank you for choosing App Craft Services.
@@ -166,8 +227,8 @@ SECURE PAYMENT LINK:
 {$paymentLink}
 
 PAYMENT OPTIONS AVAILABLE:
-- PayPal - Pay with your PayPal account  
-- Direct Bank Transfer - ACH transfer available
+- PayPal
+- Bank Transfer
 
 This link is secure and encrypted for your protection.
 
@@ -177,73 +238,57 @@ Best regards,
 App Craft Services Team
 https://appcraftservices.com";
 
-    // Enhanced email headers for maximum deliverability
-    $headers = array();
-    $headers[] = "From: App Craft Services <hello@appcraftservices.com>";
-    $headers[] = "Reply-To: App Craft Services <hello@appcraftservices.com>";
-    $headers[] = "Return-Path: hello@appcraftservices.com";
-    $headers[] = "Organization: App Craft Services";
-    $headers[] = "X-Sender: hello@appcraftservices.com";
-    $headers[] = "X-Mailer: App Craft Services Payment System v2.0";
-    $headers[] = "X-Priority: 3";
-    $headers[] = "X-MSMail-Priority: Normal";
-    $headers[] = "Importance: Normal";
-    $headers[] = "MIME-Version: 1.0";
-    $headers[] = "Content-Type: multipart/alternative; boundary=\"boundary456\"";
-    $headers[] = "Message-ID: <" . time() . "." . md5($clientEmail . $paymentLink) . "@appcraftservices.com>";
-    $headers[] = "Date: " . date('r');
+    $mail->AltBody = $textBody;
     
-    // Anti-spam headers
-    $headers[] = "X-Spam-Status: No";
-    $headers[] = "X-Authenticated-Sender: hello@appcraftservices.com";
-    $headers[] = "List-Unsubscribe: <mailto:hello@appcraftservices.com?subject=Unsubscribe>";
+    // Additional headers for better deliverability
+    $mail->addCustomHeader('X-Mailer', 'App Craft Services Payment System v3.0');
+    $mail->addCustomHeader('X-Priority', '3');
+    $mail->addCustomHeader('List-Unsubscribe', '<mailto:hello@appcraftservices.com?subject=Unsubscribe>');
     
-    // Create multipart email body
-    $emailBody = "--boundary456\r\n";
-    $emailBody .= "Content-Type: text/plain; charset=UTF-8\r\n";
-    $emailBody .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-    $emailBody .= $textBody . "\r\n\r\n";
-    $emailBody .= "--boundary456\r\n";
-    $emailBody .= "Content-Type: text/html; charset=UTF-8\r\n";
-    $emailBody .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-    $emailBody .= $htmlBody . "\r\n\r\n";
-    $emailBody .= "--boundary456--";
+    // Send email
+    $mail->send();
     
-    // Send email with improved headers
-    $headerString = implode("\r\n", $headers);
+    // Log the email sending
+    $logEntry = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'client_email' => $clientEmail,
+        'amount' => $amount,
+        'stage' => $stageDisplay,
+        'description' => $description,
+        'payment_link' => $paymentLink,
+        'delivery_method' => !empty($smtpSettings['smtp_host']) ? 'SMTP' : 'PHP mail()',
+        'status' => 'sent'
+    ];
     
-    if (mail($clientEmail, $subject, $emailBody, $headerString)) {
-        // Log the email sending for admin records
-        $logEntry = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'client_email' => $clientEmail,
-            'amount' => $amount,
-            'stage' => $stageDisplay,
-            'description' => $description,
-            'payment_link' => $paymentLink,
-            'delivery_attempt' => 'primary'
-        ];
-        
-        // Save to log file
-        $logFile = '../../logs/payment_emails.log';
-        if (!file_exists(dirname($logFile))) {
-            mkdir(dirname($logFile), 0755, true);
-        }
-        file_put_contents($logFile, json_encode($logEntry) . "\n", FILE_APPEND | LOCK_EX);
-        
-        echo json_encode([
-            'success' => true, 
-            'message' => 'Payment email sent successfully to ' . $clientEmail
-        ]);
-    } else {
-        throw new Exception('Failed to send email');
+    $logFile = '../../logs/payment_emails.log';
+    if (!file_exists(dirname($logFile))) {
+        mkdir(dirname($logFile), 0755, true);
     }
+    file_put_contents($logFile, json_encode($logEntry) . "\n", FILE_APPEND | LOCK_EX);
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Payment email sent successfully to ' . $clientEmail
+    ]);
     
 } catch (Exception $e) {
+    // Log error
+    $errorLog = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'error' => $e->getMessage(),
+        'client_email' => $clientEmail ?? 'unknown'
+    ];
+    
+    $logFile = '../../logs/payment_email_errors.log';
+    if (!file_exists(dirname($logFile))) {
+        mkdir(dirname($logFile), 0755, true);
+    }
+    file_put_contents($logFile, json_encode($errorLog) . "\n", FILE_APPEND | LOCK_EX);
+    
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'Failed to send email: ' . $e->getMessage()
     ]);
 }
 ?>

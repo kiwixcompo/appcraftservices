@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17861189621"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17861189621');
+    </script>
+    
     <title>Payment Successful - App Craft Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -109,6 +119,41 @@
 
         // Update next steps based on payment method
         updateNextSteps(method);
+        
+        // Track payment conversion with Google Analytics
+        if (typeof gtag !== 'undefined' && amount) {
+            // Extract numeric value from amount
+            const numericAmount = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0;
+            
+            // Track purchase conversion
+            gtag('event', 'purchase', {
+                'transaction_id': transaction || 'payment_' + Date.now(),
+                'value': numericAmount,
+                'currency': 'USD',
+                'items': [{
+                    'item_id': 'service_payment',
+                    'item_name': 'App Craft Services Payment',
+                    'category': 'Services',
+                    'quantity': 1,
+                    'price': numericAmount
+                }]
+            });
+            
+            // Track conversion for Google Ads
+            gtag('event', 'conversion', {
+                'send_to': 'AW-17861189621/payment_success',
+                'value': numericAmount,
+                'currency': 'USD',
+                'transaction_id': transaction || 'payment_' + Date.now()
+            });
+            
+            // Track payment method
+            gtag('event', 'payment_method_used', {
+                'event_category': 'ecommerce',
+                'event_label': method || 'unknown',
+                'value': numericAmount
+            });
+        }
 
         function getPaymentMethodName(method) {
             switch (method) {

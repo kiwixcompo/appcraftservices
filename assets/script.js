@@ -63,6 +63,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 const result = await response.json();
                 
                 if (result.success) {
+                    // Track conversion with Google Analytics
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'conversion', {
+                            'send_to': 'AW-17861189621/contact_form_submission',
+                            'value': 1.0,
+                            'currency': 'USD'
+                        });
+                        
+                        // Track as a custom event
+                        gtag('event', 'contact_form_submit', {
+                            'event_category': 'engagement',
+                            'event_label': data.project_type || 'general_inquiry',
+                            'value': 1
+                        });
+                    }
+                    
                     // Show success message
                     contactForm.style.display = 'none';
                     if (successMessage) {
