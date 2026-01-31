@@ -130,14 +130,14 @@ $numericAmount = preg_replace('/[^0-9.]/', '', $amount);
                                 <div>
                                     <h4 class="font-medium text-blue-900 text-lg">PayPal Payment</h4>
                                     <p class="text-blue-700 text-sm mt-1">Amount: <?php echo htmlspecialchars($amount); ?></p>
-                                    <p class="text-blue-700 text-sm">Recipient: talk2char@gmail.com</p>
+                                    <p class="text-blue-700 text-sm">Recipient: williams.o@tsuniversity.edu.ng</p>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Direct PayPal Payment Button -->
                         <div class="mb-4">
-                            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=talk2char@gmail.com&amount=<?php echo $numericAmount; ?>&currency_code=USD&item_name=<?php echo urlencode($description); ?>" 
+                            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=williams.o@tsuniversity.edu.ng&amount=<?php echo $numericAmount; ?>&currency_code=USD&item_name=<?php echo urlencode($description); ?>" 
                                target="_blank" 
                                class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center text-lg transition-colors">
                                 <i class="fab fa-paypal mr-2 text-2xl"></i>Pay <?php echo htmlspecialchars($amount); ?> via PayPal
