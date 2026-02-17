@@ -55,7 +55,7 @@ try {
         'id' => $input['id'],
         'name' => $input['name'],
         'description' => $input['description'],
-        'image' => $input['image'] ?? 'assets/projects/default.png',
+        'image' => $input['image'] ?? 'assets/projects/default.webp',
         'category' => $input['category'],
         'technologies' => is_array($input['technologies']) ? $input['technologies'] : explode(',', $input['technologies']),
         'completion_date' => $input['completion_date'],

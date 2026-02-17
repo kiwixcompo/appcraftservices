@@ -570,7 +570,7 @@ const projectData = {
             'Integration with fitness trackers'
         ],
         technologies: ['React', 'Node.js', 'MongoDB', 'Express', 'Chart.js'],
-        logo: 'assets/projects/MealMate.png',
+        logo: 'assets/projects/MealMate.webp',
         category: 'Health & Fitness'
     },
     'notifyme': {
@@ -585,7 +585,7 @@ const projectData = {
             'API integration capabilities'
         ],
         technologies: ['Vue.js', 'Express', 'Redis', 'Socket.io', 'PostgreSQL'],
-        logo: 'assets/projects/Notify Me.png',
+        logo: 'assets/projects/Notify-Me.webp',
         category: 'Communication'
     },
     'automated-restaurant': {
@@ -600,7 +600,7 @@ const projectData = {
             'Multi-location support'
         ],
         technologies: ['Angular', 'Python', 'PostgreSQL', 'Django', 'Redis'],
-        logo: 'assets/projects/Automated Restaurant.png',
+        logo: 'assets/projects/Automated-Restaurant.webp',
         category: 'Restaurant & Food'
     },
     'quickbudgetai': {
@@ -615,7 +615,7 @@ const projectData = {
             'Predictive spending insights'
         ],
         technologies: ['React', 'Python', 'TensorFlow', 'FastAPI', 'PostgreSQL'],
-        logo: 'assets/projects/QuickBudgetAI.png',
+        logo: 'assets/projects/QuickBudgetAI.webp',
         category: 'Finance & AI'
     },
     'clearpath': {
@@ -630,7 +630,7 @@ const projectData = {
             'Performance analytics and reporting'
         ],
         technologies: ['Laravel', 'MySQL', 'Vue.js', 'Bootstrap', 'Stripe API'],
-        logo: 'assets/projects/ClearPath Client Services.png',
+        logo: 'assets/projects/ClearPath-Client-Services.webp',
         category: 'Business Management'
     },
     'willpdf': {
@@ -645,7 +645,7 @@ const projectData = {
             'Secure client portal access'
         ],
         technologies: ['PHP', 'JavaScript', 'PDF.js', 'MySQL', 'Bootstrap'],
-        logo: 'assets/projects/WillPDF.png',
+        logo: 'assets/projects/WillPDF.webp',
         category: 'Legal Tech'
     },
     'tsu-staff': {
@@ -660,7 +660,7 @@ const projectData = {
             'Document management and storage'
         ],
         technologies: ['Django', 'PostgreSQL', 'Bootstrap', 'Python', 'Redis'],
-        logo: 'assets/projects/TSU Staff Profile.png',
+        logo: 'assets/projects/TSU-Staff-Profile.webp',
         category: 'Education'
     },
     'federal-leave': {
@@ -675,7 +675,7 @@ const projectData = {
             'Mobile-friendly employee portal'
         ],
         technologies: ['ASP.NET', 'SQL Server', 'Angular', 'C#', 'Azure'],
-        logo: 'assets/projects/Federal California Leave Assistant.png',
+        logo: 'assets/projects/Federal-California-Leave-Assistant.webp',
         category: 'Government & HR'
     }
 };
