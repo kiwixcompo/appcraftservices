@@ -1026,6 +1026,400 @@ function loadProjects() {
 
 function loadBlogPosts() {
     console.log('Loading blog posts...');
+    
+    fetch('api/get_blog_posts.php')
+        .then(response => response.json())
+        .then(posts => {
+            // Update statistics
+            const totalPosts = posts.length;
+            const publishedPosts = posts.filter(p => p.published).length;
+            const draftPosts = posts.filter(p => !p.published).length;
+            const categories = [...new Set(posts.map(p => p.category))].length;
+            
+            document.getElementById('total-posts').textContent = totalPosts;
+            document.getElementById('published-posts').textContent = publishedPosts;
+            document.getElementById('draft-posts').textContent = draftPosts;
+            document.getElementById('blog-categories').textContent = categories;
+            
+            // Display posts list
+            const blogPostsList = document.getElementById('blog-posts-list');
+            if (!blogPostsList) return;
+            
+            if (posts.length === 0) {
+                blogPostsList.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-blog text-5xl mb-4"></i>
+                        <p class="text-lg mb-2">No blog posts yet</p>
+                        <p class="text-sm">Click "Add New Post" to create your first blog post</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="border-b bg-gray-50">
+                                <th class="text-left p-3 font-medium">Title</th>
+                                <th class="text-left p-3 font-medium">Category</th>
+                                <th class="text-left p-3 font-medium">Status</th>
+                                <th class="text-left p-3 font-medium">Published</th>
+                                <th class="text-left p-3 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            posts.forEach(post => {
+                const statusBadge = post.published 
+                    ? '<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Published</span>'
+                    : '<span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>';
+                
+                const publishedDate = post.published_at ? formatDate(post.published_at) : '-';
+                
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3">
+                            <div class="font-medium text-gray-900">${escapeHtml(post.title)}</div>
+                            <div class="text-sm text-gray-500">${escapeHtml(post.excerpt.substring(0, 80))}...</div>
+                        </td>
+                        <td class="p-3">${escapeHtml(post.category)}</td>
+                        <td class="p-3">${statusBadge}</td>
+                        <td class="p-3 text-sm text-gray-600">${publishedDate}</td>
+                        <td class="p-3">
+                            <div class="flex space-x-2">
+                                ${post.published ? `
+                                    <a href="/blog/${post.slug}" target="_blank" class="text-blue-600 hover:text-blue-800" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                ` : ''}
+                                <button onclick="editBlogPost('${post.id}')" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteBlogPost('${post.id}')" class="text-red-600 hover:text-red-800" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            blogPostsList.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading blog posts:', error);
+            document.getElementById('blog-posts-list').innerHTML = `
+                <div class="text-center py-8 text-red-500">
+                    <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                    <p>Error loading blog posts</p>
+                </div>
+            `;
+        });
+}
+
+function showAddBlogModal() {
+    const modal = document.createElement('div');
+    modal.id = 'blog-modal';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 class="text-xl font-semibold">Create New Blog Post</h3>
+                <button onclick="closeBlogModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="blog-post-form" class="p-6 space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                    <input type="text" id="blog-title" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter blog post title">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Slug (URL) *</label>
+                    <input type="text" id="blog-slug" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="url-friendly-slug">
+                    <p class="text-xs text-gray-500 mt-1">Will be auto-generated from title if left empty</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                        <input type="text" id="blog-category" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="e.g., Startup Development">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                        <input type="text" id="blog-author" value="Williams Alfred Onen"
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
+                    <textarea id="blog-excerpt" required rows="3"
+                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Brief summary of the post (150-200 characters)"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Content * (Markdown supported)</label>
+                    <textarea id="blog-content" required rows="15"
+                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                              placeholder="Write your blog post content here. You can use Markdown formatting:
+
+## Heading 2
+### Heading 3
+
+**Bold text**
+*Italic text*
+
+- Bullet point
+- Another point
+
+1. Numbered list
+2. Another item
+
+[Link text](https://example.com)
+
+\`code\`
+
+\`\`\`
+code block
+\`\`\`"></textarea>
+                    <div class="mt-2 text-xs text-gray-600 space-y-1">
+                        <p><strong>Markdown Quick Reference:</strong></p>
+                        <p>## Heading | **Bold** | *Italic* | [Link](url) | \`code\` | - List item</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags (comma-separated)</label>
+                    <input type="text" id="blog-tags"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="MVP, Startup, Web Development">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image URL</label>
+                    <input type="text" id="blog-image"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="assets/blog/image.jpg">
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="blog-published" class="mr-2 w-4 h-4">
+                        <span class="text-sm font-medium text-gray-700">Publish immediately</span>
+                    </label>
+                    
+                    <label class="flex items-center">
+                        <input type="checkbox" id="blog-featured" class="mr-2 w-4 h-4">
+                        <span class="text-sm font-medium text-gray-700">Featured post</span>
+                    </label>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeBlogModal()"
+                            class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-save mr-2"></i>Save Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Auto-generate slug from title
+    document.getElementById('blog-title').addEventListener('input', function(e) {
+        const slugInput = document.getElementById('blog-slug');
+        if (!slugInput.value || slugInput.dataset.autoGenerated) {
+            const slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            slugInput.value = slug;
+            slugInput.dataset.autoGenerated = 'true';
+        }
+    });
+    
+    // Handle form submission
+    document.getElementById('blog-post-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveBlogPost();
+    });
+}
+
+function closeBlogModal() {
+    const modal = document.getElementById('blog-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function saveBlogPost(postId = null) {
+    const title = document.getElementById('blog-title').value.trim();
+    const slug = document.getElementById('blog-slug').value.trim();
+    const category = document.getElementById('blog-category').value.trim();
+    const author = document.getElementById('blog-author').value.trim();
+    const excerpt = document.getElementById('blog-excerpt').value.trim();
+    const content = document.getElementById('blog-content').value.trim();
+    const tags = document.getElementById('blog-tags').value.trim();
+    const image = document.getElementById('blog-image').value.trim();
+    const published = document.getElementById('blog-published').checked;
+    const featured = document.getElementById('blog-featured').checked;
+    
+    if (!title || !slug || !category || !excerpt || !content) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    const postData = {
+        id: postId || slug,
+        title,
+        slug,
+        category,
+        author: author || 'Williams Alfred Onen',
+        excerpt,
+        content,
+        tags: tags.split(',').map(t => t.trim()).filter(t => t),
+        featured_image: image || `assets/blog/${slug}.jpg`,
+        published,
+        featured
+    };
+    
+    fetch('api/save_blog_post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(postId ? 'Blog post updated successfully' : 'Blog post created successfully', 'success');
+            closeBlogModal();
+            loadBlogPosts();
+            
+            // Regenerate sitemap
+            regenerateSitemap();
+        } else {
+            showNotification(data.message || 'Error saving blog post', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving blog post:', error);
+        showNotification('Error saving blog post', 'error');
+    });
+}
+
+function editBlogPost(postId) {
+    fetch(`api/get_blog_posts.php?id=${postId}`)
+        .then(response => response.json())
+        .then(posts => {
+            const post = posts.find(p => p.id === postId);
+            if (!post) {
+                showNotification('Blog post not found', 'error');
+                return;
+            }
+            
+            // Show modal with existing data
+            showAddBlogModal();
+            
+            // Update modal title
+            document.querySelector('#blog-modal h3').textContent = 'Edit Blog Post';
+            
+            // Fill in the form
+            document.getElementById('blog-title').value = post.title;
+            document.getElementById('blog-slug').value = post.slug;
+            document.getElementById('blog-category').value = post.category;
+            document.getElementById('blog-author').value = post.author;
+            document.getElementById('blog-excerpt').value = post.excerpt;
+            document.getElementById('blog-content').value = post.content;
+            document.getElementById('blog-tags').value = post.tags.join(', ');
+            document.getElementById('blog-image').value = post.featured_image;
+            document.getElementById('blog-published').checked = post.published;
+            document.getElementById('blog-featured').checked = post.featured;
+            
+            // Update form submission to edit mode
+            document.getElementById('blog-post-form').onsubmit = function(e) {
+                e.preventDefault();
+                saveBlogPost(postId);
+            };
+        })
+        .catch(error => {
+            console.error('Error loading blog post:', error);
+            showNotification('Error loading blog post', 'error');
+        });
+}
+
+function deleteBlogPost(postId) {
+    if (!confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) {
+        return;
+    }
+    
+    fetch('api/delete_blog_post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: postId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Blog post deleted successfully', 'success');
+            loadBlogPosts();
+            regenerateSitemap();
+        } else {
+            showNotification(data.message || 'Error deleting blog post', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting blog post:', error);
+        showNotification('Error deleting blog post', 'error');
+    });
+}
+
+function regenerateSitemap() {
+    fetch('api/regenerate_sitemap.php', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Sitemap regenerated successfully');
+        }
+    })
+    .catch(error => {
+        console.error('Error regenerating sitemap:', error);
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function loadInvoices() {
