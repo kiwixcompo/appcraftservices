@@ -1128,59 +1128,92 @@ function loadBlogPosts() {
 function showAddBlogModal() {
     const modal = document.createElement('div');
     modal.id = 'blog-modal';
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto';
+    modal.style.paddingTop = '2rem';
+    modal.style.paddingBottom = '2rem';
+    
     modal.innerHTML = `
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8">
-            <div class="flex justify-between items-center p-6 border-b">
-                <h3 class="text-xl font-semibold">Create New Blog Post</h3>
-                <button onclick="closeBlogModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <form id="blog-post-form" class="p-6 space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
-                    <input type="text" id="blog-title" required
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="Enter blog post title">
+        <div class="min-h-screen flex items-start justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8">
+                <div class="sticky top-0 bg-white flex justify-between items-center p-6 border-b rounded-t-lg z-10">
+                    <h3 class="text-xl font-semibold">Create New Blog Post</h3>
+                    <button onclick="closeBlogModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Slug (URL) *</label>
-                    <input type="text" id="blog-slug" required
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="url-friendly-slug">
-                    <p class="text-xs text-gray-500 mt-1">Will be auto-generated from title if left empty</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form id="blog-post-form" class="p-6 space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                        <input type="text" id="blog-category" required
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                        <input type="text" id="blog-title" required
                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="e.g., Startup Development">
+                               placeholder="Enter blog post title">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Author</label>
-                        <input type="text" id="blog-author" value="Williams Alfred Onen"
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Slug (URL) *</label>
+                        <input type="text" id="blog-slug" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="url-friendly-slug">
+                        <p class="text-xs text-gray-500 mt-1">Will be auto-generated from title if left empty</p>
                     </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
-                    <textarea id="blog-excerpt" required rows="3"
-                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Brief summary of the post (150-200 characters)"></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Content * (Markdown supported)</label>
-                    <textarea id="blog-content" required rows="15"
-                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-                              placeholder="Write your blog post content here. You can use Markdown formatting:
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                            <input type="text" id="blog-category" required
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="e.g., Startup Development">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                            <input type="text" id="blog-author" value="Williams Alfred Onen"
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
+                        <textarea id="blog-excerpt" required rows="3"
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Brief summary of the post (150-200 characters)"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <input type="file" id="blog-image-upload" accept="image/*" class="hidden">
+                                <button type="button" onclick="document.getElementById('blog-image-upload').click()"
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                                    <i class="fas fa-upload mr-2"></i>Upload Image
+                                </button>
+                                <span class="text-sm text-gray-600">or paste image below</span>
+                            </div>
+                            
+                            <div id="image-paste-area"
+                                 class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition"
+                                 onclick="this.focus()" tabindex="0">
+                                <i class="fas fa-image text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-600">Click here and paste (Ctrl+V) an image from clipboard</p>
+                                <p class="text-xs text-gray-500 mt-1">Images will be automatically converted to WebP</p>
+                            </div>
+                            
+                            <div id="image-preview" class="hidden">
+                                <img id="preview-img" class="max-w-full h-48 object-cover rounded-lg border">
+                                <p class="text-sm text-gray-600 mt-2">Image path: <span id="image-path" class="font-mono text-xs"></span></p>
+                            </div>
+                            
+                            <input type="hidden" id="blog-image" value="">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Content * (Markdown supported)</label>
+                        <textarea id="blog-content" required rows="15"
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                                  placeholder="Write your blog post content here. You can use Markdown formatting:
 
 ## Heading 2
 ### Heading 3
@@ -1201,49 +1234,43 @@ function showAddBlogModal() {
 \`\`\`
 code block
 \`\`\`"></textarea>
-                    <div class="mt-2 text-xs text-gray-600 space-y-1">
-                        <p><strong>Markdown Quick Reference:</strong></p>
-                        <p>## Heading | **Bold** | *Italic* | [Link](url) | \`code\` | - List item</p>
+                        <div class="mt-2 text-xs text-gray-600 space-y-1">
+                            <p><strong>Markdown Quick Reference:</strong></p>
+                            <p>## Heading | **Bold** | *Italic* | [Link](url) | \`code\` | - List item</p>
+                        </div>
                     </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags (comma-separated)</label>
-                    <input type="text" id="blog-tags"
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="MVP, Startup, Web Development">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image URL</label>
-                    <input type="text" id="blog-image"
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="assets/blog/image.jpg">
-                </div>
-                
-                <div class="flex items-center space-x-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="blog-published" class="mr-2 w-4 h-4">
-                        <span class="text-sm font-medium text-gray-700">Publish immediately</span>
-                    </label>
                     
-                    <label class="flex items-center">
-                        <input type="checkbox" id="blog-featured" class="mr-2 w-4 h-4">
-                        <span class="text-sm font-medium text-gray-700">Featured post</span>
-                    </label>
-                </div>
-                
-                <div class="flex justify-end space-x-3 pt-4 border-t">
-                    <button type="button" onclick="closeBlogModal()"
-                            class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-save mr-2"></i>Save Post
-                    </button>
-                </div>
-            </form>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tags (comma-separated)</label>
+                        <input type="text" id="blog-tags"
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="MVP, Startup, Web Development">
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="blog-published" class="mr-2 w-4 h-4">
+                            <span class="text-sm font-medium text-gray-700">Publish immediately</span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="checkbox" id="blog-featured" class="mr-2 w-4 h-4">
+                            <span class="text-sm font-medium text-gray-700">Featured post</span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4 border-t sticky bottom-0 bg-white pb-4">
+                        <button type="button" onclick="closeBlogModal()"
+                                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-save mr-2"></i>Save Post
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     `;
     
@@ -1262,11 +1289,116 @@ code block
         }
     });
     
+    // Handle image upload
+    document.getElementById('blog-image-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            handleImageUpload(file);
+        }
+    });
+    
+    // Handle image paste
+    const pasteArea = document.getElementById('image-paste-area');
+    pasteArea.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                handleImageUpload(file);
+                break;
+            }
+        }
+    });
+    
     // Handle form submission
     document.getElementById('blog-post-form').addEventListener('submit', function(e) {
         e.preventDefault();
         saveBlogPost();
     });
+}
+
+function handleImageUpload(file) {
+    if (!file.type.startsWith('image/')) {
+        showNotification('Please upload an image file', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const pasteArea = document.getElementById('image-paste-area');
+    pasteArea.innerHTML = '<i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i><p class="text-sm text-gray-600 mt-2">Converting to WebP...</p>';
+    
+    // Convert image to WebP
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Create canvas for conversion
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            
+            // Convert to WebP with 85% quality
+            canvas.toBlob(function(blob) {
+                // Generate filename
+                const timestamp = Date.now();
+                const filename = `blog-image-${timestamp}.webp`;
+                
+                // Create FormData for upload
+                const formData = new FormData();
+                formData.append('image', blob, filename);
+                
+                // Upload to server
+                fetch('api/upload_blog_image.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update hidden input and show preview
+                        document.getElementById('blog-image').value = data.path;
+                        document.getElementById('preview-img').src = '../' + data.path;
+                        document.getElementById('image-path').textContent = data.path;
+                        document.getElementById('image-preview').classList.remove('hidden');
+                        
+                        // Reset paste area
+                        pasteArea.innerHTML = `
+                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
+                            <p class="text-sm text-green-600">Image uploaded successfully!</p>
+                            <p class="text-xs text-gray-500 mt-1">Click to upload another image</p>
+                        `;
+                        
+                        showNotification('Image uploaded and converted to WebP', 'success');
+                    } else {
+                        showNotification(data.message || 'Error uploading image', 'error');
+                        resetPasteArea();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    showNotification('Error uploading image', 'error');
+                    resetPasteArea();
+                });
+            }, 'image/webp', 0.85);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function resetPasteArea() {
+    const pasteArea = document.getElementById('image-paste-area');
+    if (pasteArea) {
+        pasteArea.innerHTML = `
+            <i class="fas fa-image text-3xl text-gray-400 mb-2"></i>
+            <p class="text-sm text-gray-600">Click here and paste (Ctrl+V) an image from clipboard</p>
+            <p class="text-xs text-gray-500 mt-1">Images will be automatically converted to WebP</p>
+        `;
+    }
 }
 
 function closeBlogModal() {
