@@ -1247,11 +1247,56 @@ code block
                                placeholder="MVP, Startup, Web Development">
                     </div>
                     
-                    <div class="flex items-center space-x-6">
-                        <label class="flex items-center">
-                            <input type="checkbox" id="blog-published" class="mr-2 w-4 h-4">
-                            <span class="text-sm font-medium text-gray-700">Publish immediately</span>
+                    <!-- Bulk Upload Section -->
+                    <div class="border-t pt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-file-upload mr-2"></i>Bulk Upload Markdown Files
                         </label>
+                        <div class="flex items-center space-x-3">
+                            <input type="file" id="bulk-md-upload" accept=".md,.markdown" multiple class="hidden">
+                            <button type="button" onclick="document.getElementById('bulk-md-upload').click()"
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center">
+                                <i class="fas fa-upload mr-2"></i>Upload .md Files
+                            </button>
+                            <span class="text-sm text-gray-600">Select multiple .md files to import</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Each .md file will be parsed and added as a separate blog post</p>
+                    </div>
+                    
+                    <!-- Publishing Options -->
+                    <div class="border-t pt-6 space-y-4">
+                        <div class="flex items-center space-x-6">
+                            <label class="flex items-center">
+                                <input type="radio" name="publish-option" value="now" id="publish-now" checked class="mr-2">
+                                <span class="text-sm font-medium text-gray-700">Publish immediately</span>
+                            </label>
+                            
+                            <label class="flex items-center">
+                                <input type="radio" name="publish-option" value="draft" id="publish-draft" class="mr-2">
+                                <span class="text-sm font-medium text-gray-700">Save as draft</span>
+                            </label>
+                            
+                            <label class="flex items-center">
+                                <input type="radio" name="publish-option" value="schedule" id="publish-schedule" class="mr-2">
+                                <span class="text-sm font-medium text-gray-700">Schedule for later</span>
+                            </label>
+                        </div>
+                        
+                        <div id="schedule-datetime" class="hidden pl-6 space-y-3">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Publish Date</label>
+                                    <input type="date" id="schedule-date"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Publish Time</label>
+                                    <input type="time" id="schedule-time"
+                                           class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500">Post will be automatically published at the scheduled time</p>
+                        </div>
                         
                         <label class="flex items-center">
                             <input type="checkbox" id="blog-featured" class="mr-2 w-4 h-4">
@@ -1259,15 +1304,22 @@ code block
                         </label>
                     </div>
                     
-                    <div class="flex justify-end space-x-3 pt-4 border-t sticky bottom-0 bg-white pb-4">
-                        <button type="button" onclick="closeBlogModal()"
-                                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                            Cancel
+                    <div class="flex justify-between space-x-3 pt-4 border-t sticky bottom-0 bg-white pb-4">
+                        <button type="button" onclick="previewBlogPost()"
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            <i class="fas fa-eye mr-2"></i>Preview
                         </button>
-                        <button type="submit"
-                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-save mr-2"></i>Save Post
-                        </button>
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="closeBlogModal()"
+                                    class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-save mr-2"></i>Save Post
+                            </button>
+                        </div>
+                    </div>
                     </div>
                 </form>
             </div>
@@ -1315,6 +1367,31 @@ code block
     document.getElementById('blog-post-form').addEventListener('submit', function(e) {
         e.preventDefault();
         saveBlogPost();
+    });
+    
+    // Handle schedule option toggle
+    document.querySelectorAll('input[name="publish-option"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const scheduleDiv = document.getElementById('schedule-datetime');
+            if (this.value === 'schedule') {
+                scheduleDiv.classList.remove('hidden');
+                // Set default to tomorrow at 9 AM
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('schedule-date').value = tomorrow.toISOString().split('T')[0];
+                document.getElementById('schedule-time').value = '09:00';
+            } else {
+                scheduleDiv.classList.add('hidden');
+            }
+        });
+    });
+    
+    // Handle bulk markdown upload
+    document.getElementById('bulk-md-upload').addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            handleBulkMarkdownUpload(files);
+        }
     });
 }
 
@@ -1417,8 +1494,25 @@ function saveBlogPost(postId = null) {
     const content = document.getElementById('blog-content').value.trim();
     const tags = document.getElementById('blog-tags').value.trim();
     const image = document.getElementById('blog-image').value.trim();
-    const published = document.getElementById('blog-published').checked;
     const featured = document.getElementById('blog-featured').checked;
+    
+    // Get publishing option
+    const publishOption = document.querySelector('input[name="publish-option"]:checked').value;
+    let published = publishOption === 'now';
+    let scheduledDate = null;
+    
+    if (publishOption === 'schedule') {
+        const date = document.getElementById('schedule-date').value;
+        const time = document.getElementById('schedule-time').value;
+        
+        if (!date || !time) {
+            showNotification('Please select date and time for scheduling', 'error');
+            return;
+        }
+        
+        scheduledDate = `${date} ${time}:00`;
+        published = false;
+    }
     
     if (!title || !slug || !category || !excerpt || !content) {
         showNotification('Please fill in all required fields', 'error');
@@ -1436,7 +1530,8 @@ function saveBlogPost(postId = null) {
         tags: tags.split(',').map(t => t.trim()).filter(t => t),
         featured_image: image || `assets/blog/${slug}.jpg`,
         published,
-        featured
+        featured,
+        scheduled_date: scheduledDate
     };
     
     fetch('api/save_blog_post.php', {
@@ -1449,7 +1544,10 @@ function saveBlogPost(postId = null) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification(postId ? 'Blog post updated successfully' : 'Blog post created successfully', 'success');
+            const message = scheduledDate 
+                ? `Blog post scheduled for ${scheduledDate}` 
+                : (postId ? 'Blog post updated successfully' : 'Blog post created successfully');
+            showNotification(message, 'success');
             closeBlogModal();
             loadBlogPosts();
             
@@ -2240,4 +2338,384 @@ async function loadPaymentSettings() {
     } catch (error) {
         console.log('No payment settings found yet');
     }
+}
+
+
+// Preview blog post with markdown rendering
+function previewBlogPost() {
+    const title = document.getElementById('blog-title').value.trim();
+    const content = document.getElementById('blog-content').value.trim();
+    const category = document.getElementById('blog-category').value.trim();
+    const author = document.getElementById('blog-author').value.trim() || 'Williams Alfred Onen';
+    const tags = document.getElementById('blog-tags').value.trim();
+    const image = document.getElementById('blog-image').value.trim();
+    
+    if (!title || !content) {
+        showNotification('Please enter title and content to preview', 'error');
+        return;
+    }
+    
+    // Convert markdown to HTML
+    const htmlContent = markdownToHtml(content);
+    
+    // Create preview modal
+    const previewModal = document.createElement('div');
+    previewModal.id = 'preview-modal';
+    previewModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-[60] overflow-y-auto';
+    previewModal.style.paddingTop = '2rem';
+    previewModal.style.paddingBottom = '2rem';
+    
+    previewModal.innerHTML = `
+        <div class="min-h-screen flex items-start justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8">
+                <div class="sticky top-0 bg-white flex justify-between items-center p-6 border-b rounded-t-lg z-10">
+                    <h3 class="text-xl font-semibold">Preview: ${escapeHtml(title)}</h3>
+                    <button onclick="document.getElementById('preview-modal').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <article class="p-8">
+                    <header class="mb-8">
+                        <div class="mb-4">
+                            <span class="inline-block px-3 py-1 bg-electric-blue text-white text-sm font-medium rounded-full">
+                                ${escapeHtml(category)}
+                            </span>
+                        </div>
+                        
+                        <h1 class="text-4xl font-bold text-navy mb-6 leading-tight">
+                            ${escapeHtml(title)}
+                        </h1>
+                        
+                        <div class="flex items-center text-gray-600 text-sm space-x-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user mr-2"></i>
+                                <span>${escapeHtml(author)}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar mr-2"></i>
+                                <span>${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                            </div>
+                        </div>
+                        
+                        ${tags ? `
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            ${tags.split(',').map(tag => `
+                                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+                                    #${escapeHtml(tag.trim())}
+                                </span>
+                            `).join('')}
+                        </div>
+                        ` : ''}
+                    </header>
+                    
+                    ${image ? `
+                    <div class="mb-8">
+                        <img src="../${escapeHtml(image)}" 
+                             alt="${escapeHtml(title)}"
+                             class="w-full rounded-lg shadow-lg"
+                             onerror="this.style.display='none'">
+                    </div>
+                    ` : ''}
+                    
+                    <div class="prose prose-lg max-w-none">
+                        ${htmlContent}
+                    </div>
+                </article>
+                
+                <div class="p-6 border-t bg-gray-50 flex justify-end">
+                    <button onclick="document.getElementById('preview-modal').remove()"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(previewModal);
+}
+
+// Simple Markdown to HTML converter
+function markdownToHtml(text) {
+    // Headers
+    text = text.replace(/^### (.+)$/gm, '<h3 class="text-2xl font-bold text-navy mt-8 mb-4">$1</h3>');
+    text = text.replace(/^## (.+)$/gm, '<h2 class="text-3xl font-bold text-navy mt-10 mb-6">$1</h2>');
+    text = text.replace(/^# (.+)$/gm, '<h1 class="text-4xl font-bold text-navy mt-12 mb-8">$1</h1>');
+    
+    // Bold and italic
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+    text = text.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>');
+    
+    // Links
+    text = text.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" class="text-electric-blue hover:underline">$1</a>');
+    
+    // Code blocks
+    text = text.replace(/```([^`]+)```/g, '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>$1</code></pre>');
+    text = text.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-sm">$1</code>');
+    
+    // Lists
+    text = text.replace(/^\- (.+)$/gm, '<li class="ml-6 mb-2">$1</li>');
+    text = text.replace(/^(\d+)\. (.+)$/gm, '<li class="ml-6 mb-2">$2</li>');
+    
+    // Wrap consecutive list items
+    text = text.replace(/(<li[^>]*>.*<\/li>\n?)+/g, '<ul class="list-disc my-4">$&</ul>');
+    
+    // Paragraphs
+    text = text.replace(/^(?!<[hul]|<pre)(.+)$/gm, '<p class="mb-4 text-gray-700 leading-relaxed">$1</p>');
+    
+    return text;
+}
+
+// Handle bulk markdown file upload
+function handleBulkMarkdownUpload(files) {
+    if (files.length === 0) return;
+    
+    showNotification(`Processing ${files.length} markdown file(s)...`, 'info');
+    
+    const processedPosts = [];
+    let filesProcessed = 0;
+    
+    files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            const post = parseMarkdownFile(content, file.name);
+            
+            if (post) {
+                processedPosts.push(post);
+            }
+            
+            filesProcessed++;
+            
+            // When all files are processed
+            if (filesProcessed === files.length) {
+                if (processedPosts.length > 0) {
+                    showBulkUploadConfirmation(processedPosts);
+                } else {
+                    showNotification('No valid markdown files found', 'error');
+                }
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
+// Parse markdown file and extract metadata
+function parseMarkdownFile(content, filename) {
+    try {
+        // Extract frontmatter if exists (YAML format)
+        let title = '';
+        let category = '';
+        let tags = [];
+        let excerpt = '';
+        let author = 'Williams Alfred Onen';
+        let featured = false;
+        let mainContent = content;
+        
+        // Check for frontmatter (between --- markers)
+        const frontmatterMatch = content.match(/^---\n([\s\S]+?)\n---\n([\s\S]+)$/);
+        if (frontmatterMatch) {
+            const frontmatter = frontmatterMatch[1];
+            mainContent = frontmatterMatch[2];
+            
+            // Parse frontmatter
+            const titleMatch = frontmatter.match(/title:\s*["']?(.+?)["']?\n/);
+            if (titleMatch) title = titleMatch[1];
+            
+            const categoryMatch = frontmatter.match(/category:\s*["']?(.+?)["']?\n/);
+            if (categoryMatch) category = categoryMatch[1];
+            
+            const tagsMatch = frontmatter.match(/tags:\s*\[(.+?)\]/);
+            if (tagsMatch) {
+                tags = tagsMatch[1].split(',').map(t => t.trim().replace(/["']/g, ''));
+            }
+            
+            const excerptMatch = frontmatter.match(/excerpt:\s*["']?(.+?)["']?\n/);
+            if (excerptMatch) excerpt = excerptMatch[1];
+            
+            const authorMatch = frontmatter.match(/author:\s*["']?(.+?)["']?\n/);
+            if (authorMatch) author = authorMatch[1];
+            
+            const featuredMatch = frontmatter.match(/featured:\s*(true|false)/);
+            if (featuredMatch) featured = featuredMatch[1] === 'true';
+        }
+        
+        // If no title in frontmatter, try to extract from first heading
+        if (!title) {
+            const headingMatch = mainContent.match(/^#\s+(.+)$/m);
+            if (headingMatch) {
+                title = headingMatch[1];
+                // Remove the heading from content
+                mainContent = mainContent.replace(/^#\s+.+\n/, '');
+            } else {
+                // Use filename as title
+                title = filename.replace(/\.md$/, '').replace(/[-_]/g, ' ');
+            }
+        }
+        
+        // Generate excerpt if not provided
+        if (!excerpt) {
+            const firstParagraph = mainContent.split('\n\n')[0];
+            excerpt = firstParagraph.substring(0, 200).replace(/[#*`]/g, '').trim();
+        }
+        
+        // Generate slug from title
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        
+        return {
+            title,
+            slug,
+            category: category || 'General',
+            author,
+            excerpt,
+            content: mainContent.trim(),
+            tags,
+            featured,
+            filename
+        };
+    } catch (error) {
+        console.error('Error parsing markdown file:', error);
+        return null;
+    }
+}
+
+// Show confirmation dialog for bulk upload
+function showBulkUploadConfirmation(posts) {
+    const confirmModal = document.createElement('div');
+    confirmModal.id = 'bulk-confirm-modal';
+    confirmModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-[70] overflow-y-auto p-4';
+    
+    confirmModal.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl">
+                <div class="p-6 border-b">
+                    <h3 class="text-xl font-semibold">Confirm Bulk Upload</h3>
+                    <p class="text-sm text-gray-600 mt-2">Review and confirm ${posts.length} blog post(s) to import</p>
+                </div>
+                
+                <div class="p-6 max-h-96 overflow-y-auto">
+                    <div class="space-y-4">
+                        ${posts.map((post, index) => `
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-navy">${escapeHtml(post.title)}</h4>
+                                        <p class="text-sm text-gray-600 mt-1">${escapeHtml(post.excerpt.substring(0, 100))}...</p>
+                                        <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                            <span><i class="fas fa-folder mr-1"></i>${escapeHtml(post.category)}</span>
+                                            <span><i class="fas fa-tags mr-1"></i>${post.tags.length} tags</span>
+                                        </div>
+                                    </div>
+                                    <label class="flex items-center ml-4">
+                                        <input type="checkbox" class="bulk-post-checkbox" data-index="${index}" checked class="w-4 h-4">
+                                    </label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="p-6 border-t bg-gray-50">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Publishing Option</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="bulk-publish-option" value="now" checked class="mr-2">
+                                <span class="text-sm">Publish all now</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="bulk-publish-option" value="draft" class="mr-2">
+                                <span class="text-sm">Save all as drafts</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="bulk-publish-option" value="schedule" class="mr-2">
+                                <span class="text-sm">Schedule (1 per day)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button onclick="document.getElementById('bulk-confirm-modal').remove()"
+                                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button onclick="processBulkUpload(${JSON.stringify(posts).replace(/"/g, '&quot;')})"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-upload mr-2"></i>Import Posts
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(confirmModal);
+}
+
+// Process bulk upload
+function processBulkUpload(posts) {
+    const publishOption = document.querySelector('input[name="bulk-publish-option"]:checked').value;
+    const selectedIndexes = Array.from(document.querySelectorAll('.bulk-post-checkbox:checked'))
+        .map(cb => parseInt(cb.dataset.index));
+    
+    const selectedPosts = posts.filter((_, index) => selectedIndexes.includes(index));
+    
+    if (selectedPosts.length === 0) {
+        showNotification('No posts selected', 'error');
+        return;
+    }
+    
+    document.getElementById('bulk-confirm-modal').remove();
+    showNotification(`Importing ${selectedPosts.length} post(s)...`, 'info');
+    
+    let processed = 0;
+    const now = new Date();
+    
+    selectedPosts.forEach((post, index) => {
+        let publishDate = null;
+        let published = publishOption === 'now';
+        
+        if (publishOption === 'schedule') {
+            // Schedule one post per day starting tomorrow
+            publishDate = new Date(now);
+            publishDate.setDate(publishDate.getDate() + index + 1);
+            publishDate.setHours(9, 0, 0, 0);
+            published = false;
+        }
+        
+        const postData = {
+            id: post.slug,
+            title: post.title,
+            slug: post.slug,
+            category: post.category,
+            author: post.author,
+            excerpt: post.excerpt,
+            content: post.content,
+            tags: post.tags,
+            featured_image: `assets/blog/${post.slug}.jpg`,
+            published,
+            featured: post.featured,
+            scheduled_date: publishDate ? publishDate.toISOString() : null
+        };
+        
+        fetch('api/save_blog_post.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            processed++;
+            if (processed === selectedPosts.length) {
+                showNotification(`Successfully imported ${processed} post(s)`, 'success');
+                loadBlogPosts();
+                regenerateSitemap();
+            }
+        })
+        .catch(error => {
+            console.error('Error saving post:', error);
+            processed++;
+        });
+    });
 }
