@@ -1029,7 +1029,10 @@ function loadBlogPosts() {
     
     fetch('api/get_blog_posts.php')
         .then(response => response.json())
-        .then(posts => {
+        .then(data => {
+            // Handle both array and object response formats
+            const posts = Array.isArray(data) ? data : (data.posts || []);
+            
             // Update statistics
             const totalPosts = posts.length;
             const publishedPosts = posts.filter(p => p.published).length;
@@ -1152,10 +1155,10 @@ function showAddBlogModal() {
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Slug (URL)</label>
-                        <input type="text" id="blog-slug" readonly
-                               class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
-                               placeholder="Auto-generated from title">
-                        <p class="text-xs text-gray-500 mt-1">Automatically generated from title with hyphens</p>
+                        <input type="text" id="blog-slug"
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Auto-generated from title (editable)">
+                        <p class="text-xs text-gray-500 mt-1">Automatically generated from title with hyphens (you can edit this)</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1339,16 +1342,30 @@ code block
     // Load categories into dropdown
     loadBlogCategories();
     
-    // Auto-generate slug from title (always auto-generate)
-    document.getElementById('blog-title').addEventListener('input', function(e) {
-        const slug = e.target.value
+    // Auto-generate slug from title (works with typing and pasting)
+    const titleInput = document.getElementById('blog-title');
+    const slugInput = document.getElementById('blog-slug');
+    
+    function generateSlug(text) {
+        return text
             .toLowerCase()
             .trim()
             .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
             .replace(/\s+/g, '-') // Replace spaces with hyphens
             .replace(/-+/g, '-') // Replace multiple hyphens with single
             .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-        document.getElementById('blog-slug').value = slug;
+    }
+    
+    // Handle both input and paste events
+    titleInput.addEventListener('input', function(e) {
+        slugInput.value = generateSlug(e.target.value);
+    });
+    
+    titleInput.addEventListener('paste', function(e) {
+        // Wait for paste to complete
+        setTimeout(() => {
+            slugInput.value = generateSlug(titleInput.value);
+        }, 10);
     });
     
     // Handle image upload
@@ -1576,8 +1593,11 @@ function saveBlogPost(postId = null) {
 function editBlogPost(postId) {
     fetch(`api/get_blog_posts.php?id=${postId}`)
         .then(response => response.json())
-        .then(posts => {
+        .then(data => {
+            // Handle both array and object response formats
+            const posts = Array.isArray(data) ? data : (data.posts || []);
             const post = posts.find(p => p.id === postId);
+            
             if (!post) {
                 showNotification('Blog post not found', 'error');
                 return;
@@ -1586,26 +1606,45 @@ function editBlogPost(postId) {
             // Show modal with existing data
             showAddBlogModal();
             
-            // Update modal title
-            document.querySelector('#blog-modal h3').textContent = 'Edit Blog Post';
-            
-            // Fill in the form
-            document.getElementById('blog-title').value = post.title;
-            document.getElementById('blog-slug').value = post.slug;
-            document.getElementById('blog-category').value = post.category;
-            document.getElementById('blog-author').value = post.author;
-            document.getElementById('blog-excerpt').value = post.excerpt;
-            document.getElementById('blog-content').value = post.content;
-            document.getElementById('blog-tags').value = post.tags.join(', ');
-            document.getElementById('blog-image').value = post.featured_image;
-            document.getElementById('blog-published').checked = post.published;
-            document.getElementById('blog-featured').checked = post.featured;
-            
-            // Update form submission to edit mode
-            document.getElementById('blog-post-form').onsubmit = function(e) {
-                e.preventDefault();
-                saveBlogPost(postId);
-            };
+            // Wait for modal to be fully rendered
+            setTimeout(() => {
+                // Update modal title
+                const modalTitle = document.querySelector('#blog-modal h3');
+                if (modalTitle) modalTitle.textContent = 'Edit Blog Post';
+                
+                // Fill in the form
+                document.getElementById('blog-title').value = post.title || '';
+                document.getElementById('blog-slug').value = post.slug || '';
+                document.getElementById('blog-category').value = post.category || '';
+                document.getElementById('blog-author').value = post.author || '';
+                document.getElementById('blog-excerpt').value = post.excerpt || '';
+                document.getElementById('blog-content').value = post.content || '';
+                document.getElementById('blog-tags').value = Array.isArray(post.tags) ? post.tags.join(', ') : '';
+                document.getElementById('blog-image').value = post.featured_image || '';
+                document.getElementById('blog-featured').checked = post.featured || false;
+                
+                // Set publishing option
+                if (post.scheduled_date) {
+                    document.getElementById('publish-schedule').checked = true;
+                    const scheduleDate = new Date(post.scheduled_date);
+                    document.getElementById('schedule-date').value = scheduleDate.toISOString().split('T')[0];
+                    document.getElementById('schedule-time').value = scheduleDate.toTimeString().substring(0, 5);
+                    document.getElementById('schedule-datetime').classList.remove('hidden');
+                } else if (post.published) {
+                    document.getElementById('publish-now').checked = true;
+                } else {
+                    document.getElementById('publish-draft').checked = true;
+                }
+                
+                // Update form submission to edit mode
+                const form = document.getElementById('blog-post-form');
+                if (form) {
+                    form.onsubmit = function(e) {
+                        e.preventDefault();
+                        saveBlogPost(postId);
+                    };
+                }
+            }, 100);
         })
         .catch(error => {
             console.error('Error loading blog post:', error);
@@ -2734,7 +2773,10 @@ function processBulkUpload(posts) {
 function loadBlogCategories() {
     fetch('api/get_blog_posts.php')
         .then(response => response.json())
-        .then(posts => {
+        .then(data => {
+            // Handle both array and object response formats
+            const posts = Array.isArray(data) ? data : (data.posts || []);
+            
             // Extract unique categories
             const categories = [...new Set(posts.map(post => post.category).filter(cat => cat))];
             

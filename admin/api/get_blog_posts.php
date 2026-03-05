@@ -12,15 +12,16 @@ try {
     $blogFile = '../../data/blog_posts.json';
     
     if (!file_exists($blogFile)) {
-        echo json_encode(['success' => true, 'posts' => []]);
+        echo json_encode([]);
         exit;
     }
     
     $blogPosts = json_decode(file_get_contents($blogFile), true) ?: [];
     
-    echo json_encode(['success' => true, 'posts' => $blogPosts]);
+    // Return just the array for consistency
+    echo json_encode($blogPosts);
     
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 ?>
