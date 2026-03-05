@@ -1188,7 +1188,6 @@ function showAddBlogModal() {
                                   placeholder="Brief summary of the post (will be auto-generated from content if left empty)"></textarea>
                         <p class="text-xs text-gray-500 mt-1">Leave empty to auto-generate from first paragraph</p>
                     </div>
-                    </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
@@ -1329,7 +1328,6 @@ code block
                                 <i class="fas fa-save mr-2"></i>Save Post
                             </button>
                         </div>
-                    </div>
                     </div>
                 </form>
             </div>
