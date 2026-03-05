@@ -39,8 +39,21 @@ try {
     $featuredImage = $input['featured_image'] ?? '';
     $scheduledDate = $input['scheduled_date'] ?? null;
     
-    // Validate required fields
-    if (empty($title) || empty($slug) || empty($excerpt) || empty($content) || empty($category)) {
+    // Auto-generate excerpt if empty
+    if (empty($excerpt) && !empty($content)) {
+        // Remove markdown formatting
+        $plainContent = preg_replace('/[#*`\[\]]/u', '', $content);
+        // Get first paragraph or first 200 characters
+        $paragraphs = preg_split('/\n\n+/', trim($plainContent));
+        $firstParagraph = $paragraphs[0] ?? '';
+        $excerpt = mb_substr($firstParagraph, 0, 200);
+        if (mb_strlen($firstParagraph) > 200) {
+            $excerpt .= '...';
+        }
+    }
+    
+    // Validate required fields (excerpt is now optional as it's auto-generated)
+    if (empty($title) || empty($slug) || empty($content) || empty($category)) {
         echo json_encode(['success' => false, 'message' => 'All required fields must be filled']);
         exit;
     }
