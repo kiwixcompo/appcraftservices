@@ -1129,11 +1129,22 @@ function loadBlogPosts() {
 }
 
 function showAddBlogModal() {
+    console.log('showAddBlogModal called');
+    
+    // Remove any existing modal first
+    const existingModal = document.getElementById('blog-modal');
+    if (existingModal) {
+        existingModal.remove();
+        console.log('Removed existing modal');
+    }
+    
     const modal = document.createElement('div');
     modal.id = 'blog-modal';
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto';
     modal.style.paddingTop = '2rem';
     modal.style.paddingBottom = '2rem';
+    
+    console.log('Creating modal element');
     
     modal.innerHTML = `
         <div class="min-h-screen flex items-start justify-center p-4">
@@ -1338,13 +1349,22 @@ code block
     `;
     
     document.body.appendChild(modal);
+    console.log('Modal appended to body');
     
     // Load categories into dropdown
     loadBlogCategories();
+    console.log('Loading categories');
     
     // Auto-generate slug from title (works with typing and pasting)
     const titleInput = document.getElementById('blog-title');
     const slugInput = document.getElementById('blog-slug');
+    
+    if (!titleInput || !slugInput) {
+        console.error('Title or slug input not found!');
+        return;
+    }
+    
+    console.log('Title and slug inputs found, attaching event listeners');
     
     function generateSlug(text) {
         return text
@@ -1358,13 +1378,17 @@ code block
     
     // Handle both input and paste events
     titleInput.addEventListener('input', function(e) {
-        slugInput.value = generateSlug(e.target.value);
+        const slug = generateSlug(e.target.value);
+        slugInput.value = slug;
+        console.log('Slug generated from input:', slug);
     });
     
     titleInput.addEventListener('paste', function(e) {
         // Wait for paste to complete
         setTimeout(() => {
-            slugInput.value = generateSlug(titleInput.value);
+            const slug = generateSlug(titleInput.value);
+            slugInput.value = slug;
+            console.log('Slug generated from paste:', slug);
         }, 10);
     });
     
@@ -2771,18 +2795,25 @@ function processBulkUpload(posts) {
 
 // Load blog categories from existing posts
 function loadBlogCategories() {
+    console.log('loadBlogCategories called');
+    
     fetch('api/get_blog_posts.php')
         .then(response => response.json())
         .then(data => {
+            console.log('Blog posts data received:', data);
+            
             // Handle both array and object response formats
             const posts = Array.isArray(data) ? data : (data.posts || []);
+            console.log('Processed posts:', posts.length);
             
             // Extract unique categories
             const categories = [...new Set(posts.map(post => post.category).filter(cat => cat))];
+            console.log('Extracted categories:', categories);
             
             // Add default categories if none exist
             if (categories.length === 0) {
                 categories.push('General', 'Technology', 'Business', 'Development');
+                console.log('Added default categories');
             }
             
             // Sort categories alphabetically
@@ -2791,6 +2822,7 @@ function loadBlogCategories() {
             // Populate dropdown
             const categorySelect = document.getElementById('blog-category');
             if (categorySelect) {
+                console.log('Category select found, populating...');
                 // Keep the first option (Select category...)
                 categorySelect.innerHTML = '<option value="">Select category...</option>';
                 
@@ -2800,6 +2832,9 @@ function loadBlogCategories() {
                     option.textContent = category;
                     categorySelect.appendChild(option);
                 });
+                console.log('Categories populated successfully');
+            } else {
+                console.error('Category select element not found!');
             }
         })
         .catch(error => {
@@ -2814,6 +2849,7 @@ function loadBlogCategories() {
                     <option value="Business">Business</option>
                     <option value="Development">Development</option>
                 `;
+                console.log('Added default categories due to error');
             }
         });
 }
