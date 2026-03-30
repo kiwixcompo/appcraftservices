@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 3. Load initial dashboard data
     if (typeof loadMessages === 'function') loadMessages();
-    
     // 4. Handle window resize
     window.addEventListener('resize', function() {
         const sidebar = document.getElementById('adminSidebar');
@@ -160,15 +159,10 @@ function showTab(tabName) {
     if (pageTitle) {
         const tabTitles = {
             'dashboard': 'Dashboard',
-            'content': 'Content Management',
-            'pages': 'Page Editor',
-            'design': 'Design & Styling',
-            'reviews': 'Reviews',
-            'projects': 'Projects',
             'blog': 'Blog Posts',
             'messages': 'Messages',
+            'projects': 'Projects',
             'invoices': 'Invoices',
-            'payments': 'Payments',
             'analytics': 'Analytics',
             'settings': 'Settings'
         };
@@ -184,12 +178,8 @@ function showTab(tabName) {
         refreshAnalytics();
     } else if (tabName === 'messages') {
         if (typeof loadMessages === 'function') loadMessages();
-    } else if (tabName === 'reviews') {
-        if (typeof loadReviews === 'function') loadReviews();
     } else if (tabName === 'invoices') {
         if (typeof loadInvoices === 'function') loadInvoices();
-    } else if (tabName === 'payments') {
-        if (typeof loadPayments === 'function') loadPayments();
     }
 }
 
@@ -274,6 +264,17 @@ async function loadMessages(filter = 'all') {
         setEl('today-messages', todayMessages);
         setEl('schedule-requests', scheduleRequests);
         setEl('message-count', unreadMessages);
+        
+        // Update sidebar badge
+        const badge = document.getElementById('message-badge');
+        if (badge) {
+            if (unreadMessages > 0) {
+                badge.textContent = unreadMessages;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
 
         // Populate message list
         const messagesList = document.getElementById('messages-list');
@@ -1043,6 +1044,10 @@ function loadBlogPosts() {
             document.getElementById('published-posts').textContent = publishedPosts;
             document.getElementById('draft-posts').textContent = draftPosts;
             document.getElementById('blog-categories').textContent = categories;
+            
+            // Update dashboard counter
+            const dashCount = document.getElementById('blog-count-dash');
+            if (dashCount) dashCount.textContent = totalPosts;
             
             // Display posts list
             const blogPostsList = document.getElementById('blog-posts-list');

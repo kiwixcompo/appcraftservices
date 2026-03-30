@@ -379,30 +379,6 @@ $content = array_merge($defaultContent, $content);
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
                 </a>
-                <a href="#content" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('content')">
-                    <i class="fas fa-edit mr-3"></i>
-                    Content Management
-                </a>
-                <a href="#realtime-editing" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="openRealtimeEditor()">
-                    <i class="fas fa-magic mr-3"></i>
-                    Realtime Editing
-                </a>
-                <a href="#pages" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('pages')">
-                    <i class="fas fa-file-alt mr-3"></i>
-                    Page Editor
-                </a>
-                <a href="#design" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('design')">
-                    <i class="fas fa-palette mr-3"></i>
-                    Design & Styling
-                </a>
-                <a href="#reviews" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('reviews')">
-                    <i class="fas fa-star mr-3"></i>
-                    Reviews
-                </a>
-                <a href="#projects" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('projects')">
-                    <i class="fas fa-project-diagram mr-3"></i>
-                    Projects
-                </a>
                 <a href="#blog" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('blog')">
                     <i class="fas fa-blog mr-3"></i>
                     Blog Posts
@@ -410,14 +386,15 @@ $content = array_merge($defaultContent, $content);
                 <a href="#messages" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('messages')">
                     <i class="fas fa-envelope mr-3"></i>
                     Messages
+                    <span id="message-badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5 hidden">0</span>
+                </a>
+                <a href="#projects" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('projects')">
+                    <i class="fas fa-project-diagram mr-3"></i>
+                    Projects
                 </a>
                 <a href="#invoices" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('invoices')">
                     <i class="fas fa-file-invoice mr-3"></i>
                     Invoices
-                </a>
-                <a href="#payments" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('payments')">
-                    <i class="fas fa-credit-card mr-3"></i>
-                    Payments
                 </a>
                 <a href="#analytics" class="sidebar-item flex items-center px-4 py-3 hover:bg-gray-700" onclick="showTab('analytics')">
                     <i class="fas fa-chart-bar mr-3"></i>
@@ -478,23 +455,11 @@ $content = array_merge($defaultContent, $content);
                     <div class="bg-white p-6 rounded-lg shadow">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-green-100 text-green-600">
-                                <i class="fas fa-dollar-sign text-xl"></i>
+                                <i class="fas fa-file-invoice text-xl"></i>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Revenue</p>
-                                <p class="text-2xl font-semibold text-gray-900">$0</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                                <i class="fas fa-users text-xl"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Visitors</p>
-                                <p class="text-2xl font-semibold text-gray-900">0</p>
+                                <p class="text-sm font-medium text-gray-600">Active Invoices</p>
+                                <p class="text-2xl font-semibold text-gray-900" id="active-invoices-count">0</p>
                             </div>
                         </div>
                     </div>
@@ -502,11 +467,23 @@ $content = array_merge($defaultContent, $content);
                     <div class="bg-white p-6 rounded-lg shadow">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-blog text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Blog Posts</p>
+                                <p class="text-2xl font-semibold text-gray-900" id="blog-count-dash">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
                                 <i class="fas fa-project-diagram text-xl"></i>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-600">Projects</p>
-                                <p class="text-2xl font-semibold text-gray-900">0</p>
+                                <p class="text-2xl font-semibold text-gray-900" id="projects-count-dash">0</p>
                             </div>
                         </div>
                     </div>
@@ -523,15 +500,21 @@ $content = array_merge($defaultContent, $content);
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
                         <div class="space-y-3">
-                            <button onclick="showTab('content')" class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded">
-                                <i class="fas fa-edit mr-2"></i>Edit Homepage Content
+                            <button onclick="showTab('blog'); showAddBlogModal()" class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded flex items-center">
+                                <i class="fas fa-plus-circle mr-2 text-blue-600"></i>Write New Blog Post
                             </button>
-                            <button onclick="showTab('messages')" class="w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded">
-                                <i class="fas fa-envelope mr-2"></i>Check Messages
+                            <button onclick="showTab('messages')" class="w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded flex items-center">
+                                <i class="fas fa-envelope mr-2 text-green-600"></i>Check Messages
                             </button>
-                            <button onclick="showTab('payments')" class="w-full text-left p-3 bg-yellow-50 hover:bg-yellow-100 rounded">
-                                <i class="fas fa-credit-card mr-2"></i>Payment Settings
+                            <button onclick="showTab('invoices')" class="w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded flex items-center">
+                                <i class="fas fa-file-invoice mr-2 text-purple-600"></i>Manage Invoices
                             </button>
+                            <button onclick="showTab('projects')" class="w-full text-left p-3 bg-yellow-50 hover:bg-yellow-100 rounded flex items-center">
+                                <i class="fas fa-project-diagram mr-2 text-yellow-600"></i>Update Portfolio Projects
+                            </button>
+                            <a href="../" target="_blank" class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded flex items-center block">
+                                <i class="fas fa-external-link-alt mr-2 text-gray-600"></i>View Live Website
+                            </a>
                         </div>
                     </div>
                 </div>
