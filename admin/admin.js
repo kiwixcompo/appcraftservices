@@ -1239,7 +1239,12 @@ function showAddBlogModal() {
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Content * (Markdown supported)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Content * (Markdown supported)
+                            <span class="ml-2 text-xs font-normal text-blue-500 bg-blue-50 px-2 py-0.5 rounded">
+                                <i class="fas fa-image mr-1"></i>Paste images with Ctrl+V
+                            </span>
+                        </label>
                         <textarea id="blog-content" required rows="15"
                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
                                   placeholder="Write your blog post content here. You can use Markdown formatting:
@@ -1421,6 +1426,23 @@ code block
         }
     });
     
+    // Handle image paste directly into the content textarea
+    const contentTextarea = document.getElementById('blog-content');
+    contentTextarea.addEventListener('paste', function(e) {
+        const items = e.clipboardData && e.clipboardData.items;
+        if (!items) return;
+        
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                e.preventDefault(); // stop the browser pasting raw image data
+                const file = items[i].getAsFile();
+                handleContentImagePaste(file, contentTextarea);
+                break;
+            }
+        }
+        // Non-image pastes (text) fall through normally
+    });
+    
     // Handle form submission
     document.getElementById('blog-post-form').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -1518,6 +1540,60 @@ function handleImageUpload(file) {
                     showNotification('Error uploading image', 'error');
                     resetPasteArea();
                 });
+            }, 'image/webp', 0.85);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// Handle image pasted directly into the content textarea
+// Uploads the image and inserts markdown syntax at the cursor
+function handleContentImagePaste(file, textarea) {
+    if (!file || !file.type.startsWith('image/')) return;
+    
+    // Show a temporary placeholder at cursor so the writer knows it's uploading
+    const cursorPos = textarea.selectionStart;
+    const before = textarea.value.substring(0, cursorPos);
+    const after  = textarea.value.substring(cursorPos);
+    const placeholder = '![Uploading image...]()';
+    textarea.value = before + placeholder + after;
+    textarea.selectionStart = textarea.selectionEnd = cursorPos + placeholder.length;
+    
+    // Convert to WebP then upload
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width  = img.width;
+            canvas.height = img.height;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            
+            canvas.toBlob(function(blob) {
+                const filename = `blog-image-${Date.now()}.webp`;
+                const formData = new FormData();
+                formData.append('image', blob, filename);
+                
+                fetch('api/upload_blog_image.php', { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Replace placeholder with real markdown image
+                            const altText = filename.replace('.webp', '').replace(/-/g, ' ');
+                            const markdown = `![${altText}](/${data.path})`;
+                            textarea.value = textarea.value.replace(placeholder, markdown);
+                            showNotification('Image uploaded and inserted', 'success');
+                        } else {
+                            // Remove placeholder on failure
+                            textarea.value = textarea.value.replace(placeholder, '');
+                            showNotification(data.message || 'Image upload failed', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        textarea.value = textarea.value.replace(placeholder, '');
+                        showNotification('Image upload failed', 'error');
+                    });
             }, 'image/webp', 0.85);
         };
         img.src = e.target.result;

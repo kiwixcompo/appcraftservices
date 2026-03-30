@@ -280,13 +280,33 @@ function copyDirectory($source, $destination) {
                 @mkdir($target, 0755, true);
             }
         } else {
-            // Skip certain files
-            $filename = basename($target);
-            if (in_array($filename, ['deploy.php', 'deploy.log']) || 
-                strpos($target, '/backups/') !== false ||
-                strpos($target, '/.git/') !== false) {
-                continue;
-            }
+            // Skip files that must never be overwritten on the server
+            $subPath = $iterator->getSubPathName();
+            $skipPaths = [
+                'deploy.php', 'deploy.log',
+                // Persistent data — lives only on server
+                'data/messages.json',
+                'data/blog_posts.json',
+                'data/invoices.json',
+                'data/projects.json',
+                'data/payments.json',
+                'data/contact_log.txt',
+                'data/admin_log.txt',
+                'data/editor_changes.log',
+                'data/realtime_changes.json',
+                'data/settings.json',
+                'data/website_content.json',
+            ];
+            
+            // Normalise path separators for comparison
+            $normPath = str_replace('\\', '/', $subPath);
+            
+            if (in_array(basename($target), ['deploy.php', 'deploy.log'])) continue;
+            if (in_array($normPath, $skipPaths)) continue;
+            // Skip anything inside data/backups/ or assets/blog/
+            if (strpos($normPath, 'data/backups/') === 0) continue;
+            if (strpos($normPath, 'assets/blog/') === 0) continue;
+            if (strpos($normPath, '.git/') === 0) continue;
             
             @copy($item, $target);
         }
