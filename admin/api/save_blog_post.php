@@ -98,8 +98,10 @@ try {
     
     // Save to file
     if (file_put_contents($blogFile, json_encode($blogPosts, JSON_PRETTY_PRINT))) {
-        // Auto-regenerate sitemap
-        include 'regenerate_sitemap.php';
+        // Auto-regenerate sitemap (use define to prevent double session_start/header)
+        define('SITEMAP_INCLUDED', true);
+        include __DIR__ . '/regenerate_sitemap.php';
+        generateSitemap();
         
         echo json_encode([
             'success' => true, 

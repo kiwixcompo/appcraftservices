@@ -25,6 +25,20 @@ RewriteCond %{REQUEST_URI} !^/appcraftservices/
 RewriteRule ^(.*)$ /appcraftservices/$1 [R=301,L]
 
 # Handle directory-based URLs (e.g., /process -> /process/index.html)
+# Check for index.php first, then index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/assets/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/assets/
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/api/
+RewriteCond %{REQUEST_URI} !^/admin/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/admin/
+RewriteCond %{REQUEST_URI} !^/data/
+RewriteCond %{REQUEST_URI} !^/appcraftservices/data/
+RewriteCond %{DOCUMENT_ROOT}/$1/index.php -f
+RewriteRule ^([^/]+)/?$ $1/index.php [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/assets/

@@ -1147,16 +1147,17 @@ function showAddBlogModal() {
     console.log('Creating modal element');
     
     modal.innerHTML = `
-        <div class="min-h-screen flex items-start justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8">
-                <div class="sticky top-0 bg-white flex justify-between items-center p-6 border-b rounded-t-lg z-10">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                <div class="bg-white flex justify-between items-center p-6 border-b rounded-t-lg flex-shrink-0">
                     <h3 class="text-xl font-semibold">Create New Blog Post</h3>
                     <button onclick="closeBlogModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 
-                <form id="blog-post-form" class="p-6 space-y-6">
+                <div class="overflow-y-auto flex-1">
+                    <form id="blog-post-form" class="p-6 space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Title *</label>
                         <input type="text" id="blog-title" required
@@ -1343,7 +1344,8 @@ code block
                             </button>
                         </div>
                     </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     `;
@@ -1537,24 +1539,30 @@ function closeBlogModal() {
 }
 
 function saveBlogPost(postId = null) {
-    const title = document.getElementById('blog-title').value.trim();
-    const slug = document.getElementById('blog-slug').value.trim();
-    const category = document.getElementById('blog-category').value.trim();
-    const author = document.getElementById('blog-author').value.trim();
-    const excerpt = document.getElementById('blog-excerpt').value.trim();
-    const content = document.getElementById('blog-content').value.trim();
-    const tags = document.getElementById('blog-tags').value.trim();
-    const image = document.getElementById('blog-image').value.trim();
-    const featured = document.getElementById('blog-featured').checked;
+    console.log('saveBlogPost called, postId:', postId);
+    
+    const title = document.getElementById('blog-title')?.value.trim() || '';
+    const slug = document.getElementById('blog-slug')?.value.trim() || '';
+    const category = document.getElementById('blog-category')?.value.trim() || '';
+    const author = document.getElementById('blog-author')?.value.trim() || '';
+    const excerpt = document.getElementById('blog-excerpt')?.value.trim() || '';
+    const content = document.getElementById('blog-content')?.value.trim() || '';
+    const tags = document.getElementById('blog-tags')?.value.trim() || '';
+    const image = document.getElementById('blog-image')?.value.trim() || '';
+    const featured = document.getElementById('blog-featured')?.checked || false;
+    
+    console.log('Form values:', { title, slug, category, author, excerpt: excerpt.substring(0, 50), content: content.substring(0, 50), tags, image, featured });
     
     // Get publishing option
-    const publishOption = document.querySelector('input[name="publish-option"]:checked').value;
+    const publishOption = document.querySelector('input[name="publish-option"]:checked')?.value || 'now';
     let published = publishOption === 'now';
     let scheduledDate = null;
     
+    console.log('Publish option:', publishOption);
+    
     if (publishOption === 'schedule') {
-        const date = document.getElementById('schedule-date').value;
-        const time = document.getElementById('schedule-time').value;
+        const date = document.getElementById('schedule-date')?.value || '';
+        const time = document.getElementById('schedule-time')?.value || '';
         
         if (!date || !time) {
             showNotification('Please select date and time for scheduling', 'error');
@@ -1566,7 +1574,8 @@ function saveBlogPost(postId = null) {
     }
     
     if (!title || !slug || !category || !content) {
-        showNotification('Please fill in all required fields', 'error');
+        console.error('Missing required fields:', { title: !!title, slug: !!slug, category: !!category, content: !!content });
+        showNotification('Please fill in all required fields (Title, Slug, Category, Content)', 'error');
         return;
     }
     
@@ -1585,6 +1594,8 @@ function saveBlogPost(postId = null) {
         scheduled_date: scheduledDate
     };
     
+    console.log('Sending post data:', postData);
+    
     fetch('api/save_blog_post.php', {
         method: 'POST',
         headers: {
@@ -1592,8 +1603,13 @@ function saveBlogPost(postId = null) {
         },
         body: JSON.stringify(postData)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
+        
         if (data.success) {
             const message = scheduledDate 
                 ? `Blog post scheduled for ${scheduledDate}` 
@@ -1605,12 +1621,13 @@ function saveBlogPost(postId = null) {
             // Regenerate sitemap
             regenerateSitemap();
         } else {
+            console.error('Save failed:', data.message);
             showNotification(data.message || 'Error saving blog post', 'error');
         }
     })
     .catch(error => {
         console.error('Error saving blog post:', error);
-        showNotification('Error saving blog post', 'error');
+        showNotification('Network error: ' + error.message, 'error');
     });
 }
 
