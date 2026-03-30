@@ -39,15 +39,13 @@ function generateSitemap() {
 
     // Main pages
     $mainPages = [
-        ['url' => '/services',          'priority' => '0.9', 'freq' => 'monthly'],
-        ['url' => '/pricing',           'priority' => '0.9', 'freq' => 'monthly'],
-        ['url' => '/contact',           'priority' => '0.9', 'freq' => 'monthly'],
-        ['url' => '/process',           'priority' => '0.8', 'freq' => 'monthly'],
-        ['url' => '/blog',              'priority' => '0.8', 'freq' => 'weekly'],
-        ['url' => '/schedule',          'priority' => '0.7', 'freq' => 'monthly'],
-        ['url' => '/startup-packages',  'priority' => '0.7', 'freq' => 'monthly'],
-        ['url' => '/payment',           'priority' => '0.6', 'freq' => 'monthly'],
-        ['url' => '/terms',             'priority' => '0.3', 'freq' => 'yearly'],
+        ['url' => '/services',  'priority' => '0.9', 'freq' => 'monthly'],
+        ['url' => '/work',      'priority' => '0.9', 'freq' => 'monthly'],
+        ['url' => '/contact',   'priority' => '0.9', 'freq' => 'monthly'],
+        ['url' => '/process',   'priority' => '0.8', 'freq' => 'monthly'],
+        ['url' => '/blog',      'priority' => '0.8', 'freq' => 'weekly'],
+        ['url' => '/schedule',  'priority' => '0.5', 'freq' => 'monthly'],
+        ['url' => '/terms',     'priority' => '0.3', 'freq' => 'yearly'],
     ];
 
     foreach ($mainPages as $page) {

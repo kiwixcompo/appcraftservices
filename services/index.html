@@ -3,459 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17861189621"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-17861189621');
-    </script>
-    <title>Services - App Craft Services | Custom Web Apps & MVP Development</title>
-    <meta name="description" content="Custom web applications, MVP development, and SaaS solutions for growing businesses. From prototypes to production-ready applications.">
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-17861189621');</script>
+    <title>Software Development Services | App Craft Services</title>
+    <meta name="description" content="Custom software development services by App Craft Services. Custom web apps, MVP development, enterprise CMS, OJS installation, WordPress design, and maintenance.">
+    <meta name="keywords" content="custom software development company, web application development agency, MVP development for startups, custom WordPress website designer, OJS installation services, custom academic portals, B2B software development">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://appcraftservices.com/services">
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'navy': '#1e3a8a',
-                        'electric-blue': '#3b82f6',
-                        'light-gray': '#f8fafc'
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{colors:{'navy':'#1e3a8a','electric-blue':'#3b82f6','light-gray':'#f8fafc'}}}}</script>
     <link rel="stylesheet" href="../assets/styles.css">
     <link rel="stylesheet" href="../assets/mobile-responsive.css">
 </head>
 <body class="bg-white">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0">
-                    <a href="../" class="flex items-center logo-admin-trigger">
-                        <img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto">
-                    </a>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                        <a href="/process" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Process</a>
-                        <a href="/services" class="text-navy hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Services</a>
-                        <a href="/pricing" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
-                        <a href="/contact" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        <a href="/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
-                    </div>
-                </div>
+<!-- NAV -->
+<nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="/" class="flex items-center logo-admin-trigger"><img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto"></a>
+            <div class="hidden md:flex items-baseline space-x-1">
+                <a href="/" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Home</a>
+                <a href="/services" class="text-navy px-3 py-2 text-sm font-medium">Services</a>
+                <a href="/work" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Our Work</a>
+                <a href="/process" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Process</a>
+                <a href="/blog" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Blog</a>
+                <a href="/contact" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Contact</a>
+                <a href="/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition ml-2">Let's Talk</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div class="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+            <a href="/" class="block px-3 py-2 text-gray-700">Home</a>
+            <a href="/services" class="block px-3 py-2 text-navy font-medium">Services</a>
+            <a href="/work" class="block px-3 py-2 text-gray-700">Our Work</a>
+            <a href="/process" class="block px-3 py-2 text-gray-700">Process</a>
+            <a href="/blog" class="block px-3 py-2 text-gray-700">Blog</a>
+            <a href="/contact" class="block px-3 py-2 text-gray-700">Contact</a>
+            <a href="/contact" class="block px-3 py-2 bg-electric-blue text-white rounded-md font-semibold">Let's Talk</a>
+        </div>
+    </div>
+</nav>
 
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue focus:outline-none focus:text-electric-blue">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+<!-- HERO -->
+<section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Software Development Services by App Craft Services</h1>
+        <p class="text-xl text-blue-100 max-w-3xl mx-auto">From cloud-native web applications to specialized academic platforms — we engineer solutions that solve complex business problems.</p>
+    </div>
+</section>
+
+<!-- SERVICE 1: Custom Web App -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-block bg-blue-100 text-electric-blue text-sm font-semibold px-3 py-1 rounded-full mb-4">Custom Software Development</div>
+                <h2 class="text-3xl font-bold text-navy mb-4">Custom Web Application Development</h2>
+                <p class="text-lg text-gray-600 mb-6">We build cloud-native, scalable architectures designed for enterprise growth. Whether you need a complex internal tool, a customer-facing portal, or a full SaaS platform, our team engineers solutions built to last.</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Role-based access control and multi-level user permissions</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Real-time dashboards and custom reporting</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Third-party API integrations and workflow automation</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Scalable architecture that grows with your business</span></li>
+                </ul>
+                <a href="/contact" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-block">Discuss Your Project</a>
+            </div>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-10 flex items-center justify-center">
+                <svg class="w-32 h-32 text-electric-blue opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-                <a href="/" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="/process" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Process</a>
-                <a href="/services" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Services</a>
-                <a href="/pricing" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Pricing</a>
-                <a href="/contact" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Contact</a>
-                <a href="/contact" class="bg-electric-blue text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
+<!-- SERVICE 2: MVP -->
+<section class="py-16 bg-light-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="order-2 lg:order-1 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-10 flex items-center justify-center">
+                <svg class="w-32 h-32 text-green-500 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <div class="order-1 lg:order-2">
+                <div class="inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full mb-4">MVP Development for Startups</div>
+                <h2 class="text-3xl font-bold text-navy mb-4">MVP Development for Startups</h2>
+                <p class="text-lg text-gray-600 mb-6">Validate your concept fast with a production-ready minimum viable product. We help founders get to market quickly without sacrificing quality, so you can start gathering real user feedback and attracting investors.</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Rapid prototyping and core feature prioritization</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Production deployment with scalable architecture</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Investor-ready demo and documentation</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Clear growth pathway from MVP to full product</span></li>
+                </ul>
+                <a href="/contact" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-block">Start Your MVP</a>
             </div>
         </div>
-    </nav>
+    </div>
+</section>
 
-    <!-- Hero Section -->
-    <section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Our Services</h1>
-                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                    Comprehensive development solutions to bring your startup ideas to life
-                </p>
+<!-- SERVICE 3: CMS -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-block bg-purple-100 text-purple-700 text-sm font-semibold px-3 py-1 rounded-full mb-4">CMS Customization</div>
+                <h2 class="text-3xl font-bold text-navy mb-4">Enterprise CMS &amp; Academic Portals</h2>
+                <p class="text-lg text-gray-600 mb-6">High-volume workflows, tailored WordPress design, and specialized platforms like Open Journal Systems (OJS). We handle complex CMS deployments that require deep technical expertise and custom modifications.</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">OJS installation, configuration, and custom theme modifications</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Custom WordPress development for B2B lead generation</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Academic staff directories and institutional portals</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Multi-role editorial workflows and publishing pipelines</span></li>
+                </ul>
+                <a href="/contact" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-block">Get a Proposal</a>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-10 flex items-center justify-center">
+                <svg class="w-32 h-32 text-purple-500 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Services -->
-    <section class="py-16 bg-light-gray">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Custom Web Apps -->
-            <div class="mb-16">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div class="md:flex">
-                        <div class="md:w-1/3 bg-electric-blue p-8 flex items-center justify-center">
-                            <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <div class="md:w-2/3 p-8">
-                            <h2 class="text-3xl font-bold text-navy mb-4">Custom Web Applications</h2>
-                            <p class="text-lg text-gray-600 mb-6">
-                                Build powerful, tailored solutions that perfectly match your startup's unique needs. From custom dashboards to internal tools and web portals, I create scalable applications that help you launch and grow your business efficiently.
-                            </p>
-                            
-                            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <h3 class="text-xl font-semibold text-navy mb-3">Business Dashboards</h3>
-                                    <ul class="text-gray-600 space-y-2">
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Real-time analytics
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Custom reporting
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Data visualization
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                <div>
-                                    <h3 class="text-xl font-semibold text-navy mb-3">Internal Tools</h3>
-                                    <ul class="text-gray-600 space-y-2">
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Workflow automation
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Team collaboration
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Process management
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-light-gray p-4 rounded-lg">
-                                <h4 class="font-semibold text-navy mb-2">Perfect for:</h4>
-                                <p class="text-gray-600">Startups and small businesses needing specialized tools that off-the-shelf software can't provide. Whether you need to turn a spreadsheet into a web app or build a custom portal for your team, I create solutions that give you a competitive advantage.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- SERVICE 4: Maintenance -->
+<section class="py-16 bg-light-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="order-2 lg:order-1 bg-gradient-to-br from-orange-50 to-amber-100 rounded-2xl p-10 flex items-center justify-center">
+                <svg class="w-32 h-32 text-orange-500 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
-
-            <!-- MVP Development -->
-            <div class="mb-16">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div class="md:flex">
-                        <div class="md:w-1/3 bg-green-500 p-8 flex items-center justify-center">
-                            <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <div class="md:w-2/3 p-8">
-                            <h2 class="text-3xl font-bold text-navy mb-4">MVP Development</h2>
-                            <p class="text-lg text-gray-600 mb-6">
-                                For startups ready to launch fast and test their market. I build Minimum Viable Products that validate your concept while keeping costs controlled and timelines short. Perfect for getting your idea in front of users and investors quickly.
-                            </p>
-                            
-                            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <h3 class="text-xl font-semibold text-navy mb-3">Rapid Prototyping</h3>
-                                    <ul class="text-gray-600 space-y-2">
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Quick concept validation
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Core feature focus
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            User feedback integration
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                <div>
-                                    <h3 class="text-xl font-semibold text-navy mb-3">Market Ready</h3>
-                                    <ul class="text-gray-600 space-y-2">
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Scalable architecture
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Production deployment
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Growth pathway
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-light-gray p-4 rounded-lg">
-                                <h4 class="font-semibold text-navy mb-2">Perfect for:</h4>
-                                <p class="text-gray-600">Startups and entrepreneurs who need to test their ideas quickly without breaking the bank. Ideal for founders seeking affordable development to validate concepts before committing to full-scale builds.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Maintenance & Support -->
-            <div class="mb-16">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div class="md:flex">
-                        <div class="md:w-1/3 bg-purple-500 p-8 flex items-center justify-center">
-                            <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="md:w-2/3 p-8">
-                            <h2 class="text-3xl font-bold text-navy mb-4">Maintenance & Support</h2>
-                            <p class="text-lg text-gray-600 mb-6">
-                                Ongoing security updates, performance optimization, and feature enhancements. Keep your applications running smoothly and securely with our comprehensive support services.
-                            </p>
-                            
-                            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <h3 class="text-xl font-semibold text-navy mb-3">Security & Updates</h3>
-                                    <ul class="text-gray-600 space-y-2">
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Security patches
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Framework updates
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Vulnerability monitoring
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                <div>
-                                    <h3 class="text-xl font-semibold text-navy mb-3">Performance & Growth</h3>
-                                    <ul class="text-gray-600 space-y-2">
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Performance optimization
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Feature enhancements
-                                        </li>
-                                        <li class="flex items-center">
-                                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Scaling support
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-light-gray p-4 rounded-lg">
-                                <h4 class="font-semibold text-navy mb-2">Perfect for:</h4>
-                                <p class="text-gray-600">Businesses with existing applications who want to ensure continued security, performance, and growth without managing technical details in-house.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="order-1 lg:order-2">
+                <div class="inline-block bg-orange-100 text-orange-700 text-sm font-semibold px-3 py-1 rounded-full mb-4">Support &amp; Maintenance</div>
+                <h2 class="text-3xl font-bold text-navy mb-4">Support &amp; Maintenance</h2>
+                <p class="text-lg text-gray-600 mb-6">Ensuring your software solution is bug-free and accessible 24/7. We provide ongoing security updates, performance optimization, and feature enhancements so your team can focus on the business.</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Security patches and vulnerability monitoring</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Performance optimization and uptime monitoring</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Feature enhancements and iterative improvements</span></li>
+                    <li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Dedicated support with fast response times</span></li>
+                </ul>
+                <a href="/contact" class="bg-electric-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-block">Get Support</a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Technology Stack -->
-    <section class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Technologies & Expertise</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Modern, proven technologies that ensure your applications are fast, secure, and scalable</p>
+<!-- TECH STACK -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-navy mb-4">Our Technology Stack</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Proven technologies that power enterprise-grade applications</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <div class="text-center p-4 bg-light-gray rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-3"><span class="text-white font-bold text-xs">React</span></div>
+                <p class="text-sm font-medium text-gray-700">React</p>
             </div>
-            
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white font-bold text-xl">React</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-navy mb-2">React Development</h3>
-                    <p class="text-gray-600 text-sm">Build interactive, modern user interfaces with React. Perfect for SaaS platforms and progressive web apps.</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white font-bold text-xl">PHP</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-navy mb-2">PHP Backend</h3>
-                    <p class="text-gray-600 text-sm">Reliable server-side development with PHP for robust, scalable backend systems.</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white font-bold text-xl">DB</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-navy mb-2">Database Design</h3>
-                    <p class="text-gray-600 text-sm">PostgreSQL, MySQL, and MongoDB for efficient data management and storage.</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white font-bold text-xl">PWA</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-navy mb-2">Progressive Web Apps</h3>
-                    <p class="text-gray-600 text-sm">Build apps that work offline and feel native on any device.</p>
-                </div>
+            <div class="text-center p-4 bg-light-gray rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-3"><span class="text-white font-bold text-xs">Node</span></div>
+                <p class="text-sm font-medium text-gray-700">Node.js</p>
             </div>
-
-            <div class="mt-12 bg-light-gray p-8 rounded-lg">
-                <h3 class="text-2xl font-bold text-navy mb-4 text-center">Why These Technologies?</h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="font-semibold text-navy mb-2">Cost-Effective</h4>
-                        <p class="text-gray-600">Using established, open-source technologies keeps development costs low while maintaining high quality. Perfect for startups working within a budget.</p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-navy mb-2">Scalable</h4>
-                        <p class="text-gray-600">These technologies power some of the world's largest applications. Your MVP can grow into a full-scale platform without needing to rebuild from scratch.</p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-navy mb-2">Fast Development</h4>
-                        <p class="text-gray-600">Mature ecosystems mean faster development times. I can leverage existing libraries and tools to build your application quickly without reinventing the wheel.</p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-navy mb-2">Easy to Hire For</h4>
-                        <p class="text-gray-600">If you eventually need to hire additional developers or bring development in-house, these popular technologies make it easy to find qualified talent.</p>
-                    </div>
-                </div>
+            <div class="text-center p-4 bg-light-gray rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-3"><span class="text-white font-bold text-xs">PHP</span></div>
+                <p class="text-sm font-medium text-gray-700">PHP</p>
+            </div>
+            <div class="text-center p-4 bg-light-gray rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 bg-blue-800 rounded-lg flex items-center justify-center mx-auto mb-3"><span class="text-white font-bold text-xs">WP</span></div>
+                <p class="text-sm font-medium text-gray-700">WordPress</p>
+            </div>
+            <div class="text-center p-4 bg-light-gray rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center mx-auto mb-3"><span class="text-white font-bold text-xs">OJS</span></div>
+                <p class="text-sm font-medium text-gray-700">Open Journal Systems</p>
+            </div>
+            <div class="text-center p-4 bg-light-gray rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-3"><span class="text-white font-bold text-xs">AWS</span></div>
+                <p class="text-sm font-medium text-gray-700">AWS</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- CTA Section -->
-    <section class="py-16 bg-navy">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Which Service Is Right for You?</h2>
-            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Let's discuss your startup idea and find the perfect solution to bring it to life</p>
-            <a href="/contact" class="bg-electric-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 inline-block">
-                Schedule a Consultation
-            </a>
+<!-- CTA -->
+<section class="py-16 bg-navy">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Not Sure Which Service You Need?</h2>
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Our experts will analyze your requirements and recommend the right approach within 24 hours.</p>
+        <a href="/contact" class="bg-electric-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-500 transition inline-block">Let's Talk About Your Project</a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8">
+            <div class="col-span-2"><h3 class="text-2xl font-bold mb-4">App Craft Services</h3><p class="text-gray-300">We build custom software solutions that scale with your business.</p></div>
+            <div><h4 class="text-lg font-semibold mb-4">Company</h4><ul class="space-y-2"><li><a href="/" class="text-gray-300 hover:text-white">Home</a></li><li><a href="/services" class="text-gray-300 hover:text-white">Services</a></li><li><a href="/work" class="text-gray-300 hover:text-white">Our Work</a></li><li><a href="/process" class="text-gray-300 hover:text-white">Process</a></li><li><a href="/blog" class="text-gray-300 hover:text-white">Blog</a></li><li><a href="/contact" class="text-gray-300 hover:text-white">Contact</a></li></ul></div>
+            <div><h4 class="text-lg font-semibold mb-4">Services</h4><ul class="space-y-2"><li><a href="/services" class="text-gray-300 hover:text-white">Custom Web Apps</a></li><li><a href="/services" class="text-gray-300 hover:text-white">MVP Development</a></li><li><a href="/services" class="text-gray-300 hover:text-white">CMS &amp; Academic Portals</a></li><li><a href="/services" class="text-gray-300 hover:text-white">Maintenance &amp; Support</a></li></ul></div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="col-span-2">
-                    <h3 class="text-2xl font-bold mb-4">App Craft Services</h3>
-                    <p class="text-gray-300 mb-4">Professional web development services for growing businesses. We build custom solutions that scale with your success.</p>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
-                        <li><a href="/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
-                        <li><a href="/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
-                        <li><a href="/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
-                        <li><a href="/terms" class="text-gray-300 hover:text-white transition duration-300">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Services</h4>
-                    <ul class="space-y-2">
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p class="text-gray-300">
-                    Copyright © <span id="current-year"></span> App Craft Services. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="../assets/cache-buster.js"></script>
-    <script src="../assets/script.js"></script>
-    <!-- Analytics removed - was causing Chrome security warnings -->
-    
-    <!-- Editor Mode Detection -->
-    <script>
-        // Check if page is loaded in editor mode
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('editor') === '1') {
-            // Add editor mode styles and functionality
-            document.body.classList.add('editor-mode');
-            
-            // Prevent normal navigation in editor mode
-            document.addEventListener('click', function(e) {
-                const link = e.target.closest('a');
-                if (link && link.href && !link.href.includes('mailto:') && !link.href.includes('tel:')) {
-                    e.preventDefault();
-                }
-            });
-        }
-    </script>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center"><p class="text-gray-300">Copyright &copy; <span id="current-year"></span> App Craft Services. All rights reserved.</p></div>
+    </div>
+</footer>
+<script src="../assets/cache-buster.js"></script>
+<script src="../assets/script.js"></script>
+<script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    document.getElementById('mobile-menu-button').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
+</script>
 </body>
 </html>

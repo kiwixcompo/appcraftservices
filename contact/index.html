@@ -3,472 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17861189621"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-17861189621');
-    </script>
-    
-    <!-- Event snippet for Submit lead form conversion page -->
-    <script>
-      gtag('event', 'conversion', {
-          'send_to': 'AW-17861189621/T_F2CMGFjOAbEPW_8MRC',
-          'value': 1.0,
-          'currency': 'USD'
-      });
-    </script>
-    <title>Contact - App Craft Services | Get Your Free Consultation</title>
-    <meta name="description" content="Get in touch with App Craft Services. Schedule your free consultation and start building your custom web application today.">
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-17861189621');</script>
+    <script>gtag('event','conversion',{'send_to':'AW-17861189621/T_F2CMGFjOAbEPW_8MRC','value':1.0,'currency':'USD'});</script>
+    <title>Let's Talk | Contact App Craft Services</title>
+    <meta name="description" content="Contact App Craft Services to build the right product with the right team. Our experts will analyze your requirements and respond within 24 hours with a detailed proposal.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://appcraftservices.com/contact">
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'navy': '#1e3a8a',
-                        'electric-blue': '#3b82f6',
-                        'light-gray': '#f8fafc'
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{colors:{'navy':'#1e3a8a','electric-blue':'#3b82f6','light-gray':'#f8fafc'}}}}</script>
     <link rel="stylesheet" href="../assets/styles.css">
     <link rel="stylesheet" href="../assets/mobile-responsive.css">
 </head>
 <body class="bg-white">
-    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0">
-                    <a href="/" class="flex items-center logo-admin-trigger">
-                        <img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto" loading="eager">
+<!-- NAV -->
+<nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="/" class="flex items-center logo-admin-trigger"><img src="../assets/logo.png" alt="App Craft Services" class="h-10 w-auto" loading="eager"></a>
+            <div class="hidden md:flex items-baseline space-x-1">
+                <a href="/" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Home</a>
+                <a href="/services" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Services</a>
+                <a href="/work" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Our Work</a>
+                <a href="/process" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Process</a>
+                <a href="/blog" class="text-gray-700 hover:text-electric-blue px-3 py-2 text-sm font-medium">Blog</a>
+                <a href="/contact" class="text-navy px-3 py-2 text-sm font-medium">Contact</a>
+                <a href="/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition ml-2">Let's Talk</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div class="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+            <a href="/" class="block px-3 py-2 text-gray-700">Home</a>
+            <a href="/services" class="block px-3 py-2 text-gray-700">Services</a>
+            <a href="/work" class="block px-3 py-2 text-gray-700">Our Work</a>
+            <a href="/process" class="block px-3 py-2 text-gray-700">Process</a>
+            <a href="/blog" class="block px-3 py-2 text-gray-700">Blog</a>
+            <a href="/contact" class="block px-3 py-2 text-navy font-medium">Contact</a>
+            <a href="/contact" class="block px-3 py-2 bg-electric-blue text-white rounded-md font-semibold">Let's Talk</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Contact Us to Build the Right Product With the Right Team</h1>
+        <p class="text-xl text-blue-100 max-w-3xl mx-auto">Tell us about your project. Our experts will analyze your requirements and get back to you within 24 hours.</p>
+    </div>
+</section>
+
+<!-- PROMISE BANNER -->
+<section class="bg-electric-blue py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-3 gap-6 text-center text-white">
+            <div class="flex items-center justify-center space-x-3">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="font-medium">Response within 24 hours</span>
+            </div>
+            <div class="flex items-center justify-center space-x-3">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <span class="font-medium">NDA available on request</span>
+            </div>
+            <div class="flex items-center justify-center space-x-3">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                <span class="font-medium">Detailed proposal with estimates &amp; timelines</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FORM + SIDEBAR -->
+<section class="py-16 bg-light-gray">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-12">
+            <!-- FORM -->
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-navy mb-2">Tell Us About Your Project</h2>
+                <p class="text-gray-600 mb-8">Fill in the details below and we'll put together a custom proposal tailored to your goals.</p>
+
+                <form id="contact-form" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                            <input type="text" id="name" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition" placeholder="John Smith">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Work Email *</label>
+                            <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition" placeholder="john@company.com">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company / Organization</label>
+                            <input type="text" id="company" name="company" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition" placeholder="Acme Corp">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition" placeholder="+1 (555) 000-0000">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="project-type" class="block text-sm font-medium text-gray-700 mb-2">Type of Project</label>
+                        <select id="project-type" name="project-type" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition">
+                            <option value="">Select a project type</option>
+                            <option value="custom-web-app">Custom Web Application</option>
+                            <option value="mvp-development">MVP Development</option>
+                            <option value="cms-portal">Enterprise CMS / Academic Portal</option>
+                            <option value="ojs-installation">OJS Installation &amp; Customization</option>
+                            <option value="wordpress">WordPress Design &amp; Development</option>
+                            <option value="maintenance">Maintenance &amp; Support</option>
+                            <option value="consultation">Technical Consultation</option>
+                            <option value="other">Other / Not Sure</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Estimated Budget</label>
+                        <select id="budget" name="budget" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition">
+                            <option value="">Select budget range</option>
+                            <option value="5k-10k">$5,000 – $10,000</option>
+                            <option value="10k-25k">$10,000 – $25,000</option>
+                            <option value="25k-plus">$25,000+</option>
+                            <option value="discuss">Prefer to discuss</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="project-details" class="block text-sm font-medium text-gray-700 mb-2">Project Description *</label>
+                        <textarea id="project-details" name="project-details" rows="5" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition resize-vertical" placeholder="Describe your project, the problem you're solving, key features needed, and any specific technical requirements..."></textarea>
+                    </div>
+
+                    <!-- CAPTCHA -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Security Verification *</label>
+                        <div class="flex items-center space-x-4">
+                            <span id="captcha-question" class="text-lg font-semibold text-navy"></span>
+                            <span class="text-lg">=</span>
+                            <input type="number" id="captcha-answer" name="captcha_answer" required class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue text-center" placeholder="?">
+                            <button type="button" onclick="generateCaptcha()" class="text-electric-blue hover:text-blue-700 text-sm font-medium">Refresh</button>
+                        </div>
+                        <input type="hidden" id="captcha-correct" name="captcha_correct" value="">
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full bg-electric-blue text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="submit-text">Send Message</span>
+                        <svg id="submit-icon" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        <svg id="loading-icon" class="w-5 h-5 ml-2 animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </button>
+                </form>
+
+                <div id="success-message" class="hidden mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Thank you! We'll review your project and get back to you within 24 hours with a detailed proposal.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="space-y-6">
+                <div class="bg-navy text-white rounded-2xl p-8">
+                    <h3 class="text-xl font-bold mb-6">What Happens Next?</h3>
+                    <ol class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="bg-electric-blue text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">1</span>
+                            <div><p class="font-medium">We review your requirements</p><p class="text-blue-200 text-sm mt-1">Our team analyzes your project details within hours</p></div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-electric-blue text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">2</span>
+                            <div><p class="font-medium">We contact you within 24 hours</p><p class="text-blue-200 text-sm mt-1">To clarify requirements and schedule a discovery call</p></div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-electric-blue text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">3</span>
+                            <div><p class="font-medium">NDA signed if needed</p><p class="text-blue-200 text-sm mt-1">We'll sign an NDA to guarantee your privacy</p></div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-electric-blue text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">4</span>
+                            <div><p class="font-medium">Detailed proposal delivered</p><p class="text-blue-200 text-sm mt-1">With estimates, timelines, and team CVs</p></div>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-md p-6">
+                    <h4 class="font-bold text-navy mb-4">Prefer Email?</h4>
+                    <a href="mailto:hello@appcraftservices.com" class="flex items-center text-electric-blue hover:text-blue-700 font-medium">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        hello@appcraftservices.com
                     </a>
                 </div>
-                
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                        <a href="/process" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Process</a>
-                        <a href="/services" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Services</a>
-                        <a href="/pricing" class="text-gray-700 hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
-                        <a href="/contact" class="text-navy hover:text-electric-blue px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        <a href="/contact" class="bg-electric-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
-                    </div>
-                </div>
 
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-gray-700 hover:text-electric-blue focus:outline-none focus:text-electric-blue">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
+                <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+                    <h4 class="font-bold text-navy mb-3">Our Commitment</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed">Our experts will analyze your requirements and contact you within 24 hours. If needed, we'll sign an NDA to guarantee your privacy. You'll receive a detailed proposal with estimates, timelines, and team CVs.</p>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <div id="mobile-menu" class="md:hidden hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-                <a href="/" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="/process" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Process</a>
-                <a href="/services" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Services</a>
-                <a href="/pricing" class="text-gray-700 hover:text-electric-blue block px-3 py-2 rounded-md text-base font-medium">Pricing</a>
-                <a href="/contact" class="text-navy block px-3 py-2 rounded-md text-base font-medium">Contact</a>
-                <a href="/contact" class="bg-electric-blue text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-300">Get Started</a>
-            </div>
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8">
+            <div class="col-span-2"><h3 class="text-2xl font-bold mb-4">App Craft Services</h3><p class="text-gray-300">We build custom software solutions that scale with your business.</p></div>
+            <div><h4 class="text-lg font-semibold mb-4">Company</h4><ul class="space-y-2"><li><a href="/" class="text-gray-300 hover:text-white">Home</a></li><li><a href="/services" class="text-gray-300 hover:text-white">Services</a></li><li><a href="/work" class="text-gray-300 hover:text-white">Our Work</a></li><li><a href="/process" class="text-gray-300 hover:text-white">Process</a></li><li><a href="/blog" class="text-gray-300 hover:text-white">Blog</a></li><li><a href="/contact" class="text-gray-300 hover:text-white">Contact</a></li></ul></div>
+            <div><h4 class="text-lg font-semibold mb-4">Services</h4><ul class="space-y-2"><li><a href="/services" class="text-gray-300 hover:text-white">Custom Web Apps</a></li><li><a href="/services" class="text-gray-300 hover:text-white">MVP Development</a></li><li><a href="/services" class="text-gray-300 hover:text-white">CMS &amp; Academic Portals</a></li><li><a href="/services" class="text-gray-300 hover:text-white">Maintenance &amp; Support</a></li></ul></div>
         </div>
-    </nav>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center"><p class="text-gray-300">Copyright &copy; <span id="current-year"></span> App Craft Services. All rights reserved.</p></div>
+    </div>
+</footer>
 
-    <section class="pt-20 pb-16 bg-gradient-to-br from-navy to-blue-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Let's Build Something Great</h1>
-                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                    Ready to turn your startup idea into reality? Schedule your initial consultation today.
-                </p>
-            </div>
-        </div>
-    </section>
+<script src="../assets/cache-buster.js"></script>
+<script src="../assets/script.js"></script>
+<script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    document.getElementById('mobile-menu-button').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
 
-    <section class="py-16 bg-light-gray">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="grid lg:grid-cols-2">
-                    <div class="p-4 sm:p-8 lg:p-12">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-navy mb-4 sm:mb-6">Get Your Free Consultation</h2>
-                        <p class="text-gray-600 mb-6 sm:mb-8">Tell us about your startup idea and I'll get back to you within 24 hours with next steps. Whether you're looking to build an MVP, need a custom dashboard, or want to turn your spreadsheet into a web application, I'm here to help.</p>
-                        
-                        <form id="contact-form" class="space-y-4 sm:space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                                <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                                    <input type="text" id="name" name="name" required class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base">
-                                </div>
-                                <div>
-                                    <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
-                                    <input type="text" id="company" name="company" class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                <input type="email" id="email" name="email" required class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base">
-                            </div>
-                            
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                <input type="tel" id="phone" name="phone" class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base" placeholder="+1 (555) 123-4567">
-                            </div>
-                            
-                            <div>
-                                <label for="project-type" class="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
-                                <select id="project-type" name="project-type" class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base">
-                                    <option value="">Select a project type</option>
-                                    <option value="mvp-development">MVP Development</option>
-                                    <option value="saas-platform">SaaS Platform</option>
-                                    <option value="custom-dashboard">Custom Dashboard/Portal</option>
-                                    <option value="spreadsheet-to-app">Turn Spreadsheet into App</option>
-                                    <option value="essential-app">Essential App ($800 - $2,000)</option>
-                                    <option value="custom-enterprise">Custom/Enterprise (Custom Quote)</option>
-                                    <option value="maintenance">Maintenance & Support</option>
-                                    <option value="not-sure">Not Sure - Need Consultation</option>
-                                </select>
-                            </div>
+    let captchaAnswer = 0;
+    function generateCaptcha() {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        const ops = ['+', '-'];
+        const op = ops[Math.floor(Math.random() * ops.length)];
+        let q, ans;
+        if (op === '+') { q = `${a} + ${b}`; ans = a + b; }
+        else { const big = Math.max(a,b), small = Math.min(a,b); q = `${big} - ${small}`; ans = big - small; }
+        document.getElementById('captcha-question').textContent = q;
+        document.getElementById('captcha-correct').value = ans;
+        captchaAnswer = ans;
+    }
+    generateCaptcha();
 
-                            <div>
-                                <label for="timeline" class="block text-sm font-medium text-gray-700 mb-2">Desired Timeline</label>
-                                <select id="timeline" name="timeline" class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base">
-                                    <option value="">Select timeline</option>
-                                    <option value="asap">ASAP (Rush project)</option>
-                                    <option value="1-month">Within 1 month</option>
-                                    <option value="2-3-months">2-3 months</option>
-                                    <option value="3-6-months">3-6 months</option>
-                                    <option value="flexible">Flexible</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="project-details" class="block text-sm font-medium text-gray-700 mb-2">Project Details *</label>
-                                <textarea id="project-details" name="project-details" rows="5" required placeholder="Please describe your startup idea, including:&#10;• What problem you're trying to solve&#10;• Key features you need&#10;• Who will be using the application&#10;• Any specific requirements or integrations" class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base resize-vertical"></textarea>
-                            </div>
-
-                            <div>
-                                <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Budget Range</label>
-                                <select id="budget" name="budget" class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-300 text-base">
-                                    <option value="">Select budget range</option>
-                                    <option value="800-2k">$800 - $2,000 (Essential App)</option>
-                                    <option value="custom-quote">Custom Quote (Enterprise Solutions)</option>
-                                    <option value="discuss">Prefer to discuss</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Captcha Verification -->
-                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-3">Security Verification *</label>
-                                <div class="flex items-center space-x-4">
-                                    <div class="flex items-center space-x-2">
-                                        <span id="captcha-question" class="text-lg font-semibold text-navy"></span>
-                                        <span class="text-lg">=</span>
-                                        <input type="number" id="captcha-answer" name="captcha_answer" required 
-                                               class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent text-center"
-                                               placeholder="?">
-                                    </div>
-                                    <button type="button" onclick="generateCaptcha()" class="text-electric-blue hover:text-blue-700 text-sm font-medium">
-                                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                        </svg>
-                                        New Question
-                                    </button>
-                                </div>
-                                <input type="hidden" id="captcha-correct" name="captcha_correct" value="">
-                                <p class="text-xs text-gray-500 mt-2">Please solve the math problem to verify you're human</p>
-                            </div>
-                            
-                            <button type="submit" id="submit-btn" class="w-full bg-electric-blue text-white py-3 sm:py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 flex items-center justify-center min-h-[44px] text-base disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span id="submit-text">Send Message</span>
-                                <svg id="submit-icon" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                </svg>
-                                <svg id="loading-icon" class="w-5 h-5 ml-2 animate-spin hidden" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            </button>
-                        </form>
-                        
-                        <div id="success-message" class="hidden mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span>Thank you! We'll get back to you within 24 hours.</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-navy p-8 lg:p-12 text-white">
-                        <h3 class="text-2xl font-bold mb-6">Why Choose App Craft Services?</h3>
-                        
-                        <div class="space-y-6">
-                            <div class="flex items-start">
-                                <div class="w-8 h-8 bg-electric-blue rounded-full flex items-center justify-center mr-4 mt-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold mb-2">Fast Response</h4>
-                                    <p class="text-blue-100">We respond to all inquiries within 24 hours, usually much faster.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="w-8 h-8 bg-electric-blue rounded-full flex items-center justify-center mr-4 mt-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold mb-2">Free Consultation</h4>
-                                    <p class="text-blue-100">No cost, no obligation consultation to understand your needs.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="w-8 h-8 bg-electric-blue rounded-full flex items-center justify-center mr-4 mt-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold mb-2">Quick Turnaround</h4>
-                                    <p class="text-blue-100">Essential apps delivered in 2-4 weeks from signed agreement.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="w-8 h-8 bg-electric-blue rounded-full flex items-center justify-center mr-4 mt-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold mb-2">Secure Process</h4>
-                                    <p class="text-blue-100">Digital contracts and secure payment processing for your protection.</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 pt-8 border-t border-blue-700">
-                            <h4 class="font-semibold mb-4">What Happens Next?</h4>
-                            <ol class="space-y-3 text-blue-100">
-                                <li class="flex items-start">
-                                    <span class="bg-electric-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">1</span>
-                                    <span>We review your project details</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="bg-electric-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">2</span>
-                                    <span>Schedule a consultation call</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="bg-electric-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">3</span>
-                                    <span>Receive detailed proposal</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="bg-electric-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">4</span>
-                                    <span>Start building your solution</span>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-navy mb-8">Prefer a Different Way to Connect?</h2>
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="p-6">
-                    <div class="w-16 h-16 bg-electric-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-navy mb-2">Email</h3>
-                    <p class="text-gray-600 mb-4">Send us a detailed email about your project</p>
-                    <a href="mailto:hello@appcraftservices.com" class="text-electric-blue hover:text-blue-700 font-medium">hello@appcraftservices.com</a>
-                </div>
-                
-                <div class="p-6">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-navy mb-2">Schedule Direct</h3>
-                    <p class="text-gray-600 mb-4">Book a consultation slot that works for you</p>
-                    <a href="/schedule" class="text-blue-600 hover:text-blue-700 font-medium">View Calendar</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Work With Me Section -->
-    <section class="py-16 bg-light-gray">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-navy mb-4">Why Work With a Freelance Developer?</h2>
-                <p class="text-xl text-gray-600">Direct communication, faster delivery, and better value</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold text-navy mb-3">More Affordable</h3>
-                    <p class="text-gray-600">Without agency overhead, I can offer competitive rates while maintaining high quality. Perfect for startups watching their budget.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold text-navy mb-3">Direct Communication</h3>
-                    <p class="text-gray-600">You work directly with the person building your application. No account managers or middlemen—just clear, direct communication.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold text-navy mb-3">Faster Turnaround</h3>
-                    <p class="text-gray-600">With streamlined processes and no bureaucracy, I can move quickly. Most MVPs are delivered in 2-4 weeks.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold text-navy mb-3">Personal Investment</h3>
-                    <p class="text-gray-600">Your success is my success. I'm personally invested in making sure your project works and helps you achieve your goals.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="col-span-2">
-                    <h3 class="text-2xl font-bold mb-4">App Craft Services</h3>
-                    <p class="text-gray-300 mb-4">Professional web development services for growing businesses. We build custom solutions that scale with your success.</p>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="/" class="text-gray-300 hover:text-white transition duration-300">Home</a></li>
-                        <li><a href="/process" class="text-gray-300 hover:text-white transition duration-300">Process</a></li>
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Services</a></li>
-                        <li><a href="/pricing" class="text-gray-300 hover:text-white transition duration-300">Pricing</a></li>
-                        <li><a href="/contact" class="text-gray-300 hover:text-white transition duration-300">Contact</a></li>
-                        <li><a href="/terms" class="text-gray-300 hover:text-white transition duration-300">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Services</h4>
-                    <ul class="space-y-2">
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Custom Web Apps</a></li>
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">MVP Development</a></li>
-                        <li><a href="/services" class="text-gray-300 hover:text-white transition duration-300">Maintenance & Support</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p class="text-gray-300">
-                    Copyright © <span id="current-year"></span> App Craft Services. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="../assets/cache-buster.js"></script>
-    <script src="../assets/script.js"></script>
-    <!-- Analytics removed - was causing Chrome security warnings -->
-    
-    <script>
-        // CAPTCHA functionality
-        let captchaAnswer = 0;
-        
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const operators = ['+', '-', '*'];
-            const operator = operators[Math.floor(Math.random() * operators.length)];
-            
-            let question, answer;
-            
-            switch(operator) {
-                case '+':
-                    question = `${num1} + ${num2}`;
-                    answer = num1 + num2;
-                    break;
-                case '-':
-                    // Ensure positive result
-                    const larger = Math.max(num1, num2);
-                    const smaller = Math.min(num1, num2);
-                    question = `${larger} - ${smaller}`;
-                    answer = larger - smaller;
-                    break;
-                case '*':
-                    // Use smaller numbers for multiplication
-                    const small1 = Math.floor(Math.random() * 5) + 1;
-                    const small2 = Math.floor(Math.random() * 5) + 1;
-                    question = `${small1} × ${small2}`;
-                    answer = small1 * small2;
-                    break;
-            }
-            
-            document.getElementById('captcha-question').textContent = question;
-            document.getElementById('captcha-correct').value = answer;
-            captchaAnswer = answer;
-            
-            // Clear the input field
-            document.getElementById('captcha-answer').value = '';
-        }
-        
-        // Generate initial CAPTCHA when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const userAnswer = parseInt(document.getElementById('captcha-answer').value);
+        if (userAnswer !== captchaAnswer) {
+            alert('Incorrect answer. Please try again.');
             generateCaptcha();
-        });
-        
-        // Validate CAPTCHA before form submission
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            const userAnswer = parseInt(document.getElementById('captcha-answer').value);
-            const correctAnswer = parseInt(document.getElementById('captcha-correct').value);
-            
-            if (userAnswer !== correctAnswer) {
-                e.preventDefault();
-                alert('Please solve the math problem correctly to verify you are human.');
-                generateCaptcha(); // Generate new CAPTCHA
-                return false;
-            }
-        });
-        
-        // Check if page is loaded in editor mode
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('editor') === '1') {
-            // Add editor mode styles and functionality
-            document.body.classList.add('editor-mode');
-            
-            // Prevent normal navigation in editor mode
-            document.addEventListener('click', function(e) {
-                const link = e.target.closest('a');
-                if (link && link.href && !link.href.includes('mailto:') && !link.href.includes('tel:')) {
-                    e.preventDefault();
-                }
-            });
+            document.getElementById('captcha-answer').value = '';
+            return;
         }
-    </script>
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        document.getElementById('submit-text').textContent = 'Sending...';
+        document.getElementById('submit-icon').classList.add('hidden');
+        document.getElementById('loading-icon').classList.remove('hidden');
+        try {
+            const formData = new FormData(this);
+            const response = await fetch('../api/contact.php', { method: 'POST', body: formData });
+            const result = await response.json();
+            if (result.success) {
+                this.classList.add('hidden');
+                document.getElementById('success-message').classList.remove('hidden');
+            } else {
+                alert(result.message || 'Error sending message. Please try again.');
+                btn.disabled = false;
+                document.getElementById('submit-text').textContent = 'Send Message';
+                document.getElementById('submit-icon').classList.remove('hidden');
+                document.getElementById('loading-icon').classList.add('hidden');
+            }
+        } catch (err) {
+            alert('Network error. Please try again or email us directly.');
+            btn.disabled = false;
+            document.getElementById('submit-text').textContent = 'Send Message';
+            document.getElementById('submit-icon').classList.remove('hidden');
+            document.getElementById('loading-icon').classList.add('hidden');
+        }
+    });
+</script>
 </body>
 </html>
