@@ -37,6 +37,13 @@ function markdownToHtml($text) {
     $text = preg_replace('/\*\*(.+?)\*\*/s', '<strong class="font-semibold">$1</strong>', $text);
     $text = preg_replace('/\*(.+?)\*/s', '<em class="italic">$1</em>', $text);
     
+    // Images — must come before links so ![alt](url) is matched first
+    $text = preg_replace(
+        '/!\[([^\]]*)\]\(([^\)]+)\)/',
+        '<img src="$2" alt="$1" class="w-full rounded-lg shadow-md my-6" loading="lazy" onerror="this.style.display=\'none\'">',
+        $text
+    );
+    
     // Links
     $text = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2" class="text-electric-blue hover:underline">$1</a>', $text);
     
@@ -51,8 +58,8 @@ function markdownToHtml($text) {
     // Wrap lists
     $text = preg_replace('/(<li[^>]*>.*<\/li>)/s', '<ul class="list-disc my-4">$1</ul>', $text);
     
-    // Paragraphs
-    $text = preg_replace('/^(?!<[hul]|<pre)(.+)$/m', '<p class="mb-4 text-gray-700 leading-relaxed">$1</p>', $text);
+    // Paragraphs — skip lines that are already HTML block elements
+    $text = preg_replace('/^(?!<h[1-6]|<ul|<li|<pre|<img|<p)(.+)$/m', '<p class="mb-4 text-gray-700 leading-relaxed">$1</p>', $text);
     
     return $text;
 }

@@ -1556,11 +1556,11 @@ function handleContentImagePaste(file, textarea) {
     const cursorPos = textarea.selectionStart;
     const before = textarea.value.substring(0, cursorPos);
     const after  = textarea.value.substring(cursorPos);
-    const placeholder = '![Uploading image...]()';
+    const placeholder = '\n![Uploading...]()\n';
     textarea.value = before + placeholder + after;
     textarea.selectionStart = textarea.selectionEnd = cursorPos + placeholder.length;
     
-    // Convert to WebP then upload
+    // Convert to WebP using canvas — same technique as featured image upload
     const reader = new FileReader();
     reader.onload = function(e) {
         const img = new Image();
@@ -1571,21 +1571,23 @@ function handleContentImagePaste(file, textarea) {
             canvas.getContext('2d').drawImage(img, 0, 0);
             
             canvas.toBlob(function(blob) {
-                const filename = `blog-image-${Date.now()}.webp`;
+                const timestamp = Date.now();
+                const filename = `blog-image-${timestamp}.webp`;
                 const formData = new FormData();
                 formData.append('image', blob, filename);
                 
+                // Same endpoint as featured image
                 fetch('api/upload_blog_image.php', { method: 'POST', body: formData })
                     .then(r => r.json())
                     .then(data => {
                         if (data.success) {
-                            // Replace placeholder with real markdown image
-                            const altText = filename.replace('.webp', '').replace(/-/g, ' ');
-                            const markdown = `![${altText}](/${data.path})`;
+                            // data.path = "assets/blog/filename.webp"
+                            // Use same path prefix as featured image: ../assets/blog/...
+                            // post.php is served from /blog/ so ../ resolves to site root
+                            const markdown = `\n![image](../${data.path})\n`;
                             textarea.value = textarea.value.replace(placeholder, markdown);
                             showNotification('Image uploaded and inserted', 'success');
                         } else {
-                            // Remove placeholder on failure
                             textarea.value = textarea.value.replace(placeholder, '');
                             showNotification(data.message || 'Image upload failed', 'error');
                         }
