@@ -1240,38 +1240,38 @@ function showAddBlogModal() {
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Content * (Markdown supported)
+                            Content *
                             <span class="ml-2 text-xs font-normal text-blue-500 bg-blue-50 px-2 py-0.5 rounded">
-                                <i class="fas fa-image mr-1"></i>Paste images with Ctrl+V
+                                <i class="fas fa-paste mr-1"></i>Paste from Google Docs, Word, or Markdown
                             </span>
                         </label>
-                        <textarea id="blog-content" required rows="15"
-                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-                                  placeholder="Write your blog post content here. You can use Markdown formatting:
-
-## Heading 2
-### Heading 3
-
-**Bold text**
-*Italic text*
-
-- Bullet point
-- Another point
-
-1. Numbered list
-2. Another item
-
-[Link text](https://example.com)
-
-\`code\`
-
-\`\`\`
-code block
-\`\`\`"></textarea>
-                        <div class="mt-2 text-xs text-gray-600 space-y-1">
-                            <p><strong>Markdown Quick Reference:</strong></p>
-                            <p>## Heading | **Bold** | *Italic* | [Link](url) | \`code\` | - List item</p>
+                        <!-- Toolbar -->
+                        <div class="flex flex-wrap gap-1 p-2 bg-gray-50 border border-gray-300 rounded-t-lg border-b-0">
+                            <button type="button" onclick="blogEditorCmd('bold')" title="Bold" class="px-2 py-1 text-sm font-bold hover:bg-gray-200 rounded"><b>B</b></button>
+                            <button type="button" onclick="blogEditorCmd('italic')" title="Italic" class="px-2 py-1 text-sm italic hover:bg-gray-200 rounded"><i>I</i></button>
+                            <button type="button" onclick="blogEditorCmd('underline')" title="Underline" class="px-2 py-1 text-sm underline hover:bg-gray-200 rounded">U</button>
+                            <span class="w-px bg-gray-300 mx-1"></span>
+                            <button type="button" onclick="blogEditorHeading(2)" title="Heading 2" class="px-2 py-1 text-sm font-bold hover:bg-gray-200 rounded">H2</button>
+                            <button type="button" onclick="blogEditorHeading(3)" title="Heading 3" class="px-2 py-1 text-sm font-bold hover:bg-gray-200 rounded">H3</button>
+                            <span class="w-px bg-gray-300 mx-1"></span>
+                            <button type="button" onclick="blogEditorCmd('insertUnorderedList')" title="Bullet list" class="px-2 py-1 text-sm hover:bg-gray-200 rounded">• List</button>
+                            <button type="button" onclick="blogEditorCmd('insertOrderedList')" title="Numbered list" class="px-2 py-1 text-sm hover:bg-gray-200 rounded">1. List</button>
+                            <span class="w-px bg-gray-300 mx-1"></span>
+                            <button type="button" onclick="blogEditorInsertLink()" title="Insert link" class="px-2 py-1 text-sm hover:bg-gray-200 rounded">🔗 Link</button>
+                            <button type="button" onclick="document.getElementById('blog-content-img-upload').click()" title="Insert image" class="px-2 py-1 text-sm hover:bg-gray-200 rounded">🖼 Image</button>
+                            <input type="file" id="blog-content-img-upload" accept="image/*" class="hidden">
+                            <span class="w-px bg-gray-300 mx-1"></span>
+                            <button type="button" onclick="blogEditorCmd('removeFormat')" title="Clear formatting" class="px-2 py-1 text-xs text-gray-500 hover:bg-gray-200 rounded">Clear</button>
                         </div>
+                        <!-- Rich editor -->
+                        <div id="blog-content-editor"
+                             contenteditable="true"
+                             class="w-full min-h-64 p-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm leading-relaxed bg-white overflow-y-auto"
+                             style="min-height:320px; max-height:500px; overflow-y:auto;"
+                             data-placeholder="Write or paste your content here. Paste directly from Google Docs, Word, or a Markdown file — formatting is preserved automatically."></div>
+                        <!-- Hidden textarea keeps the markdown value for form submission -->
+                        <textarea id="blog-content" class="hidden" required></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Paste from Google Docs, Word, or any rich text source. Images paste inline and upload automatically.</p>
                     </div>
                     
                     <div>
@@ -1426,22 +1426,15 @@ code block
         }
     });
     
-    // Handle image paste directly into the content textarea
-    const contentTextarea = document.getElementById('blog-content');
-    contentTextarea.addEventListener('paste', function(e) {
-        const items = e.clipboardData && e.clipboardData.items;
-        if (!items) return;
-        
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf('image') !== -1) {
-                e.preventDefault(); // stop the browser pasting raw image data
-                const file = items[i].getAsFile();
-                handleContentImagePaste(file, contentTextarea);
-                break;
-            }
-        }
-        // Non-image pastes (text) fall through normally
+    // Handle image upload into content via toolbar button
+    document.getElementById('blog-content-img-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) insertImageIntoEditor(file);
+        this.value = '';
     });
+    
+    // Set up the rich editor
+    setupBlogEditor();
     
     // Handle form submission
     document.getElementById('blog-post-form').addEventListener('submit', function(e) {
@@ -1547,61 +1540,267 @@ function handleImageUpload(file) {
     reader.readAsDataURL(file);
 }
 
-// Handle image pasted directly into the content textarea
-// Uploads the image and inserts markdown syntax at the cursor
-function handleContentImagePaste(file, textarea) {
-    if (!file || !file.type.startsWith('image/')) return;
-    
-    // Show a temporary placeholder at cursor so the writer knows it's uploading
-    const cursorPos = textarea.selectionStart;
-    const before = textarea.value.substring(0, cursorPos);
-    const after  = textarea.value.substring(cursorPos);
-    const placeholder = '\n![Uploading...]()\n';
-    textarea.value = before + placeholder + after;
-    textarea.selectionStart = textarea.selectionEnd = cursorPos + placeholder.length;
-    
-    // Convert to WebP using canvas — same technique as featured image upload
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            canvas.width  = img.width;
-            canvas.height = img.height;
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            
-            canvas.toBlob(function(blob) {
-                const timestamp = Date.now();
-                const filename = `blog-image-${timestamp}.webp`;
-                const formData = new FormData();
-                formData.append('image', blob, filename);
-                
-                // Same endpoint as featured image
-                fetch('api/upload_blog_image.php', { method: 'POST', body: formData })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success) {
-                            // data.path = "assets/blog/filename.webp"
-                            // Use same path prefix as featured image: ../assets/blog/...
-                            // post.php is served from /blog/ so ../ resolves to site root
-                            const markdown = `\n![image](../${data.path})\n`;
-                            textarea.value = textarea.value.replace(placeholder, markdown);
-                            showNotification('Image uploaded and inserted', 'success');
-                        } else {
-                            textarea.value = textarea.value.replace(placeholder, '');
-                            showNotification(data.message || 'Image upload failed', 'error');
-                        }
-                    })
-                    .catch(() => {
-                        textarea.value = textarea.value.replace(placeholder, '');
-                        showNotification('Image upload failed', 'error');
-                    });
-            }, 'image/webp', 0.85);
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+// ─── Rich Blog Editor ────────────────────────────────────────────────────────
+
+function setupBlogEditor() {
+    const editor = document.getElementById('blog-content-editor');
+    if (!editor) return;
+
+    // Placeholder behaviour
+    editor.addEventListener('focus', () => editor.classList.add('focused'));
+    editor.addEventListener('blur',  () => editor.classList.remove('focused'));
+
+    // Intercept all paste events
+    editor.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const cd = e.clipboardData;
+
+        // 1. Image in clipboard (screenshot, copy from browser, etc.)
+        if (cd.items) {
+            for (const item of cd.items) {
+                if (item.type.startsWith('image/')) {
+                    insertImageIntoEditor(item.getAsFile());
+                    return;
+                }
+            }
+        }
+
+        // 2. Plain text that looks like markdown — insert as-is
+        const plain = cd.getData('text/plain');
+        const html  = cd.getData('text/html');
+
+        if (!html && plain) {
+            // Pure plain text / markdown file paste
+            insertTextAtCursor(plain);
+            return;
+        }
+
+        if (html) {
+            // 3. Rich HTML (Google Docs, Word, web page) — clean and insert
+            const clean = cleanPastedHtml(html);
+            document.execCommand('insertHTML', false, clean);
+        } else {
+            insertTextAtCursor(plain);
+        }
+    });
 }
+
+// Insert plain text at cursor position inside contenteditable
+function insertTextAtCursor(text) {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    // Preserve line breaks
+    const lines = text.split('\n');
+    const frag = document.createDocumentFragment();
+    lines.forEach((line, i) => {
+        if (i > 0) frag.appendChild(document.createElement('br'));
+        frag.appendChild(document.createTextNode(line));
+    });
+    range.insertNode(frag);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+// Strip junk from pasted HTML while keeping meaningful structure
+function cleanPastedHtml(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+
+    // Remove script/style/meta/link nodes
+    tmp.querySelectorAll('script,style,meta,link,head').forEach(n => n.remove());
+
+    // Remove Google Docs wrapper spans that carry no semantic value
+    tmp.querySelectorAll('span').forEach(span => {
+        // Keep spans that have meaningful inline styles (bold/italic via font-weight/style)
+        const s = span.style;
+        const isBold   = s.fontWeight === 'bold' || parseInt(s.fontWeight) >= 700;
+        const isItalic = s.fontStyle === 'italic';
+        if (isBold) {
+            const b = document.createElement('strong');
+            b.innerHTML = span.innerHTML;
+            span.replaceWith(b);
+        } else if (isItalic) {
+            const em = document.createElement('em');
+            em.innerHTML = span.innerHTML;
+            span.replaceWith(em);
+        } else {
+            // Unwrap — keep children, discard span
+            span.replaceWith(...span.childNodes);
+        }
+    });
+
+    // Strip all style/class/id attributes from remaining elements
+    tmp.querySelectorAll('*').forEach(el => {
+        el.removeAttribute('style');
+        el.removeAttribute('class');
+        el.removeAttribute('id');
+        el.removeAttribute('data-ccp-props');
+        el.removeAttribute('data-contrast');
+        // Keep href on <a>, src/alt on <img>
+    });
+
+    return tmp.innerHTML;
+}
+
+// Toolbar commands
+function blogEditorCmd(cmd) {
+    document.getElementById('blog-content-editor')?.focus();
+    document.execCommand(cmd, false, null);
+}
+
+function blogEditorHeading(level) {
+    const editor = document.getElementById('blog-content-editor');
+    if (!editor) return;
+    editor.focus();
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    const h = document.createElement('h' + level);
+    h.textContent = sel.toString() || 'Heading';
+    range.deleteContents();
+    range.insertNode(h);
+    range.setStartAfter(h);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function blogEditorInsertLink() {
+    const url = prompt('Enter URL:');
+    if (url) {
+        document.getElementById('blog-content-editor')?.focus();
+        document.execCommand('createLink', false, url);
+    }
+}
+
+// Insert image file into the editor — shows immediately, uploads in background
+function insertImageIntoEditor(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const editor = document.getElementById('blog-content-editor');
+    if (!editor) return;
+
+    // Show a loading placeholder immediately
+    const placeholder = document.createElement('img');
+    placeholder.alt = 'Uploading...';
+    placeholder.style.cssText = 'max-width:100%;opacity:0.5;border-radius:8px;margin:8px 0;';
+    placeholder.className = 'blog-content-img';
+
+    // Read as data URL for instant preview
+    const reader = new FileReader();
+    reader.onload = e => { placeholder.src = e.target.result; };
+    reader.readAsDataURL(file);
+
+    // Insert at cursor
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount) {
+        const range = sel.getRangeAt(0);
+        range.insertNode(placeholder);
+        range.setStartAfter(placeholder);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else {
+        editor.appendChild(placeholder);
+    }
+
+    // Convert to WebP and upload — same technique as featured image
+    const imgEl = new Image();
+    imgEl.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width  = imgEl.width;
+        canvas.height = imgEl.height;
+        canvas.getContext('2d').drawImage(imgEl, 0, 0);
+
+        canvas.toBlob(function(blob) {
+            const filename = `blog-image-${Date.now()}.webp`;
+            const formData = new FormData();
+            formData.append('image', blob, filename);
+
+            fetch('api/upload_blog_image.php', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        // Swap data URL for the real server path
+                        placeholder.src = `../${data.path}`;
+                        placeholder.style.opacity = '1';
+                        placeholder.dataset.serverPath = `../${data.path}`;
+                        showNotification('Image uploaded', 'success');
+                    } else {
+                        placeholder.remove();
+                        showNotification(data.message || 'Image upload failed', 'error');
+                    }
+                })
+                .catch(() => {
+                    placeholder.remove();
+                    showNotification('Image upload failed', 'error');
+                });
+        }, 'image/webp', 0.85);
+    };
+    imgEl.src = placeholder.src || URL.createObjectURL(file);
+}
+
+// Sync editor HTML → markdown into the hidden textarea before save/preview
+function syncEditorToTextarea() {
+    const editor = document.getElementById('blog-content-editor');
+    const textarea = document.getElementById('blog-content');
+    if (!editor || !textarea) return;
+    textarea.value = htmlToMarkdown(editor.innerHTML);
+}
+
+// Convert editor HTML to clean markdown for storage
+function htmlToMarkdown(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+
+    function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return node.textContent;
+        }
+        if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+        const tag = node.tagName.toLowerCase();
+        const inner = Array.from(node.childNodes).map(processNode).join('');
+
+        switch (tag) {
+            case 'h1': return `\n# ${inner.trim()}\n`;
+            case 'h2': return `\n## ${inner.trim()}\n`;
+            case 'h3': return `\n### ${inner.trim()}\n`;
+            case 'h4': return `\n#### ${inner.trim()}\n`;
+            case 'strong': case 'b': return `**${inner}**`;
+            case 'em': case 'i': return `*${inner}*`;
+            case 'u': return inner; // underline has no markdown equivalent
+            case 'code': return `\`${inner}\``;
+            case 'pre': return `\n\`\`\`\n${node.textContent}\n\`\`\`\n`;
+            case 'a': {
+                const href = node.getAttribute('href') || '';
+                return `[${inner}](${href})`;
+            }
+            case 'img': {
+                const src = node.dataset.serverPath || node.getAttribute('src') || '';
+                const alt = node.getAttribute('alt') || 'image';
+                return `\n![${alt}](${src})\n`;
+            }
+            case 'li': return `- ${inner.trim()}\n`;
+            case 'ul': case 'ol': return `\n${inner}`;
+            case 'br': return '\n';
+            case 'p': return `\n${inner.trim()}\n`;
+            case 'div': return `\n${inner.trim()}\n`;
+            case 'blockquote': return `\n> ${inner.trim()}\n`;
+            default: return inner;
+        }
+    }
+
+    let md = processNode(tmp);
+    // Collapse 3+ consecutive newlines to 2
+    md = md.replace(/\n{3,}/g, '\n\n').trim();
+    return md;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function resetPasteArea() {
     const pasteArea = document.getElementById('image-paste-area');
@@ -1623,6 +1822,9 @@ function closeBlogModal() {
 
 function saveBlogPost(postId = null) {
     console.log('saveBlogPost called, postId:', postId);
+    
+    // Sync editor HTML → markdown into hidden textarea before reading
+    syncEditorToTextarea();
     
     const title = document.getElementById('blog-title')?.value.trim() || '';
     const slug = document.getElementById('blog-slug')?.value.trim() || '';
@@ -1742,6 +1944,11 @@ function editBlogPost(postId) {
                 document.getElementById('blog-category').value = post.category || '';
                 document.getElementById('blog-author').value = post.author || '';
                 document.getElementById('blog-excerpt').value = post.excerpt || '';
+                // Populate the rich editor with rendered markdown
+                const editor = document.getElementById('blog-content-editor');
+                if (editor) {
+                    editor.innerHTML = markdownToHtml(post.content || '');
+                }
                 document.getElementById('blog-content').value = post.content || '';
                 document.getElementById('blog-tags').value = Array.isArray(post.tags) ? post.tags.join(', ') : '';
                 document.getElementById('blog-image').value = post.featured_image || '';
@@ -2516,6 +2723,7 @@ async function loadPaymentSettings() {
 
 // Preview blog post with markdown rendering
 function previewBlogPost() {
+    syncEditorToTextarea();
     const title = document.getElementById('blog-title').value.trim();
     const content = document.getElementById('blog-content').value.trim();
     const category = document.getElementById('blog-category').value.trim();

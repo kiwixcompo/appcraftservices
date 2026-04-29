@@ -228,6 +228,32 @@ $content = array_merge($defaultContent, $content);
             background: #9ca3af;
         }
         
+        /* Rich blog editor */
+        #blog-content-editor:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            pointer-events: none;
+        }
+        #blog-content-editor:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        #blog-content-editor img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 8px 0;
+            display: block;
+        }
+        #blog-content-editor h1 { font-size: 1.75rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        #blog-content-editor h2 { font-size: 1.4rem;  font-weight: 700; margin: 1rem 0 0.5rem; }
+        #blog-content-editor h3 { font-size: 1.15rem; font-weight: 700; margin: 0.75rem 0 0.4rem; }
+        #blog-content-editor ul { list-style: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
+        #blog-content-editor ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
+        #blog-content-editor a  { color: #3b82f6; text-decoration: underline; }
+        #blog-content-editor blockquote { border-left: 3px solid #d1d5db; padding-left: 1rem; color: #6b7280; margin: 0.5rem 0; }
+        #blog-content-editor pre { background: #f3f4f6; padding: 0.75rem; border-radius: 6px; overflow-x: auto; font-family: monospace; }
+        
         /* Form Styles */
         input, textarea, select {
             border: 1px solid #d1d5db;
