@@ -698,6 +698,81 @@ const projectData = {
         technologies: ['ASP.NET', 'SQL Server', 'Angular', 'C#', 'Azure'],
         logo: 'assets/projects/Federal-California-Leave-Assistant.webp',
         category: 'Government & HR'
+    },
+    'tsu-main-website': {
+        title: 'Taraba State University Main Website',
+        description: 'A complete redesign of the university’s main website, built for speed, accessibility, and easy content management. Custom themes and modern WordPress tools empower staff to update content effortlessly while providing a fast, mobile-friendly experience for students and visitors.',
+        features: [
+            'Custom WordPress theme development',
+            'Speed and performance optimization',
+            'Mobile-responsive design',
+            'WooCommerce integration for online payments',
+            'Multi-department content management workflow',
+            'SEO and Google Analytics setup'
+        ],
+        technologies: ['WordPress', 'WPBakery', 'WooCommerce', 'jQuery', 'Bootstrap', 'Google Analytics'],
+        logo: 'assets/projects/TSU-Main-Website.png',
+        category: 'WordPress Website'
+    },
+    'imperial-care': {
+        title: 'Imperial Care Initiative NGO',
+        description: 'A content-rich NGO website designed to drive engagement, donations, and event participation. Features custom modules, SEO optimization, and a user-focused architecture for maximum impact.',
+        features: [
+            'Custom Elementor layout design',
+            'GiveWP integration for secure online donations',
+            'Newsletter and MailChimp email marketing setup',
+            'Event management system',
+            'Responsive layout for all devices',
+            'SEO and speed optimization'
+        ],
+        technologies: ['WordPress', 'Elementor', 'GiveWP', 'MailChimp', 'Redux', 'Slider Revolution'],
+        logo: 'assets/projects/Imperial-Care-Initiative.png',
+        category: 'WordPress Website'
+    },
+    'adsu-evoting': {
+        title: 'ADSU e-Voting System',
+        description: 'A secure, real-time electronic voting platform for academic elections. Designed for transparency and ease of use, it ensures data integrity and reliable results for students and administrators.',
+        features: [
+            'Real-time vote tallying and audit trails',
+            'Secure student voter verification',
+            'Multi-election admin panel',
+            'Responsive voter interface',
+            'High-concurrency vote processing',
+            'Detailed results analysis and reports'
+        ],
+        technologies: ['PHP', 'CodeIgniter', 'MySQL', 'JavaScript', 'Bootstrap'],
+        logo: 'assets/projects/ADSU-e-Voting.png',
+        category: 'E-Voting & Security'
+    },
+    'tsu-helpdesk': {
+        title: 'TSU Helpdesk System',
+        description: 'A multi-role complaint and helpdesk management system for Taraba State University. Students submit and track complaints, while staff, department heads, directors, and the DVC each have dedicated dashboards. Features real-time notifications, ICT complaint tracking, payment management, and detailed reporting.',
+        features: [
+            'Multi-role dashboards (Students, Staff, HOD, Directors, DVC)',
+            'Real-time email and portal ticket updates',
+            'ICT equipment and support tracking',
+            'Payment and finance complaint management',
+            'Comprehensive ticket analytics and PDF reporting',
+            'Secure user authentication and audit logs'
+        ],
+        technologies: ['PHP', 'MySQL', 'JavaScript', 'CSS3', 'PHPMailer', 'REST API'],
+        logo: 'assets/projects/TSU-Helpdesk.png',
+        category: 'Helpdesk & Support'
+    },
+    'tsu-id-generator': {
+        title: 'TSU Student ID Generator',
+        description: 'A web application for Taraba State University that handles student registration and automates digital ID card generation. Features built-in QR code verification for authenticity checks and exports high-resolution PNG ID cards. Built with a PHP backend and a TypeScript/Next.js frontend.',
+        features: [
+            'Automated digital ID card generation',
+            'QR Code printing and verification',
+            'High-resolution PNG and PDF exports',
+            'Student registration and verification panel',
+            'Canvas API for front-end card design',
+            'Secure PHP backend database integration'
+        ],
+        technologies: ['PHP', 'TypeScript', 'Next.js', 'MySQL', 'Canvas API', 'QR Code'],
+        logo: 'assets/projects/TSU-ID-Generator.png',
+        category: 'ID Generator / NextJS'
     }
 };
 
