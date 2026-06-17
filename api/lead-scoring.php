@@ -241,30 +241,32 @@ class LeadScorer {
     }
 }
 
-// Handle scoring request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $input = json_decode(file_get_contents('php://input'), true);
-        
-        $scorer = new LeadScorer();
-        $result = $scorer->calculateScore($input);
-        
-        echo json_encode([
-            'success' => true,
-            'scoring' => $result
-        ]);
-    } catch (Exception $e) {
-        http_response_code(400);
+// Handle scoring request only when executed directly
+if (basename($_SERVER['SCRIPT_FILENAME']) === 'lead-scoring.php') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $scorer = new LeadScorer();
+            $result = $scorer->calculateScore($input);
+            
+            echo json_encode([
+                'success' => true,
+                'scoring' => $result
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    } else {
+        http_response_code(405);
         echo json_encode([
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => 'Only POST method allowed'
         ]);
     }
-} else {
-    http_response_code(405);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Only POST method allowed'
-    ]);
 }
 ?>

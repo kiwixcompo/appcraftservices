@@ -222,10 +222,6 @@
 <script src="../assets/cache-buster.js"></script>
 <script src="../assets/script.js"></script>
 <script>
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-    document.getElementById('mobile-menu-button').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
-
-    let captchaAnswer = 0;
     function generateCaptcha() {
         const a = Math.floor(Math.random() * 10) + 1;
         const b = Math.floor(Math.random() * 10) + 1;
@@ -236,46 +232,8 @@
         else { const big = Math.max(a,b), small = Math.min(a,b); q = `${big} - ${small}`; ans = big - small; }
         document.getElementById('captcha-question').textContent = q;
         document.getElementById('captcha-correct').value = ans;
-        captchaAnswer = ans;
     }
     generateCaptcha();
-
-    document.getElementById('contact-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const userAnswer = parseInt(document.getElementById('captcha-answer').value);
-        if (userAnswer !== captchaAnswer) {
-            alert('Incorrect answer. Please try again.');
-            generateCaptcha();
-            document.getElementById('captcha-answer').value = '';
-            return;
-        }
-        const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        document.getElementById('submit-text').textContent = 'Sending...';
-        document.getElementById('submit-icon').classList.add('hidden');
-        document.getElementById('loading-icon').classList.remove('hidden');
-        try {
-            const formData = new FormData(this);
-            const response = await fetch('../api/contact.php', { method: 'POST', body: formData });
-            const result = await response.json();
-            if (result.success) {
-                this.classList.add('hidden');
-                document.getElementById('success-message').classList.remove('hidden');
-            } else {
-                alert(result.message || 'Error sending message. Please try again.');
-                btn.disabled = false;
-                document.getElementById('submit-text').textContent = 'Send Message';
-                document.getElementById('submit-icon').classList.remove('hidden');
-                document.getElementById('loading-icon').classList.add('hidden');
-            }
-        } catch (err) {
-            alert('Network error. Please try again or email us directly.');
-            btn.disabled = false;
-            document.getElementById('submit-text').textContent = 'Send Message';
-            document.getElementById('submit-icon').classList.remove('hidden');
-            document.getElementById('loading-icon').classList.add('hidden');
-        }
-    });
 </script>
 </body>
 </html>

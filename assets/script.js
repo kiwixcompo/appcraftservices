@@ -28,6 +28,22 @@ document.addEventListener('DOMContentLoaded', function() {
         contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Client-side captcha validation
+            const captchaAnswerEl = document.getElementById('captcha-answer');
+            const captchaCorrectEl = document.getElementById('captcha-correct');
+            if (captchaAnswerEl && captchaCorrectEl) {
+                const userAnswer = parseInt(captchaAnswerEl.value);
+                const correctAnswer = parseInt(captchaCorrectEl.value);
+                if (userAnswer !== correctAnswer) {
+                    alert('Incorrect answer. Please try again.');
+                    if (typeof generateCaptcha === 'function') {
+                        generateCaptcha();
+                    }
+                    captchaAnswerEl.value = '';
+                    return;
+                }
+            }
+            
             const submitBtn = document.getElementById('submit-btn');
             const submitText = document.getElementById('submit-text');
             const submitIcon = document.getElementById('submit-icon');
@@ -60,7 +76,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(data)
                 });
                 
-                const result = await response.json();
+                let result;
+                try {
+                    result = await response.json();
+                } catch (jsonErr) {
+                    throw new Error('Server returned an invalid response. Please contact us directly.');
+                }
                 
                 if (result.success) {
                     // Track conversion with Google Analytics
@@ -90,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             } catch (error) {
                 console.error('Error submitting form:', error);
-                alert('There was an error sending your message. Please try again or contact us directly.');
+                alert(error.message || 'There was an error sending your message. Please try again or contact us directly.');
             } finally {
                 // Reset button state
                 submitBtn.disabled = false;
