@@ -138,7 +138,7 @@
                 </div>
             </div>
             
-            <!-- Numbered Pagination Controls (5 articles per page) -->
+            <!-- Numbered Pagination Controls (10 articles per page) -->
             <div id="pagination-container" class="mt-14 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 pt-8 hidden">
                 <div class="text-sm text-gray-600" id="pagination-info">
                     Showing <span id="pagination-start" class="font-semibold text-gray-900">1</span> to <span id="pagination-end" class="font-semibold text-gray-900">5</span> of <span id="pagination-total" class="font-semibold text-gray-900">50</span> articles
@@ -209,9 +209,9 @@
     <script src="../assets/config.js"></script>
     
     <script>
-        // Blog functionality - 5 articles per page
+        // Blog functionality - 10 articles per page
         let currentPage = 1;
-        const postsPerPage = 5;
+        const postsPerPage = 10;
         let totalArticles = 0;
         let selectedCategory = 'all';
         
@@ -268,7 +268,7 @@
                     <div>
                         ${post.featured_image ? `
                         <div class="aspect-video overflow-hidden">
-                            <img src="../${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.title)}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                            <img src="../${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.title)}" class="w-full h-full object-cover hover:scale-105 transition duration-300" loading="lazy">
                         </div>` : `
                         <div class="aspect-video bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
                             <div class="text-4xl text-electric-blue">
@@ -446,7 +446,7 @@
             });
         });
         
-        // Load initial posts (Page 1, 5 articles)
+        // Load initial posts (Page 1, 10 articles)
         document.addEventListener('DOMContentLoaded', () => {
             loadBlogPosts(1);
         });
