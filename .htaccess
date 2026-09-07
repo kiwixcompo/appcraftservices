@@ -35,6 +35,9 @@ Options -Indexes
     BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
 </IfModule>
 
+# Sitemap routing
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
 # Hidden admin access route (secret URL)
 RewriteRule ^secret-admin-access-2026/?$ admin/login.php [L]
 
