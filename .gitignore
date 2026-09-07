@@ -59,7 +59,6 @@ config/local.json
 # never be reset by a code push.
 # -----------------------------------------------
 data/messages.json
-data/blog_posts.json
 data/invoices.json
 data/projects.json
 data/payments.json
@@ -70,6 +69,3 @@ data/realtime_changes.json
 data/settings.json
 data/website_content.json
 data/backups/
-
-# Uploaded blog images (generated on server)
-assets/blog/

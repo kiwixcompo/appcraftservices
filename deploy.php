@@ -237,6 +237,46 @@ function deployWithoutGit($config) {
             if (copyDirectory($source_dir, $config['deploy_path'])) {
                 logMessage("Files copied successfully", $config);
                 
+                // Intelligently merge blog_posts.json from repository into server data
+                $incomingBlogFile = $source_dir . '/data/blog_posts.json';
+                $serverBlogFile = $config['deploy_path'] . '/data/blog_posts.json';
+                if (file_exists($incomingBlogFile)) {
+                    $incomingPosts = json_decode(file_get_contents($incomingBlogFile), true) ?: [];
+                    $serverPosts = file_exists($serverBlogFile) ? (json_decode(file_get_contents($serverBlogFile), true) ?: []) : [];
+                    
+                    // Merge by slug (incoming posts overwrite or append to server posts)
+                    $serverPostsBySlug = [];
+                    foreach ($serverPosts as $sp) {
+                        if (!empty($sp['slug'])) {
+                            $serverPostsBySlug[$sp['slug']] = $sp;
+                        }
+                    }
+                    foreach ($incomingPosts as $ip) {
+                        if (!empty($ip['slug'])) {
+                            $serverPostsBySlug[$ip['slug']] = $ip;
+                        }
+                    }
+                    $mergedPosts = array_values($serverPostsBySlug);
+                    file_put_contents($serverBlogFile, json_encode($mergedPosts, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                    logMessage("Merged blog_posts.json (" . count($mergedPosts) . " total posts)", $config);
+                }
+                
+                // Sync any incoming assets/blog/ images into server assets/blog/
+                $incomingBlogAssets = $source_dir . '/assets/blog';
+                $serverBlogAssets = $config['deploy_path'] . '/assets/blog';
+                if (is_dir($incomingBlogAssets)) {
+                    if (!is_dir($serverBlogAssets)) {
+                        @mkdir($serverBlogAssets, 0755, true);
+                    }
+                    $blogImages = glob($incomingBlogAssets . '/*');
+                    foreach ($blogImages as $bImg) {
+                        if (is_file($bImg)) {
+                            @copy($bImg, $serverBlogAssets . '/' . basename($bImg));
+                        }
+                    }
+                    logMessage("Synced blog assets images to server", $config);
+                }
+                
                 // Clean up temporary files
                 @unlink($temp_zip);
                 removeDirectory($temp_dir);
