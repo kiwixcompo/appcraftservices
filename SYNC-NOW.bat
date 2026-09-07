@@ -2,6 +2,9 @@
 title App Craft Services - Auto-Deploy Sync
 color 0A
 
+REM Enable UTF-8 for displaying emojis correctly
+chcp 65001 >nul
+
 echo.
 echo  ╔══════════════════════════════════════════════════════════════╗
 echo  ║                    APP CRAFT SERVICES                        ║
@@ -29,17 +32,31 @@ git pull origin main --no-edit >nul 2>&1
 echo  [SYNC] Adding your changes...
 git add .
 
+REM Check if there are new changes to commit
+set "has_new_changes=0"
 git diff --cached --quiet
-if errorlevel 1 (
+if errorlevel 1 set "has_new_changes=1"
+
+if "%has_new_changes%"=="1" (
     REM Get timestamp
-    for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
-    set "timestamp=%dt:~0,4%-%dt:~4,2%-%dt:~6,2% %dt:~8,2%:%dt:~10,2%"
+    for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value 2^>nul') do set "dt=%%a"
+    if defined dt (
+        set "timestamp=%dt:~0,4%-%dt:~4,2%-%dt:~6,2% %dt:~8,2%:%dt:~10,2%"
+    ) else (
+        set "timestamp=%date% %time%"
+    )
     
     echo  [SYNC] Committing changes...
     git commit -m "Auto-sync: %timestamp%" >nul
-    
-    echo  [SYNC] Uploading to GitHub...
-    git push origin main >nul 2>&1
+)
+
+REM Check if there are ANY unpushed commits (including the one we just made, or previous ones)
+set "unpushed=0"
+for /f "tokens=*" %%c in ('git rev-list --count origin/main..HEAD 2^>nul') do set "unpushed=%%c"
+
+if not "%unpushed%"=="0" (
+    echo  [SYNC] Uploading %unpushed% commit(s) to GitHub...
+    git push origin main
     
     if errorlevel 1 (
         echo.
@@ -54,7 +71,7 @@ if errorlevel 1 (
     echo.
     echo  [DEPLOY] Triggering auto-deployment to live site...
     
-    REM Trigger manual deployment (fallback if webhook fails)
+    REM Trigger manual deployment
     curl -s "https://appcraftservices.com/deploy.php?manual=true" >nul 2>&1
     
     if errorlevel 1 (
@@ -65,7 +82,7 @@ if errorlevel 1 (
     
     echo.
     echo  🌐 Your changes will be live at: https://appcraftservices.com
-    echo  📊 View repository: https://github.com/kiwixcompo/appcraftservices
+    echo  💻 View repository: https://github.com/kiwixcompo/appcraftservices
     echo.
 ) else (
     echo.
@@ -73,5 +90,6 @@ if errorlevel 1 (
     echo.
 )
 
+echo  ══════════════════════════════════════════════════════════════
 echo  Press any key to close...
 pause >nul
