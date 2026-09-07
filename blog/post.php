@@ -153,7 +153,7 @@ $publishedDate = date('F j, Y', strtotime($post['published_at']));
     <?php endif; ?>
     
     <meta name="robots" content="index, follow">
-    <meta name="author" content="<?php echo htmlspecialchars($post['author']); ?>">
+    <meta name="author" content="App Craft Services Team">
     <meta name="keywords" content="<?php echo htmlspecialchars(implode(', ', $post['tags'])); ?>">
     
     <link rel="canonical" content="https://appcraftservices.com/blog/<?php echo htmlspecialchars($post['slug']); ?>">
@@ -248,7 +248,7 @@ $publishedDate = date('F j, Y', strtotime($post['published_at']));
                 <div class="flex items-center text-gray-600 text-sm space-x-4">
                     <div class="flex items-center">
                         <i class="fas fa-user mr-2"></i>
-                        <span><?php echo htmlspecialchars($post['author']); ?></span>
+                        <span>by App Craft Services Team</span>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-calendar mr-2"></i>
