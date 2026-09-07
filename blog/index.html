@@ -131,6 +131,15 @@
                 </button>
             </div>
 
+            <div id="pagination-container-top" class="mb-14 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-200 pb-8 hidden">
+                <div class="text-sm text-gray-600" id="pagination-info-top">
+                    Showing <span id="pagination-start-top" class="font-semibold text-gray-900">1</span> to <span id="pagination-end-top" class="font-semibold text-gray-900">5</span> of <span id="pagination-total-top" class="font-semibold text-gray-900">50</span> articles
+                </div>
+                <div class="flex items-center space-x-2" id="pagination-buttons-top">
+                    <!-- Dynamic page buttons injected by JavaScript -->
+                </div>
+            </div>
+            
             <div id="blog-posts-container">
                 <div class="text-center py-12">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue mx-auto"></div>
@@ -297,85 +306,87 @@
             });
         }
         
-        function renderPagination(currentPage, totalItems, perPage) {
-            const paginationContainer = document.getElementById('pagination-container');
-            const buttonsContainer = document.getElementById('pagination-buttons');
+                function renderPagination(currentPage, totalItems, perPage) {
             const totalPages = Math.ceil(totalItems / perPage);
             
+            const topContainer = document.getElementById('pagination-container-top');
+            const bottomContainer = document.getElementById('pagination-container');
+            
             if (totalPages <= 1) {
-                paginationContainer.classList.add('hidden');
+                if (topContainer) topContainer.classList.add('hidden');
+                if (bottomContainer) bottomContainer.classList.add('hidden');
                 return;
             }
             
-            paginationContainer.classList.remove('hidden');
+            if (topContainer) topContainer.classList.remove('hidden');
+            if (bottomContainer) bottomContainer.classList.remove('hidden');
             
-            // Update info counter
             const start = ((currentPage - 1) * perPage) + 1;
             const end = Math.min(currentPage * perPage, totalItems);
-            document.getElementById('pagination-start').textContent = start;
-            document.getElementById('pagination-end').textContent = end;
-            document.getElementById('pagination-total').textContent = totalItems;
             
-            buttonsContainer.innerHTML = '';
-            
-            // Previous button
-            const prevBtn = document.createElement('button');
-            prevBtn.className = `px-3.5 py-2 rounded-md text-sm font-medium transition ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100 border border-gray-300'}`;
-            prevBtn.innerHTML = '&larr; Prev';
-            prevBtn.disabled = (currentPage === 1);
-            if (currentPage > 1) {
-                prevBtn.addEventListener('click', () => {
-                    loadBlogPosts(currentPage - 1);
-                    scrollToBlogTop();
-                });
-            }
-            buttonsContainer.appendChild(prevBtn);
-            
-            // Generate numbered pages with smart windowing
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
-            
-            if (startPage > 1) {
-                appendPageButton(1, buttonsContainer);
-                if (startPage > 2) {
-                    appendEllipsis(buttonsContainer);
+            const setupPagination = (startId, endId, totalId, buttonsId) => {
+                const buttonsContainer = document.getElementById(buttonsId);
+                if (!buttonsContainer) return;
+                
+                document.getElementById(startId).textContent = start;
+                document.getElementById(endId).textContent = end;
+                document.getElementById(totalId).textContent = totalItems;
+                
+                buttonsContainer.innerHTML = '';
+                
+                const prevBtn = document.createElement('button');
+                prevBtn.className = `px-3.5 py-2 rounded-md text-sm font-medium transition ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100 border border-gray-300'}`;
+                prevBtn.innerHTML = '&larr; Prev';
+                prevBtn.disabled = (currentPage === 1);
+                if (currentPage > 1) {
+                    prevBtn.addEventListener('click', () => {
+                        loadBlogPosts(currentPage - 1);
+                        scrollToBlogTop();
+                    });
                 }
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                appendPageButton(i, buttonsContainer, i === currentPage);
-            }
-            
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    appendEllipsis(buttonsContainer);
+                buttonsContainer.appendChild(prevBtn);
+                
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+                
+                if (startPage > 1) {
+                    appendPageButton(1, buttonsContainer);
+                    if (startPage > 2) appendEllipsis(buttonsContainer);
                 }
-                appendPageButton(totalPages, buttonsContainer);
-            }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    appendPageButton(i, buttonsContainer, i === currentPage);
+                }
+                
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) appendEllipsis(buttonsContainer);
+                    appendPageButton(totalPages, buttonsContainer);
+                }
+                
+                const nextBtn = document.createElement('button');
+                nextBtn.className = `px-3.5 py-2 rounded-md text-sm font-medium transition ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100 border border-gray-300'}`;
+                nextBtn.innerHTML = 'Next &rarr;';
+                nextBtn.disabled = (currentPage === totalPages);
+                if (currentPage < totalPages) {
+                    nextBtn.addEventListener('click', () => {
+                        loadBlogPosts(currentPage + 1);
+                        scrollToBlogTop();
+                    });
+                }
+                buttonsContainer.appendChild(nextBtn);
+            };
             
-            // Next button
-            const nextBtn = document.createElement('button');
-            nextBtn.className = `px-3.5 py-2 rounded-md text-sm font-medium transition ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100 border border-gray-300'}`;
-            nextBtn.innerHTML = 'Next &rarr;';
-            nextBtn.disabled = (currentPage === totalPages);
-            if (currentPage < totalPages) {
-                nextBtn.addEventListener('click', () => {
-                    loadBlogPosts(currentPage + 1);
-                    scrollToBlogTop();
-                });
-            }
-            buttonsContainer.appendChild(nextBtn);
+            setupPagination('pagination-start-top', 'pagination-end-top', 'pagination-total-top', 'pagination-buttons-top');
+            setupPagination('pagination-start', 'pagination-end', 'pagination-total', 'pagination-buttons');
         }
-        
-        function appendPageButton(pageNumber, container, isActive = false) {
+
+        function appendPageButton(pageNum, container, isActive = false) {
             const btn = document.createElement('button');
-            btn.className = isActive 
-                ? 'px-3.5 py-2 rounded-md text-sm font-semibold bg-electric-blue text-white shadow-sm'
-                : 'px-3.5 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition';
-            btn.textContent = pageNumber;
+            btn.className = "px-3.5 py-2 rounded-md text-sm font-medium transition " + (isActive ? 'bg-electric-blue text-white shadow-md' : 'text-gray-700 hover:bg-gray-100 border border-gray-300') + ";
+            btn.textContent = pageNum;
             if (!isActive) {
                 btn.addEventListener('click', () => {
-                    loadBlogPosts(pageNumber);
+                    loadBlogPosts(pageNum);
                     scrollToBlogTop();
                 });
             }

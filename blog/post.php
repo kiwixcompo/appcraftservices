@@ -77,7 +77,7 @@ function markdownToHtml($text) {
         $headers = array_values(array_filter(array_map('trim', explode('|', $lines[0])), function($c) { return $c !== ''; }));
         $html .= '<thead class="bg-gray-50 text-navy font-semibold"><tr>';
         foreach ($headers as $h) {
-            $html .= '<th scope="col" class="px-4 py-3 border-b border-gray-200">' . htmlspecialchars($h) . '</th>';
+            $html .= '<th scope="col" class="px-4 py-3 border-b border-gray-200">' . $h . '</th>';
         }
         $html .= '</tr></thead><tbody class="divide-y divide-gray-200 bg-white">';
         
@@ -86,9 +86,7 @@ function markdownToHtml($text) {
             $cols = array_values(array_filter(array_map('trim', explode('|', $lines[$i])), function($c) { return $c !== ''; }));
             $html .= '<tr class="hover:bg-blue-50/50 transition">';
             foreach ($cols as $col) {
-                // Parse bold inside tables
-                $parsedCol = preg_replace('/\*\*(.+?)\*\*/s', '<strong class="font-semibold text-navy">$1</strong>', htmlspecialchars($col));
-                $html .= '<td class="px-4 py-3 text-gray-700">' . $parsedCol . '</td>';
+                $html .= '<td class="px-4 py-3 text-gray-700">' . $col . '</td>';
             }
             $html .= '</tr>';
         }
