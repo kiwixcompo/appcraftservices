@@ -68,9 +68,37 @@ if errorlevel 1 (
     echo  📊 View repository: https://github.com/kiwixcompo/appcraftservices
     echo.
 ) else (
-    echo.
-    echo  ℹ️  No changes detected - Repository is up to date!
-    echo.
+    REM Check if there are unpushed commits
+    git rev-list @{u}..HEAD >nul 2>&1
+    if not errorlevel 1 (
+        for /f "tokens=*" %%c in ('git rev-list --count @{u}..HEAD 2^>nul') do set "unpushed=%%c"
+    ) else (
+        set "unpushed=0"
+    )
+    
+    if not "%unpushed%"=="0" (
+        echo  [SYNC] Found %unpushed% unpushed commit(s). Uploading to GitHub...
+        git push origin main
+        if errorlevel 1 (
+            echo.
+            echo  ❌ SYNC FAILED - Check your internet connection or GitHub access
+            echo.
+            timeout /t 5 >nul
+            exit /b 1
+        )
+        echo.
+        echo  ✅ SUCCESS! Changes uploaded to GitHub
+        echo.
+        echo  [DEPLOY] Triggering auto-deployment to live site...
+        curl -s "https://appcraftservices.com/deploy.php?manual=true" >nul 2>&1
+        echo  ✅ Live site deployment triggered successfully!
+        echo.
+        echo  🌐 Your changes will be live at: https://appcraftservices.com
+    ) else (
+        echo.
+        echo  ℹ️  No changes detected - Repository is up to date!
+        echo.
+    )
 )
 
 echo  Press any key to close...
