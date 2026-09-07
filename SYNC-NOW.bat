@@ -55,7 +55,7 @@ set "unpushed=0"
 for /f "tokens=*" %%c in ('git rev-list --count origin/main..HEAD 2^>nul') do set "unpushed=%%c"
 
 if not "%unpushed%"=="0" (
-    echo  [SYNC] Uploading %unpushed% commit(s) to GitHub...
+    echo  [SYNC] Uploading %unpushed% commits to GitHub...
     git push origin main
     
     if errorlevel 1 (
