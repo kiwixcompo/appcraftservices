@@ -112,6 +112,25 @@
     <!-- Blog Posts -->
     <section class="py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Category Filters -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12" id="category-filters">
+                <button data-category="all" class="category-btn active px-5 py-2.5 rounded-full text-sm font-semibold transition duration-300 bg-electric-blue text-white shadow-md">
+                    All Categories
+                </button>
+                <button data-category="Custom Web & Software Application Development" class="category-btn px-5 py-2.5 rounded-full text-sm font-semibold transition duration-300 bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    Custom Web & Software Application Development
+                </button>
+                <button data-category="Startup MVP (Minimum Viable Product) Development" class="category-btn px-5 py-2.5 rounded-full text-sm font-semibold transition duration-300 bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    Startup MVP Development
+                </button>
+                <button data-category="Enterprise CMS, WordPress & Academic Portals" class="category-btn px-5 py-2.5 rounded-full text-sm font-semibold transition duration-300 bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    Enterprise CMS & Portals
+                </button>
+                <button data-category="Software Maintenance, Support & Scaling" class="category-btn px-5 py-2.5 rounded-full text-sm font-semibold transition duration-300 bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    Maintenance & Scaling
+                </button>
+            </div>
+
             <div id="blog-posts-container">
                 <div class="text-center py-12">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue mx-auto"></div>
@@ -190,14 +209,16 @@
         // Blog functionality
         let currentPage = 1;
         let hasMorePosts = true;
+        let selectedCategory = 'all';
         
-        async function loadBlogPosts(page = 1) {
+        async function loadBlogPosts(page = 1, append = false) {
             try {
-                const response = await fetch(`../api/get_blog_posts.php?page=${page}&limit=6`);
+                const categoryParam = encodeURIComponent(selectedCategory);
+                const response = await fetch(`../api/get_blog_posts.php?page=${page}&limit=6&category=${categoryParam}`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    renderBlogPosts(data.posts, page === 1);
+                    renderBlogPosts(data.posts, !append);
                     hasMorePosts = data.has_more;
                     
                     const loadMoreBtn = document.getElementById('load-more-posts');
@@ -242,11 +263,15 @@
                 const postElement = document.createElement('article');
                 postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300';
                 postElement.innerHTML = `
+                    ${post.featured_image ? `
+                    <div class="aspect-video overflow-hidden">
+                        <img src="../${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.title)}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                    </div>` : `
                     <div class="aspect-video bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
                         <div class="text-4xl text-electric-blue">
                             <i class="fas fa-blog"></i>
                         </div>
-                    </div>
+                    </div>`}
                     <div class="p-6">
                         <div class="flex items-center text-sm text-gray-500 mb-3">
                             <span class="bg-electric-blue text-white px-2 py-1 rounded text-xs font-medium mr-3">${escapeHtml(post.category)}</span>
@@ -299,7 +324,28 @@
         // Load more posts
         document.getElementById('load-more-posts').addEventListener('click', () => {
             currentPage++;
-            loadBlogPosts(currentPage);
+            loadBlogPosts(currentPage, true);
+        });
+
+        // Category filter clicks
+        document.querySelectorAll('#category-filters .category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.getAttribute('data-category');
+                if (category === selectedCategory) return;
+                
+                selectedCategory = category;
+                currentPage = 1;
+                
+                document.querySelectorAll('#category-filters .category-btn').forEach(b => {
+                    b.classList.remove('bg-electric-blue', 'text-white', 'shadow-md', 'active');
+                    b.classList.add('bg-gray-100', 'text-gray-700');
+                });
+                
+                btn.classList.remove('bg-gray-100', 'text-gray-700');
+                btn.classList.add('bg-electric-blue', 'text-white', 'shadow-md', 'active');
+                
+                loadBlogPosts(1, false);
+            });
         });
         
         // Load initial posts

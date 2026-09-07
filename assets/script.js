@@ -1,3 +1,33 @@
+// Transparent local navigation handler - keeps /appcraftservices/ in URL on localhost
+(function() {
+    const isLocal = (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.startsWith('192.168.')
+    );
+    
+    if (isLocal) {
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (!link) return;
+            
+            // Ignore external links, mailto, tel, hash anchors, or javascript
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+            if (link.target === '_blank' || link.hasAttribute('download')) return;
+            
+            // Check if it's a root-relative internal link like "/services" or "/blog/post-slug"
+            if (href.startsWith('/') && !href.startsWith('//')) {
+                // If it doesn't already have /appcraftservices/ prefix
+                if (!href.startsWith('/appcraftservices/')) {
+                    e.preventDefault();
+                    window.location.href = '/appcraftservices' + href;
+                }
+            }
+        }, true);
+    }
+})();
+
 // Dynamic year in footer
 document.addEventListener('DOMContentLoaded', function() {
     const currentYear = new Date().getFullYear();

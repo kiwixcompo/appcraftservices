@@ -24,8 +24,14 @@ try {
     }
     
     // Filter only published posts
-    $publishedPosts = array_filter($posts, function($post) {
-        return isset($post['published']) && $post['published'] === true;
+    $categoryFilter = isset($_GET['category']) ? trim($_GET['category']) : '';
+    $publishedPosts = array_filter($posts, function($post) use ($categoryFilter) {
+        $isPublished = isset($post['published']) && $post['published'] === true;
+        if (!$isPublished) return false;
+        if (!empty($categoryFilter) && strtolower($categoryFilter) !== 'all') {
+            return isset($post['category']) && strtolower($post['category']) === strtolower($categoryFilter);
+        }
+        return true;
     });
     
     // Sort by published date (newest first)

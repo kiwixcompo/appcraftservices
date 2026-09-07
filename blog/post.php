@@ -2,8 +2,12 @@
 // Get the slug from the URL
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
 
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$isLocal = ($host === 'localhost' || $host === '127.0.0.1' || str_starts_with($host, '192.168.'));
+$blogRedirectUrl = $isLocal ? '/appcraftservices/blog' : '/blog';
+
 if (empty($slug)) {
-    header('Location: /blog');
+    header('Location: ' . $blogRedirectUrl);
     exit;
 }
 
@@ -22,7 +26,7 @@ foreach ($blogPosts as $p) {
 
 // If post not found, redirect to blog
 if (!$post) {
-    header('Location: /blog');
+    header('Location: ' . $blogRedirectUrl);
     exit;
 }
 
@@ -44,22 +48,67 @@ function markdownToHtml($text) {
         $text
     );
     
-    // Links
-    $text = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2" class="text-electric-blue hover:underline">$1</a>', $text);
+    // Links — external links open in new tab
+    $text = preg_replace_callback('/\[([^\]]+)\]\(([^\)]+)\)/', function($m) {
+        $label = $m[1];
+        $url = $m[2];
+        $isExternal = preg_match('/^https?:\/\//i', $url) && !preg_match('/^https?:\/\/(?:www\.)?appcraftservices\.com/i', $url);
+        if ($isExternal) {
+            return '<a href="' . htmlspecialchars($url) . '" target="_blank" rel="noopener noreferrer" class="text-electric-blue hover:underline">' . $label . ' <i class="fas fa-external-link-alt text-xs ml-1 opacity-70"></i></a>';
+        }
+        return '<a href="' . htmlspecialchars($url) . '" class="text-electric-blue hover:underline">' . $label . '</a>';
+    }, $text);
     
     // Code blocks
     $text = preg_replace('/```([^`]+)```/s', '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>$1</code></pre>', $text);
     $text = preg_replace('/`([^`]+)`/', '<code class="bg-gray-100 px-2 py-1 rounded text-sm">$1</code>', $text);
     
-    // Lists
-    $text = preg_replace('/^\- (.+)$/m', '<li class="ml-6 mb-2">$1</li>', $text);
-    $text = preg_replace('/^(\d+)\. (.+)$/m', '<li class="ml-6 mb-2">$2</li>', $text);
+    // Horizontal rules
+    $text = preg_replace('/^---$/m', '<hr class="my-8 border-gray-200">', $text);
+
+    // Markdown Tables
+    $text = preg_replace_callback('/((?:^\|.+?\|\s*\n)+)/m', function($matches) {
+        $lines = array_values(array_filter(array_map('trim', explode("\n", trim($matches[1])))));
+        if (count($lines) < 2) return $matches[1];
+        
+        $html = '<div class="overflow-x-auto my-6 rounded-lg shadow-sm border border-gray-200"><table class="min-w-full divide-y divide-gray-200 text-left text-sm">';
+        
+        // Header
+        $headers = array_values(array_filter(array_map('trim', explode('|', $lines[0])), function($c) { return $c !== ''; }));
+        $html .= '<thead class="bg-gray-50 text-navy font-semibold"><tr>';
+        foreach ($headers as $h) {
+            $html .= '<th scope="col" class="px-4 py-3 border-b border-gray-200">' . htmlspecialchars($h) . '</th>';
+        }
+        $html .= '</tr></thead><tbody class="divide-y divide-gray-200 bg-white">';
+        
+        // Body (skip line 1 which is separator |---|---|)
+        for ($i = 2; $i < count($lines); $i++) {
+            $cols = array_values(array_filter(array_map('trim', explode('|', $lines[$i])), function($c) { return $c !== ''; }));
+            $html .= '<tr class="hover:bg-blue-50/50 transition">';
+            foreach ($cols as $col) {
+                // Parse bold inside tables
+                $parsedCol = preg_replace('/\*\*(.+?)\*\*/s', '<strong class="font-semibold text-navy">$1</strong>', htmlspecialchars($col));
+                $html .= '<td class="px-4 py-3 text-gray-700">' . $parsedCol . '</td>';
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table></div>';
+        return $html;
+    }, $text);
+
+    // Blockquotes
+    $text = preg_replace('/^\> (.+)$/m', '<blockquote class="border-l-4 border-electric-blue bg-blue-50 p-4 my-4 italic text-gray-800 rounded-r-lg">$1</blockquote>', $text);
     
-    // Wrap lists
-    $text = preg_replace('/(<li[^>]*>.*<\/li>)/s', '<ul class="list-disc my-4">$1</ul>', $text);
+    // Lists - un-ordered
+    $text = preg_replace('/((?:^\- .+\n?)+)/m', "<ul class=\"list-disc list-inside space-y-2 my-4 text-gray-700 leading-relaxed\">\n$1</ul>\n", $text);
+    $text = preg_replace('/^\- (.+)$/m', '<li class="ml-2">$1</li>', $text);
+    
+    // Lists - ordered
+    $text = preg_replace('/((?:^\d+\. .+\n?)+)/m', "<ol class=\"list-decimal list-inside space-y-2 my-4 text-gray-700 leading-relaxed\">\n$1</ol>\n", $text);
+    $text = preg_replace('/^\d+\. (.+)$/m', '<li class="ml-2">$1</li>', $text);
     
     // Paragraphs — skip lines that are already HTML block elements
-    $text = preg_replace('/^(?!<h[1-6]|<ul|<li|<pre|<img|<p)(.+)$/m', '<p class="mb-4 text-gray-700 leading-relaxed">$1</p>', $text);
+    $text = preg_replace('/^(?!<h[1-6]|<ul|<ol|<li|<blockquote|<pre|<img|<p|<hr|<div|<table|<thead|<tbody|<tr|<th|<td|<\/ul|<\/ol|<\/blockquote|<\/div|<\/table|<\/thead|<\/tbody)(.+)$/m', '<p class="mb-4 text-gray-700 leading-relaxed text-lg">$1</p>', $text);
     
     return $text;
 }
