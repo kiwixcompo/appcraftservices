@@ -67,38 +67,38 @@ if errorlevel 1 (
     echo  🌐 Your changes will be live at: https://appcraftservices.com
     echo  📊 View repository: https://github.com/kiwixcompo/appcraftservices
     echo.
+    goto :check_unpushed
 ) else (
-    REM Check if there are unpushed commits
-    git rev-list @{u}..HEAD >nul 2>&1
-    if not errorlevel 1 (
-        for /f "tokens=*" %%c in ('git rev-list --count @{u}..HEAD 2^>nul') do set "unpushed=%%c"
-    ) else (
-        set "unpushed=0"
+    goto :check_unpushed
+)
+
+:check_unpushed
+REM Check if there are unpushed commits
+set "unpushed=0"
+for /f "tokens=*" %%c in ('git rev-list --count @{u}..HEAD 2^>nul') do set "unpushed=%%c"
+
+if not "%unpushed%"=="0" (
+    echo  [SYNC] Found %unpushed% unpushed commit(s). Uploading to GitHub...
+    git push origin main
+    if errorlevel 1 (
+        echo.
+        echo  ❌ SYNC FAILED - Check your internet connection or GitHub access
+        echo.
+        echo  Press any key to close...
+        pause >nul
+        exit /b 1
     )
-    
-    if not "%unpushed%"=="0" (
-        echo  [SYNC] Found %unpushed% unpushed commit(s). Uploading to GitHub...
-        git push origin main
-        if errorlevel 1 (
-            echo.
-            echo  ❌ SYNC FAILED - Check your internet connection or GitHub access
-            echo.
-            timeout /t 5 >nul
-            exit /b 1
-        )
-        echo.
-        echo  ✅ SUCCESS! Changes uploaded to GitHub
-        echo.
-        echo  [DEPLOY] Triggering auto-deployment to live site...
-        curl -s "https://appcraftservices.com/deploy.php?manual=true" >nul 2>&1
-        echo  ✅ Live site deployment triggered successfully!
-        echo.
-        echo  🌐 Your changes will be live at: https://appcraftservices.com
-    ) else (
-        echo.
-        echo  ℹ️  No changes detected - Repository is up to date!
-        echo.
-    )
+    echo.
+    echo  ✅ SUCCESS! Changes uploaded to GitHub
+    echo.
+    echo  [DEPLOY] Triggering auto-deployment to live site...
+    curl -s "https://appcraftservices.com/deploy.php?manual=true" >nul 2>&1
+    echo  ✅ Live site deployment triggered successfully!
+    echo.
+    echo  🌐 Your changes will be live at: https://appcraftservices.com
+) else (
+    echo  ℹ️  No changes detected - Repository is up to date!
+    echo.
 )
 
 echo  Press any key to close...
