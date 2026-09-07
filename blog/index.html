@@ -138,11 +138,14 @@
                 </div>
             </div>
             
-            <!-- Load More Button -->
-            <div class="text-center mt-12">
-                <button id="load-more-posts" class="bg-electric-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 hidden">
-                    Load More Posts
-                </button>
+            <!-- Numbered Pagination Controls (5 articles per page) -->
+            <div id="pagination-container" class="mt-14 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 pt-8 hidden">
+                <div class="text-sm text-gray-600" id="pagination-info">
+                    Showing <span id="pagination-start" class="font-semibold text-gray-900">1</span> to <span id="pagination-end" class="font-semibold text-gray-900">5</span> of <span id="pagination-total" class="font-semibold text-gray-900">50</span> articles
+                </div>
+                <div class="flex items-center space-x-2" id="pagination-buttons">
+                    <!-- Dynamic page buttons injected by JavaScript -->
+                </div>
             </div>
         </div>
     </section>
@@ -206,27 +209,31 @@
     <script src="../assets/config.js"></script>
     
     <script>
-        // Blog functionality
+        // Blog functionality - 5 articles per page
         let currentPage = 1;
-        let hasMorePosts = true;
+        const postsPerPage = 5;
+        let totalArticles = 0;
         let selectedCategory = 'all';
         
-        async function loadBlogPosts(page = 1, append = false) {
+        async function loadBlogPosts(page = 1) {
+            currentPage = page;
+            const container = document.getElementById('blog-posts-container');
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Loading articles...</p>
+                </div>
+            `;
+            
             try {
                 const categoryParam = encodeURIComponent(selectedCategory);
-                const response = await fetch(`../api/get_blog_posts.php?page=${page}&limit=6&category=${categoryParam}`);
+                const response = await fetch(`../api/get_blog_posts.php?page=${page}&limit=${postsPerPage}&category=${categoryParam}`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    renderBlogPosts(data.posts, !append);
-                    hasMorePosts = data.has_more;
-                    
-                    const loadMoreBtn = document.getElementById('load-more-posts');
-                    if (hasMorePosts) {
-                        loadMoreBtn.classList.remove('hidden');
-                    } else {
-                        loadMoreBtn.classList.add('hidden');
-                    }
+                    totalArticles = data.total || 0;
+                    renderBlogPosts(data.posts);
+                    renderPagination(page, totalArticles, postsPerPage);
                 } else {
                     showError('Failed to load blog posts');
                 }
@@ -236,61 +243,157 @@
             }
         }
         
-        function renderBlogPosts(posts, clearContainer = false) {
+        function renderBlogPosts(posts) {
             const container = document.getElementById('blog-posts-container');
+            container.innerHTML = '';
             
-            if (clearContainer) {
-                container.innerHTML = '';
-            }
-            
-            if (posts.length === 0 && clearContainer) {
+            if (posts.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-12">
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4">No Blog Posts Yet</h3>
-                        <p class="text-gray-600">Check back soon for startup insights and development tips!</p>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4">No Articles Found</h3>
+                        <p class="text-gray-600">No articles available in this category yet.</p>
                     </div>
                 `;
                 return;
             }
             
-            const postsGrid = clearContainer ? document.createElement('div') : container.querySelector('.grid') || document.createElement('div');
-            if (clearContainer) {
-                postsGrid.className = 'grid md:grid-cols-2 lg:grid-cols-3 gap-8';
-                container.appendChild(postsGrid);
-            }
+            const postsGrid = document.createElement('div');
+            postsGrid.className = 'grid md:grid-cols-2 lg:grid-cols-3 gap-8';
+            container.appendChild(postsGrid);
             
             posts.forEach(post => {
                 const postElement = document.createElement('article');
-                postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300';
+                postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between';
                 postElement.innerHTML = `
-                    ${post.featured_image ? `
-                    <div class="aspect-video overflow-hidden">
-                        <img src="../${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.title)}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                    </div>` : `
-                    <div class="aspect-video bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-                        <div class="text-4xl text-electric-blue">
-                            <i class="fas fa-blog"></i>
+                    <div>
+                        ${post.featured_image ? `
+                        <div class="aspect-video overflow-hidden">
+                            <img src="../${escapeHtml(post.featured_image)}" alt="${escapeHtml(post.title)}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                        </div>` : `
+                        <div class="aspect-video bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+                            <div class="text-4xl text-electric-blue">
+                                <i class="fas fa-blog"></i>
+                            </div>
+                        </div>`}
+                        <div class="p-6">
+                            <div class="flex items-center text-sm text-gray-500 mb-3 flex-wrap gap-2">
+                                <span class="bg-electric-blue text-white px-2.5 py-1 rounded-full text-xs font-semibold">${escapeHtml(post.category)}</span>
+                                <time class="text-xs text-gray-400 font-medium">${formatDate(post.published_at)}</time>
+                            </div>
+                            <h2 class="text-xl font-bold text-navy mb-3 hover:text-electric-blue transition duration-300 line-clamp-2">
+                                <a href="/blog/${post.slug}">${escapeHtml(post.title)}</a>
+                            </h2>
+                            <p class="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed">${escapeHtml(post.excerpt)}</p>
                         </div>
-                    </div>`}
-                    <div class="p-6">
-                        <div class="flex items-center text-sm text-gray-500 mb-3">
-                            <span class="bg-electric-blue text-white px-2 py-1 rounded text-xs font-medium mr-3">${escapeHtml(post.category)}</span>
-                            <time>${formatDate(post.published_at)}</time>
-                        </div>
-                        <h2 class="text-xl font-bold text-navy mb-3 hover:text-electric-blue transition duration-300">
-                            <a href="/blog/${post.slug}">${escapeHtml(post.title)}</a>
-                        </h2>
-                        <p class="text-gray-600 mb-4 line-clamp-3">${escapeHtml(post.excerpt)}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">By ${escapeHtml(post.author)}</span>
-                            <a href="/blog/${post.slug}" class="text-electric-blue hover:text-blue-700 font-medium text-sm">
-                                Read More →
-                            </a>
-                        </div>
+                    </div>
+                    <div class="px-6 pb-6 pt-0 flex items-center justify-between border-t border-gray-100 pt-4">
+                        <span class="text-xs text-gray-500 font-medium">${escapeHtml(post.author || 'App Craft Services')}</span>
+                        <a href="/blog/${post.slug}" class="text-electric-blue hover:text-blue-700 font-semibold text-sm inline-flex items-center">
+                            Read Article <span class="ml-1">→</span>
+                        </a>
                     </div>
                 `;
                 postsGrid.appendChild(postElement);
             });
+        }
+        
+        function renderPagination(currentPage, totalItems, perPage) {
+            const paginationContainer = document.getElementById('pagination-container');
+            const buttonsContainer = document.getElementById('pagination-buttons');
+            const totalPages = Math.ceil(totalItems / perPage);
+            
+            if (totalPages <= 1) {
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+            
+            paginationContainer.classList.remove('hidden');
+            
+            // Update info counter
+            const start = ((currentPage - 1) * perPage) + 1;
+            const end = Math.min(currentPage * perPage, totalItems);
+            document.getElementById('pagination-start').textContent = start;
+            document.getElementById('pagination-end').textContent = end;
+            document.getElementById('pagination-total').textContent = totalItems;
+            
+            buttonsContainer.innerHTML = '';
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `px-3.5 py-2 rounded-md text-sm font-medium transition ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100 border border-gray-300'}`;
+            prevBtn.innerHTML = '&larr; Prev';
+            prevBtn.disabled = (currentPage === 1);
+            if (currentPage > 1) {
+                prevBtn.addEventListener('click', () => {
+                    loadBlogPosts(currentPage - 1);
+                    scrollToBlogTop();
+                });
+            }
+            buttonsContainer.appendChild(prevBtn);
+            
+            // Generate numbered pages with smart windowing
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                appendPageButton(1, buttonsContainer);
+                if (startPage > 2) {
+                    appendEllipsis(buttonsContainer);
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                appendPageButton(i, buttonsContainer, i === currentPage);
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    appendEllipsis(buttonsContainer);
+                }
+                appendPageButton(totalPages, buttonsContainer);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `px-3.5 py-2 rounded-md text-sm font-medium transition ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100 border border-gray-300'}`;
+            nextBtn.innerHTML = 'Next &rarr;';
+            nextBtn.disabled = (currentPage === totalPages);
+            if (currentPage < totalPages) {
+                nextBtn.addEventListener('click', () => {
+                    loadBlogPosts(currentPage + 1);
+                    scrollToBlogTop();
+                });
+            }
+            buttonsContainer.appendChild(nextBtn);
+        }
+        
+        function appendPageButton(pageNumber, container, isActive = false) {
+            const btn = document.createElement('button');
+            btn.className = isActive 
+                ? 'px-3.5 py-2 rounded-md text-sm font-semibold bg-electric-blue text-white shadow-sm'
+                : 'px-3.5 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 transition';
+            btn.textContent = pageNumber;
+            if (!isActive) {
+                btn.addEventListener('click', () => {
+                    loadBlogPosts(pageNumber);
+                    scrollToBlogTop();
+                });
+            }
+            container.appendChild(btn);
+        }
+        
+        function appendEllipsis(container) {
+            const span = document.createElement('span');
+            span.className = 'px-2 py-2 text-gray-400 text-sm';
+            span.textContent = '...';
+            container.appendChild(span);
+        }
+        
+        function scrollToBlogTop() {
+            const el = document.getElementById('category-filters');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
         
         function showError(message) {
@@ -304,13 +407,14 @@
                     <p class="text-gray-600">${message}</p>
                 </div>
             `;
+            document.getElementById('pagination-container').classList.add('hidden');
         }
         
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', { 
                 year: 'numeric', 
-                month: 'long', 
+                month: 'short', 
                 day: 'numeric' 
             });
         }
@@ -320,12 +424,6 @@
             div.textContent = text;
             return div.innerHTML;
         }
-        
-        // Load more posts
-        document.getElementById('load-more-posts').addEventListener('click', () => {
-            currentPage++;
-            loadBlogPosts(currentPage, true);
-        });
 
         // Category filter clicks
         document.querySelectorAll('#category-filters .category-btn').forEach(btn => {
@@ -344,13 +442,13 @@
                 btn.classList.remove('bg-gray-100', 'text-gray-700');
                 btn.classList.add('bg-electric-blue', 'text-white', 'shadow-md', 'active');
                 
-                loadBlogPosts(1, false);
+                loadBlogPosts(1);
             });
         });
         
-        // Load initial posts
+        // Load initial posts (Page 1, 5 articles)
         document.addEventListener('DOMContentLoaded', () => {
-            loadBlogPosts();
+            loadBlogPosts(1);
         });
     </script>
 </body>
