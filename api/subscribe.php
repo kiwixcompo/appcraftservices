@@ -26,7 +26,7 @@ if (!$input) {
 $name   = trim(htmlspecialchars($input['name'] ?? '', ENT_QUOTES, 'UTF-8'));
 $email  = filter_var(trim($input['email'] ?? ''), FILTER_SANITIZE_EMAIL);
 $role   = trim(htmlspecialchars($input['role'] ?? 'other', ENT_QUOTES, 'UTF-8'));
-$magnet = in_array($input['magnet'] ?? '', ['ojs', 'mvp']) ? $input['magnet'] : 'ojs';
+$magnet = in_array($input['magnet'] ?? '', ['blueprint', 'ojs', 'mvp']) ? $input['magnet'] : 'blueprint';
 
 if (empty($name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['success' => false, 'message' => 'Please enter a valid name and email address.']);
@@ -35,13 +35,15 @@ if (empty($name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL))
 
 // Define download links (these would be real PDF/hosted file URLs)
 $downloadLinks = [
-    'ojs' => 'https://appcraftservices.com/resources/ojs-guide-african-universities.pdf',
-    'mvp' => 'https://appcraftservices.com/resources/mvp-tech-stack-checklist.pdf',
+    'blueprint' => 'https://appcraftservices.com/resources/2026-web-architecture-blueprint.pdf',
+    'ojs'       => 'https://appcraftservices.com/resources/ojs-guide-african-universities.pdf',
+    'mvp'       => 'https://appcraftservices.com/resources/mvp-tech-stack-checklist.pdf',
 ];
 
 $guideTitles = [
-    'ojs' => 'The Complete Guide to Optimizing Open Journal Systems for African Universities',
-    'mvp' => "The Non-Technical Founder's MVP Tech Stack Checklist",
+    'blueprint' => 'The 2026 Web Architecture Blueprint (Scalable MVPs, HR Portals & Custom CMS)',
+    'ojs'       => 'The Complete Guide to Optimizing Open Journal Systems for African Universities',
+    'mvp'       => "The Non-Technical Founder's MVP Tech Stack Checklist",
 ];
 
 $downloadUrl = $downloadLinks[$magnet];
